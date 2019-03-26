@@ -1,0 +1,25 @@
+<div ng-controller="">
+	<script type="text/ng-template" id="modalReporteMensual">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reporte Mensual</h4>
+		</div>
+		<form ng-submit="reporteMensual()">
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label>Mes</label>
+							<input ng-model="reporte.MES" type="month" class="form-control" required>
+						</div>
+		
+					</div>
+				</div>
+			</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<button type="submit" class="btn btn-primary">Generar Reporte</button>
+				</div>
+			</form>
+	</script>
+</div>

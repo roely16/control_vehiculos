@@ -1,0 +1,294 @@
+<div ng-controller="detalleValeController">
+
+	<!-- Detalles del Vale -->
+	<div class="row">
+		<h3 class="text-center">Detalles del Vale</h3>
+	</div>
+	<div class="row">
+		<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">No. de Vale</label>
+				<input type="text" ng-model="vale.NO_VALE" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Fecha</label>
+				<input type="text" ng-model="vale.FECHA" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Hora</label>
+				<input type="text" ng-model="vale.HORA" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Gasolinera</label>
+				<input type="text" ng-model="vale.GASOLINERA" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Departamento</label>
+				<input type="text" ng-model="vale.DEPARTAMENTO" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Dirección</label>
+				<input type="text" ng-model="vale.DIRECCION" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Estado</label>
+				<input type="text" class="form-control" ng-if="vale.ESTADO == 5" value="EMITIDO" readonly>
+				<input type="text" class="form-control" ng-if="vale.ESTADO == 6" value="FINALIZADO" readonly>
+				<input type="text" class="form-control" ng-if="vale.ESTADO == 8" value="ENTREGADO" readonly>
+				<input type="text" class="form-control" ng-if="vale.ESTADO == 7" value="ANULADO" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-1">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Consumo</label>
+				<input type="text" ng-if="vale.CONSUMO == NULL " value="0" class="form-control" readonly="">
+				<input type="text" ng-if="vale.CONSUMO != NULL " ng-model="vale.CONSUMO" ng-value="vale.CONSUMO" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-1">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Gestión</label>
+				<input type="text" ng-if="vale.NO_GESTION != NULL" ng-model="vale.NO_GESTION" class="form-control" readonly="">
+				<input type="text" ng-if="vale.NO_GESTION == NULL" value="Ninguna" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-4">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Responsable</label>
+				<input type="text" ng-model="vale.RESPONSABLE" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+
+		<div class="col-md-4">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Fecha y Hora de Entrega</label>
+				<input type="text" ng-model="vale.FECHA_ENTREGA" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+
+		<div class="col-md-4">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Fecha de Despacho</label>
+				<input type="text" ng-model="vale.FECHA_DESPACHO" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+
+		<div class="col-md-4">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Responsable Entrega</label>
+				<input type="text" ng-model="vale.PERSONA_ENTREGA" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+
+	  	<div class="col-md-4">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Comisión</label>
+				<textarea class="form-control" rows="3" ng-model="vale.COMISION" readonly></textarea>
+		  	</div>
+	  	</div>
+	</div>
+
+	<br>
+
+	<!-- Tabs -->
+	<div class="row">
+		<ul class="nav nav-tabs" id="myTabs">
+  			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab">Documentos</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+			<div class="tab-pane fade in active" id="t1">
+				<br>
+				<div class="row">
+
+					<div class="col-md-2">
+						<button type="button" class="btn btn-success btn-block" ng-click="modalNuevoDocumento()">Nuevo Documento
+							<i class="glyphicon glyphicon-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_documento" ng-change="filter_documentos()" class="form-control" type="text" placeholder="Buscar documento">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+
+					<div class="col-md-12" ng-show="filter_data_documentos > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-3">Nombre</th>
+									<th class="col-md-3">Descripción</th>
+									<th class="col-md-3">Archivo</th>
+									<th class="col-md-3">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="documento in searched_documentos = (documentos | filter:search_documento | orderBy : base_documentos :reverse_documentos) | beginning_data:(current_grid_documentos - 1) * data_limit_documentos | limitTo:data_limit_documentos">
+									<td>{{ documento.NOMBRE }} </td>
+									<td>{{ documento.DESCRIPCION }} </td>
+									<td ng-if=" documento.TIPO_ARCHIVO == 'image/jpeg' || documento.TIPO_ARCHIVO == 'image/png' || documento.TIPO_ARCHIVO == 'image/jpg' ">
+										<img style="width: 15%" ng-src="{{ documento.ARCHIVO }}" class="img-responsive">
+									</td>
+									<td ng-if=" documento.TIPO_ARCHIVO != 'image/jpeg'">
+										<img style="width: 10%" src="public/img/document.png" class="img-responsive">
+									</td>
+									<td>
+
+										<button ng-click="modalEditarDocumento(documento.DOCUMENTOID)" class="btn btn-primary btn-sm" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+
+										<button class="btn btn-danger btn-sm" title="Eliminar" ng-click="eliminarDocumento(documento.DOCUMENTOID)">
+											<i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')"></i>
+										</button>
+
+										<a class="btn btn-success btn-sm" title="Descargar" href="{{ documento.ARCHIVO }}" download="{{ documento.NOMBRE_ARCHIVO }}" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-save"></i>
+										</a>
+
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="col-md-12" ng-show="filter_data_documentos > 0">
+						<div pagination="" page="current_grid_documentos" on-select-page="page_position_documentos(page)" boundary-links="true" total-items="filter_data_documentos" items-per-page="data_limit_documentos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_documentos" max-size="max_size_documentos" num-pages="numPages">
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_documentos == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Modal Nuevo Documento  -->
+	<div class="modal fade" id="modalDocumento">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Subir documento</h4>
+				</div>
+				<form ng-submit="registrarDocumento()" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="form-control" ng-model="documento.NOMBRE" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Descripción</label>
+										<textarea class="form-control" rows="6" required="required" ng-model="documento.DESCRIPCION"></textarea required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="exampleInputFile">Seleccionar archivo</label>
+										<input type="file" id="exampleInputFile" file-input="files" onchange="angular.element(this).scope().imageUpload(event)" required>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+
+							      <img class="img-responsive" ng-if=" isImage == 1 " ng-src="{{ step }}" alt="">
+
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-success">Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Editar Documento -->
+	<div class="modal fade" id="editarDocumento">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Editar documento</h4>
+				</div>
+				<form ng-submit="editarDocumento()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="form-control" ng-model="editar_documento.NOMBRE" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Descripción</label>
+										<textarea class="form-control" rows="6" required="required" ng-model="editar_documento.DESCRIPCION"></textarea required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="exampleInputFile">Seleccionar archivo</label>
+		    							<input type="file" id="editar_archivo" file-input="files" onchange="angular.element(this).scope().imageUpload_(event)">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" ng-if="editar_documento.IS_IMAGE == 1">
+							      <img class="img-responsive" ng-src="{{ editar_documento.ARCHIVO }}" alt="">
+							</div>
+							<div class="col-md-6" ng-if="editar_documento.IS_IMAGE == 0">
+							      <img class="img-responsive" src="public/img/document.png" alt="">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar cambios</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Grande -->
+	<div class="modal fade" id="modalBig">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div ng-include="modalBig_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+</div>

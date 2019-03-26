@@ -1,0 +1,43 @@
+<div class="" ng-show="reporte_generado" id="reporte">
+					
+	<div class="row">
+		<h3 class="text-center">Consumo de Combustible - {{ mes }}</h3>
+	</div>
+
+	<br>
+
+	<!-- Tabla -->
+	<div class="col-md-6" id="reporte_combustible">
+		<table class="table table-hover" id="tabla_reporte_semanal">
+			<thead>
+				<th>No.</th>
+				<th>Semana</th>
+				<th>Cuota</th>
+				<th>Abastecido</th>
+				<th>Sobrante</th>
+			</thead>
+			<tbody>
+				<tr ng-repeat="semana in semanas">
+					<td>{{ $index + 1 }}</td>
+					<td>{{ semana.FECHA_INICIO}} al {{ semana.FECHA_FIN }}</td>
+					<td>{{ semana.CUOTA }}</td>
+					<td ng-if="semana.CONSUMO != null">{{ semana.CONSUMO }}</td>
+					<td ng-if="semana.CONSUMO == null">0</td>
+					<td>{{ semana.SOBRANTE }}</td>
+				</tr>
+				<tr>
+					<td><strong>Totales</strong></td>
+					<td></td>
+					<td><strong>{{ total_cuota }}</strong></td>
+					<td><strong>{{ total_abastecido }}</strong></td>
+					<td><strong>{{ total_restante }}</strong></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Grafica -->
+	<div class="col-md-6" id="graph-container">
+		<canvas id="myChart" style="width: 25%;"></canvas>
+	</div>
+</div>

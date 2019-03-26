@@ -1,0 +1,236 @@
+<div ng-controller="solicitudesValesController">
+
+	<div class="row">
+		<ul class="nav nav-tabs">
+  			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab"">Vales de Combustible</a></li>
+  			<li role="presentation"><a data-target="#t2" data-toggle="tab"">Mantenimientos de Vehículos</a></li>
+		</ul>
+	</div>
+
+	<div class="tab-content">
+
+		<!-- Gestiones de vales -->
+		<div class="tab-pane fade in active" id="t1">
+
+			<br>
+			<br>
+			<div class="row" >
+				<div class="col-md-4 pull-right">
+					<div class="input-group">
+						<input ng-model="search" ng-change="filter()" class="form-control" type="text" placeholder="Buscar solicitud de vale">
+						<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+					</div>			
+				</div>	
+			</div>
+
+			<br>
+			<br>
+
+			<div class="row">
+
+				<!-- Lista de Gestiones de Vales -->
+				<table class="table table-hover table-condensed" ng-show="filter_data > 0">
+					<thead>
+						<tr>
+							<th class="col-md-2">No. Gestión&nbsp;<a ng-click="sort_with(GESTIONID)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Fecha y Hora&nbsp;<a ng-click="sort_with(FECHA)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Responsable&nbsp;<a ng-click="sort_with(NOMBRE)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Placa</th>
+							<th>Tipo</th>
+							<th>Marca</th>
+							<th class="col-md-1">Estado</th>
+							<th class="col-md-2">Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="solicitud in searched = (solicitudes_pendientes | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+							<td>{{ solicitud.GESTIONID }}</td>
+							<td>{{ solicitud.FECHA }}</td>
+							<td>{{ solicitud.NOMBRE }} {{ solicitud.APELLIDO }}</td>
+							<td>{{ solicitud.PLACA }}</td>
+							<td>{{ solicitud.TIPO }}</td>
+							<td>{{ solicitud.MARCA }}</td>
+							<td ng-if="solicitud.STATUS == 0 || solicitud.STATUS == 4">
+								<span class="label label-danger">En Proceso</span>
+							</td>
+							<td>
+								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestion(solicitud.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-eye-open"></i>
+								</button>
+								<a ng-if="solicitud.ACTIVO == 1" ng-href="#/vehiculos/detalles/{{ solicitud.INVENTARIOID }}/{{ solicitud.GESTIONID }}" class="btn btn-primary btn-sm" title="Generar Vale" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-log-in"></i>
+								</a>
+
+								<a ng-if="solicitud.ACTIVO == 0" class="btn btn-primary btn-sm" title="Generar Vale" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" disabled>
+									<i class="glyphicon glyphicon-log-in"></i>
+								</a>
+
+								<button class="btn btn-success btn-sm" title="Unir con Vale" ng-click="modalUnirVale( solicitud.INVENTARIOID )" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="solicitud.ACTIVO == 0">
+									<i class="glyphicon glyphicon-transfer"></i>
+								</button>
+								<button class="btn btn-danger btn-sm" title="Rechazar Gestión" ng-click="cancelarGestion(solicitud.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-remove-sign "></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="col-md-12" ng-show="filter_data == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<!-- Paginacion -->
+				<div class="col-md-12" ng-show="filter_data > 0">
+					<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- Gestiones de mantenimiento -->
+		<div class="tab-pane fade" id="t2">
+
+			<br>
+			<br>
+			<div class="row" >
+				<div class="col-md-4 pull-right">
+					<div class="input-group">
+						<input ng-model="search_m" ng-change="filter()" class="form-control" type="text" placeholder="Buscar solicitud de mantenimiento">
+						<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+					</div>			
+				</div>	
+			</div>
+
+			<br>
+			<br>
+
+			<div class="row">
+
+				<!-- Lista de Cuotas -->
+				<table class="table table-hover table-condensed" ng-show="filter_data_m > 0">
+					<thead>
+						<tr>
+							<th class="col-md-2">No. Gestión&nbsp;<a ng-click="sort_with(GESTIONID)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Fecha y Hora&nbsp;<a ng-click="sort_with(FECHA)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Responsable&nbsp;<a ng-click="sort_with(NOMBRE)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Placa</th>
+							<th>Tipo</th>
+							<th>Marca</th>
+							<th class="col-md-1">Estado</th>
+							<th class="col-md-2">Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="solicitud_m in searched = (solicitudes_mantenimiento_pendientes | filter:search_m | orderBy : base :reverse) | beginning_data:(current_grid_m - 1) * data_limit_m | limitTo:data_limit_m">
+							<td>{{ solicitud_m.GESTIONID }}</td>
+							<td>{{ solicitud_m.FECHA }}</td>
+							<td>{{ solicitud_m.NOMBRE }} {{ solicitud_m.APELLIDO }}</td>
+							<td>{{ solicitud_m.PLACA }}</td>
+							<td>{{ solicitud_m.TIPO }}</td>
+							<td>{{ solicitud_m.MARCA }}</td>
+							<td ng-if="solicitud_m.STATUS == 0 || solicitud_m.STATUS == 4">
+								<span class="label label-danger">En Proceso</span>
+							</td>
+							<td>
+								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestion(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-eye-open"></i>
+								</button>
+
+								<a ng-if="solicitud_m.ESTADO_VEHICULO == 1" ng-href="#/vehiculos/detalles/{{ solicitud_m.INVENTARIOID }}/{{ solicitud_m.GESTIONID }}/2" class="btn btn-primary btn-sm" title="Generar Mantenimiento" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-log-in"></i>
+								</a>
+
+								<a ng-if="solicitud_m.ESTADO_VEHICULO == 0" class="btn btn-primary btn-sm" title="Generar Mantenimiento" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" disabled>
+									<i class="glyphicon glyphicon-log-in"></i>
+								</a>
+
+								<button class="btn btn-danger btn-sm" title="Rechazar Gestión" ng-click="cancelarGestionMantenimiento(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-remove-sign "></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="col-md-12" ng-show="filter_data_m == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<!-- Paginacion -->
+				<div class="col-md-12" ng-show="filter_data_m > 0">
+					<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+					</div>
+				</div>
+		</div>
+
+	</div>
+
+	<div class="modal fade" id="modalDetalleGestion">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Detalles de Gestión</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="row">
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">No. Gestión</label>
+								<input type="text" class="form-control" ng-model="gestion.GESTIONID" readonly>
+							</div>
+						</div>
+
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Fecha y Hora</label>
+								<input type="text" class="form-control" ng-model="gestion.FECHA" readonly>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Responsable</label>
+								<input type="text" value="{{ gestion.NIT }} {{ gestion.NOMBRE }} {{ gestion.APELLIDO }}" class="form-control" readonly>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Detalle</label>
+								<textarea class="form-control" rows="8" ng-model="gestion.DETALLE" readonly></textarea>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Mediano -->
+	<div class="modal fade" id="modalMed">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div ng-include="modalMed_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Grande -->
+	<div class="modal fade" id="modalBig">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div ng-include="modalBig_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+</div>

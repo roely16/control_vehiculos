@@ -1,0 +1,193 @@
+<div ng-controller="cuotasCombustibleController">
+
+	<br>
+	<div class="row" >
+
+		<div class="col-md-3">
+			<button ng-click="cargarModalCuotas()" class="btn btn-primary btn-block">Registrar Cuotas
+				<i class="fas fa-plus"></i>
+			</button>
+		</div>
+
+		<div class="col-md-3 pull-right">
+			<div class="input-group">
+				<input ng-model="search" ng-change="filter()" class="form-control" type="text" placeholder="Buscar cuota de combustible">
+				<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+			</div>			
+		</div>	
+
+	</div>
+
+	<br>
+
+	<!-- Lista de Cuotas -->
+	<div class="row">
+
+		<table class="table table-hover table-condensed" ng-show="filter_data > 0">
+			<thead>
+				<tr>
+					<th class="col-md-1">No.&nbsp;<a ng-click="sort_with($index)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+					<th class="col-md-1">Fecha inicio&nbsp;<a ng-click="sort_with(FECHA_INICIO)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+					<th class="col-md-1">Fecha fin&nbsp;<a ng-click="sort_with(FECHA_FIN)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+					<th class="col-md-1">Vehículo&nbsp;<a ng-click="sort_with(PLACA)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+					<th class="col-md-1 text-right">Cuota</th>
+					<th class="col-md-1 text-right">Consumo</th>
+					<th class="col-md-1 text-right">Restante</th>
+					<th class="col-md-2 text-center">Estado&nbsp;<a ng-click="sort_with(ESTADO)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+					<th class="col-md-1">Acción</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="cuota in searched = (cuotas | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+					<td>{{ $index + 1 }}</td>
+					<td>{{ cuota.FECHA_INICIO }}</td>
+					<td>{{ cuota.FECHA_FIN }}</td>
+					<td>
+						{{ cuota.PLACA }}
+					</td>
+					<td class="text-right">{{ cuota.CUOTA }}</td>
+					<td ng-if="cuota.CONSUMO != NULL" class="text-right">{{ cuota.CONSUMO }}</td>
+					<td ng-if="cuota.CONSUMO == NULL" class="text-right">0</td>
+					<td class="text-right">{{ cuota.CUOTA - cuota.CONSUMO | number }}</td>
+					<td class="text-center" ng-if="cuota.ESTADO == 1">
+						<span class="label label-success">ACTIVA</span>
+					</td>
+					<td class="text-center" ng-if="cuota.ESTADO == 0">
+						<span class="label label-danger">INACTIVA</span>
+					</td>
+					<td ng-if="cuota.ESTADO == 1">
+				  		<a class="btn btn-primary btn-sm" title="Editar"" ng-click="modalEditarCuota( cuota.CUOTAID )" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+				  			<i class="glyphicon glyphicon-pencil"></i>
+				  		</a>
+				  		<a class="btn btn-danger btn-sm" title="Eliminar"" ng-click="eliminarCuota( cuota.CUOTAID, cuota.INVENTARIOID )" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+				  			<i class="glyphicon glyphicon-trash"></i>
+				  		</a>
+					</td>
+					<td ng-if="cuota.ESTADO == 0">
+				  		<a class="btn btn-primary btn-sm" title="Editar"" disabled>
+				  			<i class="glyphicon glyphicon-pencil"></i>
+				  		</a>
+				  		<a class="btn btn-danger btn-sm" title="Eliminar"" disabled>
+				  			<i class="glyphicon glyphicon-trash"></i>
+				  		</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="col-md-12" ng-show="filter_data == 0">
+			<h4 class="text-center">-- No se encontraron registros --</h4>
+		</div>
+
+	</div>
+
+	<!-- Paginacion -->
+	<div class="col-md-12" ng-show="filter_data > 0">
+		<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+		</div>
+	</div>
+
+	<!-- Modal para registrar cuotas -->
+	<div class="modal fade" id="modalRegistrarCuotas">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form ng-submit="registrarCuotas()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Fecha de inicio</label>
+									<input type="text" class="form-control datepicker" id="fecha_inicio" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Fecha de finalización</label>
+									<input type="text" id="fecha_fin" class="form-control datepicker" required>
+								</div>
+						 	</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th class="col-md-1">No.</th>
+											<th class="col-md-2">Placa</th>
+											<th>Marca</th>
+											<th>Tipo</th>
+											<th class="col-md-2">Modelo</th>
+											<th class="2">Cuota</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="vehiculo in vehiculos">
+											<td>{{ $index + 1 }}</td>
+											<td>
+												{{ vehiculo.PLACA }}
+												<input type="hidden" name="{{ $index + 1 }}" class="form-control" value="{{ vehiculo.INVENTARIOID }}">
+											</td>
+											<td>{{ vehiculo.MARCA }}</td>
+											<td>{{ vehiculo.TIPO }}</td>
+											<td>{{ vehiculo.MODELO }}</td>
+											<td>
+												<input type="text" name="cuota" class="form-control" required>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Registrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para editar cuota -->
+	<div class="modal fade" id="modalEditarCuota">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Editar Cuota de Combustible</h4>
+				</div>
+				<form ng-submit="editarCuota()">
+					<div class="modal-body">
+						<input type="hidden" ng-value="edit_cuota.CUOTAID">
+						<input type="hidden" ng-value="edit_cuota.INVENTARIOID">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Fecha de inicio</label>
+									<input type="text" ng-model="edit_cuota.FECHA_INICIO" class="form-control" readonly="">
+							  	</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Fecha de finalización</label>
+									<input type="text" ng-model="edit_cuota.FECHA_FIN" class="form-control" readonly="">
+							  	</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Cuota</label>
+									<input type="text" ng-model="edit_cuota.CUOTA" class="form-control" required>
+							  	</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar Cambios</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>

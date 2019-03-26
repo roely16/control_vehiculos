@@ -1,0 +1,287 @@
+<div ng-controller="valeController">
+	<br>
+	<div class="row" >
+	  	<div class="col-md-2">
+		    <button ng-click="validarVale()" type="button" class="btn btn-success" >Nuevo Vale
+				<i class="fas fa-plus"></i>
+			</button>
+
+		</div>   
+		<div class="col-md-2">
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#talonarioModal">Nuevo Talonario
+				<i class="fas fa-plus"></i>
+			</button>
+		</div>
+	</div>
+
+
+	<br>
+	<div class="row">
+		
+		<div class="col-md-3 pull-right">
+			<div class="input-group">
+				<input class="form-control" type="text" name="" placeholder="Ingrese el número de vale">
+				<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+			</div>			
+		</div>	
+	</div>
+
+	<br>
+
+	<div class="row">
+	  <table class="table">
+	      	<thead>
+	        <tr>
+	          <th>No. Vale</th>
+	          <th>Fecha</th>
+	          <th>Hora</th>
+	          <th>Estado</th>
+	          <th class="col-md-2">Acción</th>
+	        </tr>
+	      	</thead>
+	      	<tbody>
+		      	<tr ng-repeat="vale in vales">
+		      		<td>{{vale.NO_VALE}}</td>
+		      		<td></td>
+		      		<td></td>
+		      		<td ng-if="vale.ESTADO == 1">
+		      			<span class="label label-success">EMITIDO</span>
+		      		</td>
+		      		<td>
+		      			<a href="" class="btn btn-default btn-sm" title="Detalles" ng-click="mostrarDetalleVale(vale.VALEID)">
+		      				<i class="glyphicon glyphicon-eye-open"></i>
+		      			</a>
+		      			<a href="" class="btn btn-primary btn-sm" title="Editar" ng-click="mostrarEditarVale(vale.VALEID)">
+	  						<i class="glyphicon glyphicon-edit"></i>
+	  					</a>
+		      			
+		      		</td>
+		      	</tr>
+	      	</tbody>
+	    </table>
+	</div>
+
+	<center>
+		<nav aria-label="Page navigation">
+			<ul class="pagination">
+		    	<li>
+		      		<a href="#" aria-label="Previous">
+		        		<span aria-hidden="true">&laquo;</span>
+		      		</a>
+		    	</li>
+			    <li><a href="#">1</a></li>
+			    <li><a href="#">2</a></li>
+			    <li><a href="#">3</a></li>
+			    <li><a href="#">4</a></li>
+			    <li><a href="#">5</a></li>
+		    	<li>
+			      	<a href="#" aria-label="Next">
+			        	<span aria-hidden="true">&raquo;</span>
+			      	</a>
+		    	</li>
+		  	</ul>
+		</nav>
+	</center>
+
+	<!-- Modal para registro de Vale -->
+	<div class="modal fade" id="valeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  	<div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      	<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Registro de Nuevo Vale</h4>
+		      	</div>
+		      	<form id="form_valeModal" ng-submit="registrarVale()">
+		      		<div class="modal-body">
+			      		<!-- Div con seccion de busqueda de vehiculo -->
+			      		<div class="row">
+			      			<div class="col-md-12">
+			      				<div class="col-md-4">
+			      					<label>Seleccione el vehículo</label>
+			      				</div>
+			      				<div class="col-md-4">
+			      					<select class="form-control" ng-model="selectedItem" ng-change="cargarDatos(option.CODIGO_MUNI)" ng-options="option.CODIGO_MUNI for option in vehiculos" required="">
+			      						<option value="">Seleccione una placa</option>
+			      					</select>
+			      				</div>
+			      			</div>
+			      		</div>
+			      		<h3 class="text-center">Datos del Vale</h3>
+			      		<!-- Div con los datos del vale -->
+			        	<div class="row">
+			        		<div class="col-md-12">
+			        			<div class="col-md-3">
+					   				<div class="form-group">
+									    <label  for="exampleInputEmail1">No. de Vale</label>
+										<input type="text" class="form-control" id="no_vale" name="no_vale" aria-describedby="emailHelp" ng-value="vale.NO_VALE" placeholder="" readonly>
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+					   				<div class="form-group">
+									    <label for="exampleInputEmail1">Fecha</label>
+										<input type="date" class="form-control" id="fecha" name="fecha" aria-describedby="emailHelp" ng-model="vale.fecha" placeholder="" required>
+			  						</div>
+		  						</div>	
+		  						<div class="col-md-3">
+					   				<div class="form-group">
+									    <label for="exampleInputEmail1">Gasolinera</label>
+										<input type="text" class="form-control" ng-model="vale.gasolinera" name="gasolinera" id="gasolinera" placeholder="" required>
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Tipo de Combustible</label>
+										<select class="form-control" ng-model="vale.tipo_c" id="tipo_combustible" name="tipo_combustible" required>
+											<option value="Gasolina">Gasolina</option>
+											<option value="Diesel">Diesel</option>
+										</select>
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Placa</label>
+										<input type="text" ng-model="vale.no_placa" class="form-control" id="no_placa" name="no_placa" readonly>
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Tipo</label>
+										<input type="text" ng-model="vale.tipo_v" class="form-control" name="no_placa">
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Marca</label>
+										<input type="text" ng-model="vale.marca_v" class="form-control" name="no_placa">
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Color</label>
+										<input type="text" ng-model="vale.color_v" class="form-control" name="no_placa">
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Departamento</label>
+										<input type="text" ng-model="vale.departamento" class="form-control" name="no_placa">
+			  						</div>
+		  						</div>
+		  						<div class="col-md-3">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Dirección</label>
+										<input type="text" ng-model="vale.direccion" class="form-control" name="no_placa">
+			  						</div>
+		  						</div>
+		  						<div class="col-md-6">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Responsable</label>
+										<input type="text" ng-model="vale.responsable" class="form-control" name="no_placa" required>
+			  						</div>
+		  						</div>
+		  						<div class="col-md-6">
+		  							<div class="form-group">
+									    <label for="exampleInputEmail1">Comision(es) a efectuar</label>
+									    <textarea class="form-control" ng-model="vale.comision" rows="3" style="resize:none" required></textarea>
+			  						</div>
+		  						</div>				
+			        		</div>
+			        	</div>
+			      	</div>
+			      	<div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			        	<button type="submit" class="btn btn-success">Registrar</button>
+			      	</div>
+		      	</form>
+		    </div>
+	  	</div>
+	</div>
+
+	<div class="modal fade" id="talonarioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  	<div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      	<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Registro de Nuevo Talonario de Vales</h4>
+		      	</div>
+		      	<form ng-submit="registrarTalonario()">
+			      	<div class="modal-body">
+			        	<div class="row">
+			        		<div class="col-md-12">
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Talonario</label>
+										<input type="text" class="form-control" ng-model="talonario.no" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Inicio</label>
+										<input type="text" class="form-control" ng-model="talonario.inicio" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Fin</label>
+										<input type="text" class="form-control" ng-model="talonario.fin" required>
+			  						</div>
+			        			</div>
+			        		</div>
+			        	</div>
+			      	</div>
+			      	<div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			        	<button type="submit" class="btn btn-success">Registrar</button>
+			      	</div>
+		      	</form>
+		    </div>
+	  	</div>
+	</div>
+
+
+
+	<!-- Modal para ver detalles del vale -->
+	<div class="modal fade" id="modalDetalleVale">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Detalles de Vale No. {{vale.NO_VALE}}</h4>
+				</div>
+				<div class="modal-body">
+					<h3 class="text-center">Datos del vale</h3>
+					<div class="row">
+						<div class="col-md-2">
+		      				<div class="form-group">
+								<label for="exampleInputEmail1">No. de Vale</label>
+								<input type="text" class="form-control" readonly>
+			  				</div>
+		      			</div>	
+		      			<div class="col-md-2">
+		      				<div class="form-group">
+								<label for="exampleInputEmail1">Fecha</label>
+								<input type="text" class="form-control" readonly>
+			  				</div>
+		      			</div>							
+		      			<div class="col-md-2">
+		      				<div class="form-group">
+								<label for="exampleInputEmail1">Hora</label>
+								<input type="text" class="form-control" readonly>
+			  				</div>
+		      			</div>	
+		      			<div class="col-md-6">
+		      				<div class="form-group">
+								<label for="exampleInputEmail1">Responsable</label>
+								<input type="text" class="form-control" readonly>
+			  				</div>
+		      			</div>	
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

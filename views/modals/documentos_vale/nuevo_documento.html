@@ -1,0 +1,39 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title">Subir documento</h4>
+</div>
+<form ng-submit="registrarDocumento()" enctype="multipart/form-data">
+	<div class="modal-body">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Nombre</label>
+						<input type="text" class="form-control" ng-model="documento.NOMBRE" required>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Descripción</label>
+						<textarea class="form-control" rows="6" required="required" ng-model="documento.DESCRIPCION"></textarea required>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="exampleInputFile">Seleccionar archivo</label>
+						<input type="file" id="exampleInputFile" file-input="files" onchange="angular.element(this).scope().imageUpload(event)" required>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				
+			      <img class="img-responsive" ng-if=" isImage == 1 " ng-src="{{ step }}" alt="">
+			    
+			</div>
+		</div>		
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		<button type="submit" class="btn btn-success">Guardar</button>
+	</div>
+</form>

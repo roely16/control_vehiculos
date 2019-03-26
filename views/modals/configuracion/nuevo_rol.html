@@ -1,0 +1,67 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Nuevo Rol</h4>
+	</div>
+	<form ng-submit="registrar_rol()">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3 text-center">
+					<div class="form-group">
+						<label>Ingresar nombre o número de NIT</label>
+						<input type="text" class="form-control" ng-model="$parent.nombre_piloto" id="nombre_piloto" ng-change="buscar_responsable()" required>
+					</div>
+				</div>
+			</div>	
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Resultados</label>
+						<select multiple  class="form-control" ng-model="$parent.piloto" id="piloto" required>
+							<option ng-repeat="empleado in empleados" value="{{ empleado.NIT }}">{{ empleado.NOMBRE }} {{ empleado.APELLIDO }} - NIT: {{ empleado.NIT }}</option>
+						</select>
+					</div>
+				</div>
+			</div>	
+
+			<div class="row" ng-if="piloto != NULL">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Roles</label>
+						<div class="row">
+							<div class="col-md-6">
+								<label class="checkbox-inline">
+									<input class="rol" value="FIRMA_REGISTRADA" type="checkbox">
+										<span class="label label-default">FIRMA REGISTRADA</span>
+								</label>
+							</div>
+							<div class="col-md-6">
+								<label class="checkbox-inline">
+									<input class="rol" value="PILOTO" type="checkbox">
+										<span class="label label-primary">PILOTO</span>
+								</label>
+							</div>
+							<div class="col-md-6">
+								<label class="checkbox-inline">
+									<input class="rol" value="SOLICITAR_VALE" type="checkbox">
+										<span class="label label-success">SOLICITAR VALE</span>
+								</label>
+							</div>
+							<div class="col-md-6">
+								<label class="checkbox-inline">
+									<input class="rol" value="ADMINISTRADOR" type="checkbox">
+										<span class="label label-danger">ADMINISTRADOR</span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-primary">Guardar</button>
+		</div>
+	</form>
+</div>

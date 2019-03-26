@@ -1,0 +1,503 @@
+<div>
+
+	<!-- Botones para generar reportes -->
+	<div class="row">
+
+		<div class="col-md-3">
+			<button data-toggle="modal" data-target="#modalReporteCombustible" class="btn btn-primary btn-block">Reporte de Combustible Mensual</button>
+		</div>
+
+		<div class="col-md-3">
+			<button data-toggle="modal" data-target="#modalReporteRendimiento" class="btn btn-success btn-block">Reporte de Rendimiento Mensual</button>
+		</div>
+
+		<div class="col-md-3">
+			<button ng-click="reporteKilometraje()" class="btn btn-danger btn-block">Reporte de Kilometraje</button>
+		</div>
+
+		<div class="col-md-1 col-md-offset-2" ng-show="reporte_generado">
+			<button class="btn btn-default" title="Imprimir" ng-click="imprimirReporteMensual()">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+		</div>
+
+		<div class="col-md-1 col-md-offset-2" ng-show="reporte_rendimiento_generado">
+			<button class="btn btn-default" title="Imprimir" ng-click="imprimirReporteRendimiento()">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+		</div>
+
+		<div class="col-md-1 col-md-offset-2" ng-show="reporte_kilometraje_generado">
+			<button class="btn btn-default" title="Imprimir" ng-click="imprimirReporteKilometraje()">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+		</div>
+
+		<div class="col-md-1 col-md-offset-2" ng-show="reporte_vales_generado">
+			<button class="btn btn-default" title="Imprimir" ng-click="imprimirReporteVales()">
+				<i class="glyphicon glyphicon-print"></i>
+			</button>
+		</div>
+
+	</div>
+
+	<br>
+
+	<div class="row">
+		<div class="col-md-3">
+			<button data-toggle="modal" data-target="#modalReporteVales" class="btn btn-info btn-block">Reporte de Vales</button>
+		</div>
+	</div>
+
+	<br>
+
+	<!-- Reportes -->
+	<div ng-show="reporte_generado">
+		<!-- Reporte de Combustible -->
+
+		<div class="row">
+			<h3 class="text-center">Consumo de Combustible - Mes de {{ mes }}</h3>
+		</div>
+
+		<div>
+			<div class="row">
+				<div class="col-md-5">
+					<h3 class="text-center">Detalle Semanal</h3>
+					<div id="detalle_semanal">
+						<table class="table table-hover" id="tabla_detalle_semanal">
+							<thead>
+								<tr>
+									<th>No.</th>
+									<th>Semana</th>
+									<th class="text-right">Cuota</th>
+									<th class="text-right">Abastecido</th>
+									<th class="text-right">Sobrante</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="semana in semanas">
+									<td>{{ $index + 1 }}</td>
+									<td>{{ semana.FECHA_INICIO }} - {{ semana.FECHA_FIN }}</td>
+									<td class="text-right">{{ semana.CUOTA }}</td>
+									<td class="text-right">{{ semana.CONSUMO }}</td>
+									<td class="text-right">{{ semana.RESTANTE }}</td>
+								</tr>
+								<tr>
+									<td><center><strong>Totales</strong></center></td>
+									<td></td>
+									<td class="text-right"><strong>{{ total_cuota }}</strong></td>
+									<td class="text-right"><strong>{{ total_abastecido }}</strong></td>
+									<td class="text-right"><strong>{{ total_sobrante }}</strong></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-md-7">
+					<h3 class="text-center">Gráfica Consumo por Semana</h3>
+
+					<div id="graph-container">
+						<canvas id="graficaSemanas"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<br>
+
+			<div class="row">
+				<div class="col-md-4">
+					<h3 class="text-center">Detalle por Vehículo</h3>
+					<table class="table table-hover" id="tabla_detalle_vehiculo">
+						<thead>
+							<tr>
+								<th>No.</th>
+								<th>Placa</th>
+								<th class="text-right">Cuota</th>
+								<th class="text-right">Abastecido</th>
+								<th class="text-right">Sobrante</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="vehiculo in vehiculos">
+								<td>{{ $index + 1 }}</td>
+								<td>{{ vehiculo.PLACA }}</td>
+								<td class="text-right">{{ vehiculo.CUOTA }}</td>
+								<td ng-if="vehiculo.CONSUMO != null" class="text-right">{{ vehiculo.CONSUMO }}</td>
+								<td ng-if="vehiculo.CONSUMO == null" class="text-right">0</td>
+								<td class="text-right">{{ vehiculo.RESTANTE }}</td>
+							</tr>
+							<tr>
+								<td><center><strong>Totales</strong></center></td>
+								<td></td>
+								<td class="text-right"><strong>{{ total_cuota_v }}</strong></td>
+								<td class="text-right"><strong>{{ total_abastecido_v }}</strong></td>
+								<td class="text-right"><strong>{{ total_sobrante_v }}</strong></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-md-8">
+
+					<h3 class="text-center">Gráfica Consumo por Vehículo</h3>
+
+					<div id="graph-container_">
+						<canvas id="graficaVehiculos"></canvas>
+					</div>
+
+					<br>
+					<br>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div ng-show="reporte_rendimiento_generado">
+
+		<div class="row">
+			<h3 class="text-center">Rendimiento de Combustible - Mes de {{ mes }}</h3>
+		</div>
+		<div class="row" ng-if="reporte_rendimiento.FUENTE == 1">
+			<h5 class="text-center">Fuente: Historial de Entradas y Salidas</h5>
+		</div>
+		<div class="row" ng-if="reporte_rendimiento.FUENTE == 2">
+			<h5 class="text-center">Fuente: Registro de Vales</h5>
+		</div>
+		<br>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div id="graph-container_rendimiento">
+					<canvas id="graficaRendimiento"></canvas>
+				</div>
+			</div>
+		</div>
+
+		<br><br>
+
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<table class="table table-hover" id="detalle_mensual_rendimiento">
+					<thead>
+						<tr>
+							<th>No. Placa</th>
+							<th class="text-right">Km Inicial</th>
+							<th class="text-right">Km Final</th>
+							<th class="text-right">Km Recorridos</th>
+							<th class="text-right">Total Galones</th>
+							<th class="text-right">Km por Galón</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="vehiculo in vehiculos">
+							<td>{{ vehiculo.PLACA }}</td>
+							<td class="text-right" ng-if="vehiculo.KM_INICIAL != null">{{ vehiculo.KM_INICIAL }}</td>
+							<td class="text-right" ng-if="vehiculo.KM_INICIAL == null">0</td>
+							<td class="text-right" ng-if="vehiculo.KM_FINAL != null">{{ vehiculo.KM_FINAL }}</td>
+							<td class="text-right" ng-if="vehiculo.KM_FINAL == null">0</td>
+							<td class="text-right" >{{ vehiculo.KM_RECORRIDOS }}</td>
+							<td class="text-right" ng-if="vehiculo.TOTAL_GALONES != null">{{ vehiculo.TOTAL_GALONES }}</td>
+							<td class="text-right" ng-if="vehiculo.TOTAL_GALONES == null">0</td>
+							<td class="text-right" >{{ vehiculo.KM_GALON }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<br>
+	</div>
+
+	<div ng-show="reporte_kilometraje_generado">
+
+		<div class="row">
+			<h3 class="text-center">Kilometraje de Vehículos</h3>
+		</div>
+
+		<br>
+
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-hover table-condensed" id="tabla_reporte_kilometraje">
+					<thead>
+						<tr>
+							<th>No. de Placa</th>
+							<th>Km de Servicio</th>
+							<th>Fecha de Servicio</th>
+							<th>Fecha Actualizada</th>
+							<th>Km Recorridos</th>
+							<th>Km Próximo Servicio</th>
+							<th>Km Diferencia Próximo Servicio</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="kilometraje in reporte_kilometraje">
+							<td>{{ kilometraje.PLACA }}</td>
+							<td class="text-center">{{ kilometraje.KILOMETRAJE_ACTUAL }}</td>
+							<td class="text-center">{{ kilometraje.FECHA }}</td>
+							<td></td>
+							<td class="text-center">{{ kilometraje.KM_ACTUAL }}</td>
+							<td class="text-center">{{ kilometraje.KM_SERVICIO }}</td>
+							<td class="text-center">{{ kilometraje.KM_SERVICIO - kilometraje.KM_ACTUAL }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<br><br>
+	</div>
+
+	<div ng-show="reporte_vales_generado">
+
+		<!-- Tabla oculta para reporte -->
+		<div style="display: none;" >
+			<table id="tabla_reporte_vales">
+				<thead>
+					<tr>
+						<th>No. Vale</th>
+						<th>No. Gestión</th>
+						<th>Fecha de Emisión</th>
+						<th>Hora de Emisión</th>
+						<th>Galones</th>
+						<th>No. Placa</th>
+						<th>Piloto</th>
+						<th>Fecha de Recepción</th>
+						<th>Hora de Recepción</th>
+						<th>Nombre del Receptor</th>
+						<th>Fecha de Despacho</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="vale in vales">
+						<td>{{ vale.NO_VALE }}</td>
+						<td>{{ vale.NO_GESTION }}</td>
+						<td>{{ vale.FECHA }}</td>
+						<td>{{ vale.HORA }}</td>
+						<td ng-if="vale.ESTADO == 6">{{ vale.CONSUMO }}</td>
+						<td ng-if="vale.ESTADO == 7">A</td>
+						<td>{{ vale.PLACA }}</td>
+						<td>{{ vale.PILOTO }}</td>
+						<td>{{ vale.FECHA_ENTREGA }}</td>
+						<td>{{ vale.HORA_ENTREGA }}</td>
+						<td>{{ vale.PERSONA_ENTREGA }}</td>
+						<td>{{ vale.FECHA_DESPACHO }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="row">
+			<h3 class="text-center">Reporte de Vales - {{ fecha_inicio }} al {{ fecha_fin }}</h3>
+			<h4 class="text-center">{{ vehiculos_reporte }}</h4>
+		</div>
+
+		<div class="row">
+
+			<div class="col-md-2 ">
+				<div class="form-group">
+					<label>Cantidad de Registros</label>
+					<input ng-model="data_limit" class="form-control">
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row">
+
+			<div class="col-md-12 table-responsive">
+				<table style="width: 1300px" class="table table-hover table-condensed" id="tabla_reporte_kilometraje">
+					<thead>
+						<tr>
+							<th>No. Vale</th>
+							<th>No. Gestión</th>
+							<th>Fecha de Emisión</th>
+							<th>Hora de Emisión</th>
+							<th>Galones</th>
+							<th>No. Placa</th>
+							<th>Piloto</th>
+							<th>Fecha de Recepción</th>
+							<th>Hora de Recepción</th>
+							<th>Nombre del Receptor</th>
+							<th>Fecha de Despacho</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="vale in searched = (vales | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+							<td>{{ vale.NO_VALE }}</td>
+							<td>{{ vale.NO_GESTION }}</td>
+							<td>{{ vale.FECHA }}</td>
+							<td>{{ vale.HORA }}</td>
+
+							<td ng-if="vale.ESTADO == 6">{{ vale.CONSUMO }}</td>
+							<td ng-if="vale.ESTADO == 7">A</td>
+
+							<td>{{ vale.PLACA }}</td>
+							<td>{{ vale.PILOTO }}</td>
+							<td>{{ vale.FECHA_ENTREGA }}</td>
+							<td>{{ vale.HORA_ENTREGA }}</td>
+							<td>{{ vale.PERSONA_ENTREGA }}</td>
+							<td>{{ vale.FECHA_DESPACHO }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-md-12" ng-show="filter_data == 0">
+				<h4 class="text-center">-- No se encontraron registros --</h4>
+			</div>
+
+			<div class="col-md-12" ng-show="filter_data > 0">
+				<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- Modales -->
+	<div class="modal fade" id="modalReporteCombustible">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reporte de Combustible Mensual</h4>
+				</div>
+				<form ng-submit="reporte_combustible()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-4 col-md-offset-4">
+								<div class="form-group">
+									<label>Mes</label>
+									<input id="mes3" type="text" class="form-control month-picker" required>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalReporteRendimiento">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reporte de Rendimiento Mensual</h4>
+				</div>
+				<form ng-submit="generar_reporte_rendimiento()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6 col-md-offset-3">
+								<div class="form-group">
+									<label>Fuente</label>
+									<select class="form-control" id="fuente_reporte_rendimiento" required>
+										<option value="">-- Seleccione una opción --</option>
+										<option value="1">Historial de Entradas y Salidas</option>
+										<option value="2">Vales de Combustible</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-4 col-md-offset-4">
+								<div class="form-group">
+									<label>Mes</label>
+									<input id="mes_rendimiento" type="text" class="form-control month-picker" required>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalReporteVales">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reporte de Vales</h4>
+				</div>
+				<form ng-submit="generarReporteVales()" autocomplete="off">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Fecha Inicio</label>
+									<input id="reporte_vales_fecha_inicio" type="text" class="form-control date-picker" ng-model="reporte_vales.FECHA_INICIO" autocomplete="off" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Fecha Fin</label>
+									<input id="reporte_vales_fecha_fin" type="text" class="form-control date-picker" ng-model="reporte_vales.FECHA_FIN" autocomplete="off" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Tipo de reporte</label>
+									<div class="radio">
+									  <label>
+									    <input type="radio" name="optionsRadios" ng-click="selecionarTipoReporte(1)" id="optionsRadios1" value="option1_reporte_vale" checked>
+									    Todos los vehículos
+									  </label>
+									</div>
+									<div class="radio">
+									  <label>
+									    <input type="radio" name="optionsRadios" ng-click="selecionarTipoReporte(2)" id="optionsRadios2" value="option2_reporte_vale">
+									   Vehículos seleccionados
+									  </label>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Vehículos</label>
+									<select class="form-control" multiple id="reporte_vales_vehiculos" ng-disabled="tipo_reporte_vale == 1" required>
+										<option ng-repeat="vehiculo in listado_vehiculos" value="{{ vehiculo.INVENTARIOID }}">{{ vehiculo.PLACA }}</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Vales Anuladados</label>
+									<div class="radio">
+									  <label>
+									    <input type="radio" name="optionsRadiosAnulado" ng-click="seleccionarValeAnulado(1)" id="anulado_si" value="anulado_si" checked>
+									    Si
+									  </label>
+									</div>
+									<div class="radio">
+									  <label>
+									    <input type="radio" name="optionsRadiosAnulado" ng-click="seleccionarValeAnulado(2)" id="anulado_no" value="anulado_no">
+									   	No
+									  </label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>

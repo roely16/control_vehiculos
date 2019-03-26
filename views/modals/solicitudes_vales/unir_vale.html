@@ -1,0 +1,26 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Unir Gestión con Vale</h4>
+	</div>
+	<form ng-submit="unirVale()">
+		<div class="modal-body">
+			<input type="hidden" ng-model="unir_vale.GESTIONID">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<div class="form-group">
+						<label>Vales</label>
+						<select class="form-control selectpicker" data-live-search="true" ng-model="unir_vale.VALEID" required>
+							<option value="">-- Seleccione un vale --</option>
+							<option value="{{ vale.VALEID }}" ng-repeat="vale in vales">{{ vale.NO_VALE }} {{ vale.NOMBRE }} {{ vale.APELLIDO }}</option>
+						</select>
+					</div>
+				</div>
+			</div>				
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-primary">Guardar</button>
+		</div>
+	</form>
+</div>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="app">
+	<head>
+	    <meta charset="utf-8">
+	    <title>Recursos Humanos - DCAI</title>
+	    <link rel="shortcut icon" type="image/x-icon" href="public/img/favicon.ico">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	    <!-- Bootstrap 3 -->
+		<link rel="stylesheet" href="public/css/bootstrap/bootstrap.min.css">
+
+	    <link href="public/css/font-awesome.css" rel="stylesheet">
+
+	   	<link rel="stylesheet" href="/css/master.css">
+
+	    <!-- JQuery -->
+		<script src="public/js/JQuery/jquery-2.2.4.min.js"></script>
+
+		<!-- Boostrap Select -->
+		<link rel="stylesheet" type="text/css" href="public/js/bootstrap_select/dist/css/bootstrap-select.min.css">
+
+		<!-- Datetimepicker -->
+		<link rel="stylesheet" type="text/css" href="public/css/datetimepicker/bootstrap-datetimepicker.min.css">
+
+		<link rel="stylesheet" href="public/jquery-ui/jquery-ui.css">
+
+		<link rel="stylesheet" type="text/css" href="public/css/sweetalert2.css">
+
+		<script src="public/jquery-ui/jquery-ui.js"></script>
+
+		<style type="text/css">
+
+			.swal2-popup {
+	  			font-size: 1.6rem !important;
+			}
+		</style>
+
+	<link href="public/css/style.css" rel="stylesheet">
+
+		<script type="text/javascript">
+			$.datepicker.regional['es'] = {
+				closeText: 'Cerrar',
+				prevText: 'Anterior',
+				nextText: 'Siguiente',
+				currentText: 'Hoy',
+				monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+				monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+				dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+				dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+				dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+				weekHeader: 'Sm',
+				dateFormat: 'dd/mm/yy',
+				firstDay: 1,
+				isRTL: false,
+				showMonthAfterYear: false,
+				yearSuffix: ''
+			};
+			$.datepicker.setDefaults($.datepicker.regional['es']);
+		</script>
+
+	</head>
+
+	<body>
+
+		<!-- Navbar -->
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+		        			<span class="sr-only">Toggle navigation</span>
+					        <span class="icon-bar"></span>
+					        <span class="icon-bar"></span>
+					        <span class="icon-bar"></span>
+		      			</button>
+		      			<a class="brand" href="../../RecursosHumanos">
+							<img src="public/img/logo2.png"  style="position:absolute">
+		         		</a>
+					</div>
+
+		        	<div class="collapse navbar-collapse">
+		        		<div style="text-align:right; color:#FFF;" ng-controller="vController">{{ $root.NOMBRE }}</div>
+
+						<ul class="nav navbar-nav navbar-right">
+				         	<li class="dropdown">
+				         		<a href="!#" style="background-color: #A2CE39 !important" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="icon-cog"></i>
+				         			Mi Cuenta <span class="caret"></span></a>
+				         		</a>
+					            <ul class="dropdown-menu">
+					              	<li><a href="../../GestionServicios/change_password.php">Cambiar password</a></li>
+					              	<li><a href="../../GestionServicios/logout.php">Desconectar</a></li>
+					            </ul>
+				          	</li>
+			        	</ul>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	    <!-- Contenedor principal -->
+		<div class="container">
+			<div class="panel panel-default">
+			  	<div class="panel-heading">
+			  		<h3 class="panel-title">
+			  			<strong>
+			  				<a href="{{ $root.URL_RETROCESO }}">
+								<li class="icon-arrow-left icon-1x"></li>
+							</a>
+			  				{{ $root.TITULO_IZQUIERDA }}
+			  			</strong>
+			  			<strong class="pull-right" ng-controller="dateTimeController">
+
+			  				{{ clock | date:'dd/MM/yyyy  HH:mm:ss'}}
+			  				<a href="../../GestionServicios/">
+								<li class="icon-home icon-1x"></li>
+							</a>
+			  			</strong>
+			  		</h3>
+			  	</div>
+			  	<div class="panel-body">
+			  		<div class="container-fluid">
+			  			<div class="">
+							<div ng-view>
+
+							</div>
+						</div>
+			  		</div>
+			  	</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<div class="footer">
+			<div class="footer-inner">
+				<div class="container">
+					<div class="row">
+		    			<div class="span12">
+		    				&copy; 2018 <a href="#">Direcci&oacute;n de Catastro y Administraci&oacute;n del IUSI</a>.
+		    			</div>
+		    		</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Boostrap JS -->
+		<script src="public/js/bootstrap/bootstrap.min.js"></script>
+
+		<!-- Font Awesome -->
+		<script defer src="public/js/font-awesome/all.js"></script>
+
+		<!-- SweetAlert -->
+		<script src="public/js/sweetalert/sweetalert.min.js"></script>
+		<script src="public/js/sweetalert2/sweetalert2.js"></script>
+
+		<!-- AngularJS -->
+		<script src="public/js/angular.js" charset="utf-8"></script>
+		<script src="public/js/angular-route.js" charset="utf-8"></script>
+		<script src="public/js/angular-resource.js" charset="utf-8"></script>
+
+		<script src="public/js/base.js"></script>
+		<script src="public/js/app/app.js" charset="utf-8"></script>
+		<script src="public/js/app/valesController.js" charset="utf-8"></script>
+		<script src="public/js/app/vehiculosController.js" charset="utf-8"></script>
+		<script src="public/js/app/detalleVehiculoController.js" type="text/javascript"></script>
+		<script src="public/js/app/HomeController.js" type="text/javascript"></script>
+		<script src="public/js/app/detalleValeController.js" type="text/javascript"></script>
+		<script src="public/js/app/nuevoValeController.js" type="text/javascript"></script>
+		<script src="public/js/app/dateTimeController.js" type="text/javascript"></script>
+		<script src="public/js/app/cuotasCombustibleController.js" type="text/javascript"></script>
+		<script src="public/js/app/reportesController.js" type="text/javascript"></script>
+		<script src="public/js/app/solicitudesValesController.js"></script>
+		<script src="public/js/app/mailController.js" type="text/javascript"></script>
+		<script src="public/js/app/configuracionCtrl.js" type="text/javascript" ></script>
+
+		<!-- Angular UI -->
+		<script src="public/js/angular-ui/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
+
+		<!-- ChartJS -->
+		<script type="text/javascript" src="public/js/chartjs/Chart.bundle.min.js"></script>
+		<script type="text/javascript" src="public/js/chartjs/Chart.min.js"></script>
+
+		<!-- JsPDF -->
+		<script src="public/js/jspdf/jspdf.debug.js"></script>
+		<script src="public/js/jspdf/autotable.js"></script>
+
+		<!-- HTML2Canvas -->
+		<script src="public/js/html2canvas/html2canvas.min.js" type="text/javascript"></script>
+
+		<script type="text/javascript" src="public/js/bootstrap_select/dist/js/bootstrap-select.min.js"></script>
+		<script type="text/javascript" src="public/js/bootstrap_select/dist/js/i18n/defaults-es_ES.min.js"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+   				$('.selectpicker').selectpicker();
+			});
+		</script>
+
+		<!-- Datetimepicker -->
+		<script type="text/javascript" src="public/js/datetimepicker/moment.min.js"></script>
+		<script type="text/javascript" src="public/js/datetimepicker/es.js"></script>
+		<script type="text/javascript" src="public/js/datetimepicker/bootstrap_datetimepicker.min.js"></script>
+
+		<script type="text/javascript">
+			$('#pilotos').on('click', function(){
+
+				alert('click')
+
+			})
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,32 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title">Agregar Piloto</h4>
+</div>
+<form ng-submit="registrar_nuevo_piloto()" id="formRegistroHistorial" method="POST">
+	<input type="hidden" ng-model="historial.INVENTARIOID" ng-value="historial.INVENTARIOID">
+	<div class="modal-body">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<div class="form-group">
+				    <label>Ingresar nombre o número de NIT del piloto</label>
+					<input type="text" class="form-control" ng-model="nombre_piloto" id="nombre_piloto" ng-change="buscar_piloto()" required>
+			  	</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+				    <label for="exampleInputEmail1">Resultados</label>
+				    <select multiple class="form-control" ng-model="piloto" id="piloto" required>
+				    	<option ng-repeat="empleado in empleados" value="{{ empleado.NIT }}">{{ empleado.NOMBRE }} {{ empleado.APELLIDO }} - NIT: {{ empleado.NIT }}</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		<button type="submit" class="btn btn-primary">Agregar</button>
+	</div>
+</form>

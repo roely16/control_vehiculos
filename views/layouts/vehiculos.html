@@ -1,0 +1,64 @@
+<div ng-controller="vController">
+	<br>
+	<div class="row" >
+
+		<div class="col-md-3 pull-right">
+			<div class="input-group">
+				<input ng-model="search" ng-change="filter()" class="form-control" type="text" placeholder="Buscar vehículo">
+				<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+			</div>			
+		</div>	
+
+	</div>
+
+	<br>
+
+	<div>
+		<div class="row">
+			<div class="col-md-12" ng-show="filter_data > 0">
+				<div class="table-responsive">
+					<table class="table table-hover table-condensed">
+				  		<thead>
+				  			<tr>
+				  				<th class="col-md-1">Placa&nbsp;<a ng-click="sort_with('PLACA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-2">Tipo&nbsp;<a ng-click="sort_with('TIPO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-2">Marca&nbsp;<a ng-click="sort_with('MARCA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-1">Modelo&nbsp;<a ng-click="sort_with('MODELO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-2">Linea&nbsp;<a ng-click="sort_with('LINEA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-2">Color&nbsp;<a ng-click="sort_with('COLOR')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+				  				<th class="col-md-1">Acción&nbsp;</th>
+				  			</tr>
+				  		</thead>
+				  		<tbody>
+				  			<tr ng-repeat="v in searched = (vehiculos | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+				  				<td>{{v.PLACA}}</td>
+				  				<td>{{v.TIPO}}</td>
+				  				<td>{{v.MARCA}}</td>
+				  				<td>{{v.MODELO}}</td>
+				  				<td>{{v.LINEA}}</td>
+				  				<td>{{v.COLOR}}</td>
+				  				<td>
+				  					<a ng-href="#/vehiculos/detalles/{{v.INVENTARIOID}}" class="btn btn-default btn-sm" title="Detalles"" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+				  						<i class="glyphicon glyphicon-eye-open"></i>
+				  					</a>
+				  				</td>
+				  			</tr>
+				  		</tbody>
+				  	</table>
+			  	</div>
+		  	</div>
+		</div>
+		
+		<!-- Se muestra el mensaje si no se encuentran registros -->
+		<div class="col-md-12" ng-show="filter_data == 0">
+			<h4 class="text-center">-- No se encontraron registros --</h4>
+		</div>
+
+	</div>
+
+	<div class="col-md-12" ng-show="filter_data > 0">
+		<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;">
+		</div>
+	</div>
+
+</div>

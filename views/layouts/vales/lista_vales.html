@@ -1,0 +1,123 @@
+<div ng-controller="ValesCtrl">
+	<br>
+	<div class="row" >
+		<div class="col-md-2">
+			<button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#talonarioModal">Nuevo Talonario
+				<i class="fas fa-plus"></i>
+			</button>
+		</div>
+		<div class="col-md-3">
+			<label>No. de vales restantes: <span class="badge">{{ vales_restantes }}</span></label>
+		</div>
+		<div class="col-md-3 pull-right">
+			<div class="input-group">
+				<input ng-model="search" ng-change="filter()" class="form-control" type="text" placeholder="Buscar vale">
+				<span class="input-group-addon"><i class="fas fa-search"></i></span>
+			</div>
+		</div>
+
+	</div>
+
+	<br>
+
+	<div>
+		<div class="row">
+			<div class="col-md-12" ng-show="filter_data > 0">
+				<table class="table table-hover table-condensed">
+					<thead>
+						<tr>
+							<th class="col-md-2">No. Vale&nbsp;<a ng-click="sort_with('VALEID')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-1">Hora&nbsp;<a ng-click="sort_with('HORA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Estado&nbsp;<a ng-click="sort_with('ESTADO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Vehículo</th>
+							<th>Gestión</th>
+							<th>Responsable&nbsp;<a ng-click="sort_with('RESPONSABLE')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="vale in searched = (vales | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+							<td>{{vale.NO_VALE}}</td>
+							<td>{{vale.FECHA}}</td>
+							<td>{{ vale.HORA }}</td>
+							<td ng-if="vale.ESTADO == 5">
+								<span class="label label-primary">Emitido</span>
+							</td>
+							<td ng-if="vale.ESTADO == 6">
+								<span class="label label-success">Finalizado</span>
+							</td>
+							<td ng-if="vale.ESTADO == 7">
+								<span class="label label-danger">Anulado</span>
+							</td>
+							<td ng-if="vale.ESTADO == 8">
+								<span class="label label-warning">Entregado</span>
+							</td>
+							<td>{{ vale.PLACA }}</td>
+							<td>{{ vale.NO_GESTION }}</td>
+							<td>{{vale.RESPONSABLE}} {{vale.NOMBRE}} {{vale.APELLIDO}}</td>
+							<td>
+								<a ng-href="#/vales/detalles/{{vale.VALEID}}" class="btn btn-default btn-sm" title="Detalles"">
+				  					<i class="glyphicon glyphicon-eye-open"></i>
+				  				</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="col-md-12" ng-show="filter_data == 0">
+			<h4 class="text-center">-- No se encontraron registros --</h4>
+		</div>
+	</div>
+
+	<div class="col-md-12" ng-show="filter_data > 0">
+		<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+		</div>
+	</div>
+
+	<!-- Modal para registro de Talonario -->
+	<div class="modal fade" id="talonarioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  	<div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      	<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Registro de Nuevo Talonario de Vales</h4>
+		      	</div>
+		      	<form ng-submit="registrarTalonario()">
+			      	<div class="modal-body">
+			      		<input type="hidden" ng-value="vehiculo.INVENTARIOID">
+			        	<div class="row">
+			        		<div class="col-md-12">
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Talonario</label>
+										<input type="text" class="form-control" ng-model="talonario.no" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Inicio</label>
+										<input type="text" class="form-control" ng-model="talonario.inicio" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Fin</label>
+										<input type="text" class="form-control" ng-model="talonario.fin" required>
+			  						</div>
+			        			</div>
+			        		</div>
+			        	</div>
+			      	</div>
+			      	<div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			        	<button type="submit" class="btn btn-success">Registrar</button>
+			      	</div>
+		      	</form>
+		    </div>
+	  	</div>
+	</div>
+
+</div>

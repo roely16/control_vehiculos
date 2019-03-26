@@ -1,0 +1,124 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Registrar Mantenimiento</h4>
+	</div>
+	<form ng-submit="registrarMantenimiento()">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Fecha</label>
+							<input type="text" class="form-control calendar" ng-model="mantenimiento.FECHA" id="fecha" required></input>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Hora</label>
+							<input type="text" class="form-control time" ng-model="mantenimiento.HORA" id="hora" required></input>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Kilometraje Actual</label>
+							<input type="text" class="form-control" ng-model="mantenimiento.KILOMETRAJE_ACTUAL" ng-value=""></input>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Kilometraje Servicio</label>
+							<input type="text" class="form-control" ng-model="mantenimiento.KILOMETRAJE_MANTENIMIENTO" ng-value="" ></input>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Tipo de Mantenimiento</label>
+							<select class="form-control" ng-change="cargar_detalles_mantenimiento()" ng-model="mantenimiento.TIPO_MANTENIMIENTO_ID" requried>
+								<option value="">-- Seleccione una opción --</option>
+								<optgroup label="Preventivo">
+									<!--
+									<option ng-repeat="tipo in tipos_mantenimiento" value="{{ tipo.ID }}">{{ tipo.NOMBRE }} - {{ tipo.FRECUENCIA }} KM</option>
+									-->
+									<option value="1">Servicio Menor - 5,000 KM</option>
+									<option value="2">Servicio Medio - 10,000 KM</option>
+									<option value="3">Servicio Mayor - 50,000 KM</option>
+								</optgroup>
+								<optgroup label="Correctivo">
+								    <option value="4">Servicio Correctivo</option>
+							  	</optgroup>
+							  	<optgroup label="Garantia">
+								    <option value="5">Servicio por Garantía</option>
+							  	</optgroup>
+							</select>
+
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Responsable</label>
+							<select class="form-control selectpicker" ng-model="mantenimiento.RESPONSABLE" data-live-search="true" required>
+								<option value="">-- Seleccione una opción --</option>
+								<option value="{{ piloto.NIT }}" ng-repeat="piloto in pilotos" ng-model="mantenimiento.RESPONSABLE">{{ piloto.NIT }} {{ piloto.NOMBRE }} {{ piloto.APELLIDO }}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Proveedor</label>
+							<select class="form-control" ng-model="mantenimiento.PROVEEDORID" required>
+								<option value="">-- Seleccione una opción --</option>
+								<option ng-repeat="proveedor in proveedores" value="{{ proveedor.PROVEEDORID }}">{{ proveedor.NOMBRE }}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="col-md-12" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID != null">
+						<div class="form-group">
+							<label>Trabajos a realizar</label>
+							<div class="row">
+								<div class="col-md-4">
+									<input type="text" ng-model="mantenimiento.OTRO_TRABAJO" class="form-control" placeholder="Agregar trabajo">
+								</div>
+								<div class="col-md-2">
+									<button type="button" ng-click="agregar_otro_trabajo()" class="btn btn-default btn-block">
+										Agregar
+										<i class="glyphicon glyphicon-plus"></i>
+									</button>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-6" ng-repeat="detalle in detalles_tipo_mantenimiento">
+									<label class="checkbox-inline">
+										<input type="checkbox" class="revision" value="{{ detalle.ID }}">{{ detalle.NOMBRE }}
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-12" ng-show="mantenimiento.OTROS_TRABAJOS.length">
+						<div class="form-group">
+							<label>Otros trabajos a realizar</label>
+							<div class="row">
+								<div class="col-md-6" ng-repeat="otro in mantenimiento.OTROS_TRABAJOS">
+									<label class="checkbox-inline">
+										<input class="otra_revision" value="{{ otro }}" type="checkbox">
+										{{ otro }}
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-primary">Guardar</button>
+		</div>
+	</form>
+</div>

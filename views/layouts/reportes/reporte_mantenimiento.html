@@ -1,0 +1,35 @@
+<div class="row">
+	<h3 class="text-center">Reporte de Mantenimiento</h3>
+</div>
+
+<br>
+<div class="row">
+	<div class="col-md-12">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Fecha</th>
+					<th>Tipo</th>
+					<th>Km realizado</th>
+					<th>Km siguiente</th>
+					<th>Documento</th>
+					<th>Valor</th>
+					<th>Repuestos cambiados</th>
+					<th>Compra o realización</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="registro in reporte_mantenimiento">
+					<td class="col-md-1">{{ registro.FECHA }}</td>
+					<td class="col-md-1">{{ registro.TIPO }}</td>
+					<td>{{ registro.KILOMETRAJE_ACTUAL }}</td>
+					<td></td>
+					<td class="col-md-1">{{ registro.NO_FACTURA }}</td>
+					<td class="col-md-1">{{ registro.VALOR_FACTURA }}</td>
+					<td class="col-md-3">{{ registro.TRABAJO_REALIZADO }}</td>
+					<td class="col-md-3">{{ registro.NOMBRE_PROVEEDOR }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

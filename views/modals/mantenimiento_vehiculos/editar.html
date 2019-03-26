@@ -1,0 +1,236 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title" >Editar Mantenimiento</h4>
+	</div>
+
+	<form ng-submit="editarMantenimiento()" ng-if="edit_mantenimiento.ESTADO == 0">
+		<div class="modal-body">
+
+			<!-- Revisiones -->
+			<div class="row" >
+				<div class="col-md-12">
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Fecha</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.FECHA" readonly>	
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Kilometraje Actual</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.KILOMETRAJE_ACTUAL" ng-value="" readonly></input>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Tipo de Mantenimiento</label>
+							<span class="label label-success" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 1">
+								SERVICIO MENOR
+							</span>
+							<span class="label label-primary" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 2">
+								SERVICIO MEDIO
+							</span>
+							<span class="label label-danger" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 3">
+								SERVICIO MAYOR
+							</span>
+							<span class="label label-warning" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 4">
+								SERVICIO CORRECTIVO
+							</span>
+							<span class="label label-info" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 5">
+								SERVICIO POR GARANTÍA
+							</span>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group">
+							<label>Responsable</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.RESPONSABLE_1" readonly>
+						</div>
+					</div>
+
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Fecha de Entrega</label>
+							<input type="text" class="form-control calendar" ng-model="edit_mantenimiento.FECHA_ENTREGA" id="fecha_entrega" required>	
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Responsable</label>
+							<select class="form-control selectpicker" ng-model="edit_mantenimiento.RESPONSABLE_ENTREGA" data-live-search="true" required>
+								<option value="">-- Seleccione una opción --</option>
+								<option value="{{ piloto.NIT }}" ng-repeat="piloto in pilotos" ng-model="mantenimiento.RESPONSABLE">{{ piloto.NIT }} {{ piloto.NOMBRE }} {{ piloto.APELLIDO }}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="col-md-5">
+						<div class="form-group">
+							<label>Observación</label>
+							<textarea class="form-control" rows="3" ng-model="edit_mantenimiento.OBSERVACIONES_ENTREGA"></textarea>	
+						</div>
+					</div>
+
+					<div class="col-md-12" ng-if="edit_mantenimiento.REVISIONES.length > 0">
+						<div class="form-group">
+							<div class="row">
+							<h3 class="text-center">Verificación de trabajos realizados</h3>
+								<table class="table table-hover table-condensed">
+									<thead>
+										<tr>
+											<th class="col-md-10">Descripción</th>
+											<th class="col-md-1 text-center">Solicitado</th>
+											<th class="col-md-1 text-center">Realizado</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="revision in edit_mantenimiento.REVISIONES">
+											<td>{{ revision.NOMBRE }}</td>
+											<td class="text-center">
+												<input type="checkbox" checked disabled>
+											</td>
+											<td class="text-center">
+												<input type="checkbox" class="realizado" value="{{ revision.DETALLEID }}">
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-12" ng-if="edit_mantenimiento.OTRAS_REVISIONES.length > 0">
+						<div class="form-group">
+							<div class="row">
+							<h3 ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4" class="text-center">Verificación de trabajos extras</h3>
+							<h3 ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID > 3" class="text-center">Verificación de trabajos solicitados</h3>
+								<table class="table table-hover table-condensed">
+									<thead>
+										<tr>
+											<th class="col-md-10">Descripción</th>
+											<th class="col-md-1 text-center">Solicitado</th>
+											<th class="col-md-1 text-center">Realizado</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="otra_revision in edit_mantenimiento.OTRAS_REVISIONES">
+											<td>{{ otra_revision.NOMBRE }}</td>
+											<td class="text-center">
+												<input type="checkbox" checked disabled>
+											</td>
+											<td class="text-center">
+												<input type="checkbox" class="otra_realizado" value="{{ otra_revision.DETALLEID }}">
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>			
+
+			<!-- Factura -->	
+			<div class="row" ng-if="edit_mantenimiento.ESTADO == 1">
+				<div class="col-md-12">
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>No. de Factura</label>
+							<input type="text" class="form-control">	
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Monto de Factura Q</label>
+							<input type="text" class="form-control">	
+						</div>
+					</div>
+					<div class="col-md-3" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4">
+						<div class="form-group">
+							<label>Km Próximo Servicio</label>
+							<input type="text" class="form-control">	
+						</div>
+					</div>
+					<div class="col-md-4" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4">
+						<div class="form-group">
+							<label>Tipo Próximo Servicio</label>
+							<select id="input" class="form-control" required="required">
+								<option value="">-- Seleccione una opción --</option>
+								<option ng-repeat="tipo in tipos_mantenimiento">{{ tipo.NOMBRE }} - {{ tipo.FRECUENCIA }} KM</option>
+							</select>	
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Observaciones</label>
+							<textarea id="input" class="form-control" rows="3" required="required"></textarea>	
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Evaluacion -->
+			<div class="row" ng-if="edit_mantenimiento.ESTADO == 2">
+				
+			</div>
+
+
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-success">Editar</button>
+		</div>
+	</form>
+
+	<form ng-submit="registrarFactura()" ng-if="edit_mantenimiento.ESTADO == 1">
+		<div class="modal-body">
+
+			<!-- Factura -->	
+			<div class="row">
+				<div class="col-md-12">
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>No. de Factura</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.NO_FACTURA" required>	
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="form-group">
+							<label>Monto de Factura Q</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.VALOR_FACTURA" required>	
+						</div>
+					</div>
+					<div class="col-md-3" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4">
+						<div class="form-group">
+							<label>Km Próximo Servicio</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.KILOMETRAJE_PROXIMO" required>	
+						</div>
+					</div>
+					<div class="col-md-4" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4">
+						<div class="form-group">
+							<label>Tipo Próximo Servicio</label>
+							<select id="input" class="form-control" required="required" ng-model="edit_mantenimiento.PROXIMO_SERVICIO">
+								<option value="">-- Seleccione una opción --</option>
+								<option ng-repeat="tipo in tipos_mantenimiento" value="{{ tipo.ID }}">{{ tipo.NOMBRE }} - {{ tipo.FRECUENCIA }} KM</option>
+							</select>	
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Observaciones</label>
+							<textarea id="input" class="form-control" rows="3" ng-model="edit_mantenimiento.OBSERVACIONES"></textarea>	
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-success">Editar</button>
+		</div>
+	</form>
+
+</div>

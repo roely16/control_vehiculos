@@ -1,0 +1,40 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Asignar Vehículos</h4>
+	</div>
+	<form ng-submit="registrar_vehiculos()">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-md-12">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>Placa</th>
+								<th>Marca</th>
+								<th>Modelo</th>
+								<th>Tipo</th>
+								<th class="text-center">Seleccionar</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr  ng-repeat="vehiculo in vehiculos_disponibles">
+								<td>{{ vehiculo.PLACA }}</td>
+								<td>{{ vehiculo.MARCA }}</td>
+								<td>{{ vehiculo.MODELO }}</td>
+								<td>{{ vehiculo.TIPO }}</td>
+								<td class="text-center">
+									<input type="checkbox" class="vehiculo" value="{{ vehiculo.INVENTARIOID }}">
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="submit" class="btn btn-primary">Guardar</button>
+		</div>
+	</form>
+</div>

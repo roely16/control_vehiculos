@@ -1,0 +1,2642 @@
+<div ng-controller="detalleVehiculoController">
+	<div class="row">
+		<h3 class="text-center">Detalles del Vehículo</h3>
+	</div>
+
+	<div class="row">
+		<input type="hidden" name="id_vehiculo" id="id_vehiculo">
+		<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">No. de Placa</label>
+				<input type="text" ng-value="vehiculo.PLACA" name="no_placa" id="no_placa" class="form-control" readonly="">
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Tipo</label>
+				<input type="text" class="form-control" id="tipo" name="tipo" aria-describedby="emailHelp" ng-value="vehiculo.TIPO" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Marca</label>
+				<input type="text" class="form-control" ng-value="vehiculo.MARCA" id="marca" name="marca" aria-describedby="emailHelp" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Modelo</label>
+				<input type="text" class="form-control" ng-value="vehiculo.MODELO" id="modelo" name="modelo" aria-describedby="emailHelp" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Linea</label>
+				<input type="text" class="form-control" ng-value="vehiculo.LINEA" id="linea" name="linea" aria-describedby="emailHelp" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Color</label>
+				<input type="text" class="form-control" ng-value="vehiculo.COLOR" id="color" name="color" aria-describedby="emailHelp" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-3">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Responsable</label>
+				<input type="text" class="form-control" ng-value="vehiculo.NOMBRE + ' ' + vehiculo.APELLIDO " id="responsable" name="responsable" aria-describedby="emailHelp" placeholder="" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Kilometraje Actual</label>
+				<input type="text" class="form-control" ng-model="vehiculo.KM_ACTUAL" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Kilometraje Servicio</label>
+				<input type="text" class="form-control" ng-model="vehiculo.KM_SERVICIO" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+	  		<div class="form-group">
+	  			<label>Estado</label>
+	  			<br>
+	  			<a ng-if="vehiculo.ACTIVO == 1" class="btn btn-success btn-block">ACTIVO</a>
+	  			<a ng-if="vehiculo.ACTIVO == 0" class="btn btn-danger btn-block">BAJA</a>
+
+	  			<!--
+	  			<input type="text" class="form-control" value="BAJA" ng-if="vehiculo.ACTIVO == 0" readonly>
+	  			<input type="text" class="form-control" value="ACTIVO" ng-if="vehiculo.ACTIVO == 1" readonly>
+	  			-->
+	  		</div>
+
+	  	</div>
+
+	</div>
+
+	<br>
+	<div class="row">
+		<!-- Conjunto de Tabs -->
+		<ul class="nav nav-tabs " id="myTabs">
+  			<li role="presentation" class="active"><a data-target="#t2" data-toggle="tab"">Vales de combustible</a></li>
+  			<li role="presentation"><a data-target="#t7" data-toggle="tab"">Cuotas de Combustible</a></li>
+  			<li role="presentation"><a data-target="#t1" data-toggle="tab">Mantenimientos</a></li>
+  			<li role="presentation"><a data-target="#t6" data-toggle="tab">Accesorios</a></li>
+  			<li role="presentation"><a data-target="#t4" data-toggle="tab">Historial de Entradas y Salidas</a></li>
+  			<li role="presentation"><a data-target="#t8" data-toggle="tab">Documentos</a></li>
+  			<li role="presentation"><a data-target="#t5" data-toggle="tab">Bitácora</a></li>
+  	  	  	<li role="presentation"><a data-target="#t3" data-toggle="tab">Reportes</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+			<!-- Tab para documentos -->
+			<div class="tab-pane fade" id="t8">
+				<br>
+				<div class="row">
+					<div class="col-md-2">
+						<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#documento">Nuevo Documento
+							<i class="glyphicon glyphicon-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_documento" ng-change="filter_documentos()" class="form-control" type="text" placeholder="Buscar documento">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_documentos > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-2">Nombre&nbsp;<a ng-click="sort_with_documentos('NOMBRE')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-4">Descripción&nbsp;<a ng-click="sort_with_documentos('DESCRIPCION')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-3">Archivo</th>
+									<th class="col-md-2">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="documento in searched_documentos = (documentos | filter:search_documento | orderBy : base_documentos :reverse_documentos) | beginning_data:(current_grid_documentos - 1) * data_limit_documentos | limitTo:data_limit_documentos">
+									<td>{{ documento.NOMBRE }}</td>
+									<td>{{ documento.DESCRIPCION }}</td>
+									<td ng-if=" documento.TIPO_ARCHIVO == 'image/jpeg' || documento.TIPO_ARCHIVO == 'image/png' || documento.TIPO_ARCHIVO == 'image/jpg' ">
+										<img style="width: 20%" ng-src="{{ documento.ARCHIVO }}" class="img-responsive">
+									</td>
+									<td ng-if=" documento.TIPO_ARCHIVO != 'image/jpeg'">
+										<img style="width: 15%" src="public/img/document.png" class="img-responsive">
+									</td>
+									<td>
+										<button ng-click="verEditarDocumento(documento.DOCUMENTOID)" class="btn btn-primary btn-sm" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+										<button class="btn btn-danger btn-sm" title="Eliminar" ng-click="eliminarDocumento(documento.DOCUMENTOID)">
+											<i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')"></i>
+										</button>
+										<a class="btn btn-success btn-sm" title="Descargar" href="{{ documento.ARCHIVO }}" download="{{ documento.NOMBRE_ARCHIVO }}" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-save"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="col-md-12" ng-show="filter_data_documentos > 0">
+						<div pagination="" page="current_grid_documentos" on-select-page="page_position_documentos(page)" boundary-links="true" total-items="filter_data_documentos" items-per-page="data_limit_documentos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_documentos" max-size="max_size_documentos" num-pages="numPages">
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_documentos == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+			</div>
+
+			<!-- Tab para cuotas de combustible -->
+			<div class="tab-pane fade" id="t7">
+				<br>
+				<div class="row">
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_cuota" ng-change="filter_cuotas()" class="form-control" type="text" placeholder="Buscar cuota">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_cuotas > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-2">Fecha de inicio&nbsp;<a ng-click="sort_with_cuotas('FECHA_INICIO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Fecha de finalización&nbsp;<a ng-click="sort_with_cuotas('FECHA_FIN')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-1">Cuota</th>
+									<th class="col-md-1">Consumo</th>
+									<th class="col-md-1">Restante</th>
+									<th class="col-md-2">Estado&nbsp;<a ng-click="sort_with_cuotas('ESTADO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="cuota in searched_cuotas = (cuotas | filter:search_cuota | orderBy : base_cuotas :reverse_cuotas) | beginning_data:(current_grid_cuotas - 1) * data_limit_cuotas | limitTo:data_limit_cuotas">
+									<td>{{cuota.FECHA_INICIO}}</td>
+									<td>{{cuota.FECHA_FIN}}</td>
+									<td>{{cuota.CUOTA}}</td>
+									<td>{{ cuota.CONSUMO }}</td>
+									<td>{{ cuota.RESTANTE }}</td>
+									<td ng-if="cuota.ESTADO == 1">
+										<span class="label label-success">ACTIVA</span>
+									</td>
+									<td ng-if="cuota.ESTADO == 0">
+										<span class="label label-danger">INACTIVA</span>
+									</td>
+									<td>
+										<button ng-click="mostrarEditarCuota(cuota.CUOTAID)" class="btn btn-primary btn-sm" title="Editar" ng-disabled="cuota.ESTADO == 0 || vehiculo.ACTIVO == 0" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+										<button class="btn btn-danger btn-sm" title="Eliminar" ng-disabled="cuota.ESTADO == 0 || vehiculo.ACTIVO == 0" ng-click="eliminarCuota(cuota.CUOTAID, vehiculo.INVENTARIOID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="col-md-12" ng-show="filter_data_cuotas > 0">
+						<div pagination="" page="current_grid_cuotas" on-select-page="page_position_cuotas(page)" boundary-links="true" total-items="filter_data_cuotas" items-per-page="data_limit_cuotas" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_cuotas" max-size="max_size_cuotas" num-pages="numPages">
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_cuotas == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+			</div>
+
+			<!-- Tab para accesorios -->
+			<div class="tab-pane fade" id="t6">
+
+				<br>
+				<div class="row">
+					<div class="col-md-2">
+						<button type="button" class="btn btn-success btn-block" ng-click="nuevoMantenimiento()" ng-disabled="vehiculo.ACTIVO == 0">Nuevo Accesorio
+							<i class="glyphicon glyphicon-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search" ng-change="" class="form-control" type="text" placeholder="Buscar accesorio">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+
+				<div class="row">
+					<div class="col-md-12">
+						<table>
+							<thead>
+								<tr>
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab para mostrar la bitacora -->
+			<div class="tab-pane fade" id="t5">
+				<br>
+				<div class="row">
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_b_eventos" ng-change="filter_b_eventos()" class="form-control" type="text" name="" placeholder="Buscar en bitacora">
+							<span class="input-group-addon"><i class="fa fa-search"></i></span>
+						</div>
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_b_eventos > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with_e_eventos('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Hora&nbsp;<a ng-click="sort_with_e_eventos('HORA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-10">Evento&nbsp;<a ng-click="sort_with_e_eventos('EVENTO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="evento in searched_b_eventos = (b_eventos | filter:search_b_eventos | orderBy : base_b_eventos :reverse_b_eventos) | beginning_data:(current_grid_b_eventos - 1) * data_limit_b_eventos | limitTo:data_limit_b_eventos">
+									<td>{{evento.FECHA}}</td>
+									<td>{{evento.HORA}}</td>
+									<td>{{evento.EVENTO}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Se muestra el mensaje si no se encuentran registros -->
+				<div class="col-md-12" ng-show="filter_data_b_eventos == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_b_eventos > 0">
+					<div pagination="" page="current_grid_b_eventos" on-select-page="page_position_b_eventos(page)" boundary-links="true" total-items="filter_data_b_eventos" items-per-page="data_limit_b_eventos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_b_eventos" max-size="max_size_b_eventos" num-pages="numPages">
+					</div>
+				</div>
+			</div>
+
+			<!-- Contenido del tab de Mantenimientos -->
+			<div class="tab-pane fade" id="t1">
+
+				<br>
+				<div class="row">
+					<div class="col-md-2">
+						<button type="button" class="btn btn-success btn-block" ng-click="nuevoMantenimiento()" ng-disabled="vehiculo.ACTIVO == 0">Nuevo Mantenimiento
+							<i class="glyphicon glyphicon-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_mantenimientos" ng-change="filter_mantenimientos()" class="form-control" type="text" placeholder="Buscar mantenimiento">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+
+				<div class="row" ng-show="filter_data_mantenimientos > 0">
+					<div class="col-md-12">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th>Fecha&nbsp;<a ng-click="sort_with_mantenimientos('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th>Hora</th>
+									<th>Tipo de Servicio</th>
+									<th>Responsable</th>
+									<th>Proveedor</th>
+									<th>Estado</th>
+									<th class="col-md-2">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="mantenimiento in  searched_mantenimientos = (mantenimientos | filter:search_mantenimientos | orderBy : base_mantenimientos :reverse_mantenimientos) | beginning_data:(current_grid_mantenimientos - 1) * data_limit_mantenimientos | limitTo:data_limit_mantenimientos">
+									<td>{{ mantenimiento.FECHA }}</td>
+									<td>{{ mantenimiento.HORA }}</td>
+									<td>
+										<span class="label label-success" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID == 1">
+											SERVICIO MENOR
+										</span>
+										<span class="label label-primary" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID == 2">
+											SERVICIO MEDIO
+										</span>
+										<span class="label label-danger" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID == 3">
+											SERVICIO MAYOR
+										</span>
+										<span class="label label-warning" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID == 4">
+											SERVICIO CORRECTIVO
+										</span>
+										<span class="label label-info" ng-if="mantenimiento.TIPO_MANTENIMIENTO_ID == 5">
+											SERVICIO POR GARANTÍA
+										</span>
+									</td>
+									<td>{{ mantenimiento.NOMBRE }} {{ mantenimiento.APELLIDO }}</td>
+									<td>{{ mantenimiento.NOMBRE_PROVEEDOR }}</td>
+									<td>
+										<span ng-if="mantenimiento.ESTADO == 0" class="label label-primary">ENVIADO</span>
+										<span ng-if="mantenimiento.ESTADO == 1" class="label label-success">REALIZADO</span>
+										<span ng-if="mantenimiento.ESTADO == 2" class="label label-warning">PAGADO</span>
+										<span ng-if="mantenimiento.ESTADO == 3" class="label label-danger">FINALIZADO</span>
+									</td>
+									<td>
+										<button class="btn btn-sm btn-default" title="Detalles" ng-click="detalleMantenimiento(mantenimiento.MANTENIMIENTOID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-eye-open"></i>
+										</button>
+
+										<button ng-if="mantenimiento.ESTADO == 0" class="btn btn-sm btn-primary" title="Editar" ng-click="mostrarEditarMantenimiento(mantenimiento.MANTENIMIENTOID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+
+										<button ng-if="mantenimiento.ESTADO == 0" class="btn btn-sm btn-danger" title="Eliminar" ng-click="eliminarMantenimiento(mantenimiento.MANTENIMIENTOID, mantenimiento.INVENTARIOID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+
+										<button ng-if="mantenimiento.ESTADO == 1" class="btn btn-sm btn-primary" title="Editar" ng-click="mostrarEditarMantenimiento(mantenimiento.MANTENIMIENTOID)" disabled ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+
+										<button ng-if="mantenimiento.ESTADO == 1" class="btn btn-sm btn-danger" title="Eliminar" ng-click="eliminarMantenimiento(mantenimiento.MANTENIMIENTOID, mantenimiento.INVENTARIOID)" disabled ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+
+										<button class="btn btn-sm btn-primary" ng-if="mantenimiento.ESTADO == 2" title="Evaluación de Proveedor" ng-click="evaluacionProveedor(mantenimiento.MANTENIMIENTOID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-list-alt"></i>
+										</button>
+
+										<button class="btn btn-sm btn-danger" ng-if="mantenimiento.ESTADO == 3" ng-click="reporteEvaluacion(mantenimiento.MANTENIMIENTOID)" title="Reporte de Evaluación" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-print"></i>
+										</button>
+
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<table class="table table-hover table-condensed" id="descripcion_mantenimiento" style="display: none;">
+						<thead>
+							<tr>
+								<th class="col-md-10" ng-if="detalle_mantenimiento.TIPO_MANTENIMIENTO_ID == 1">Servicio 1 Menor: a cada 5,000 Km</th>
+								<th class="col-md-10" ng-if="detalle_mantenimiento.TIPO_MANTENIMIENTO_ID == 2">Servicio 2 Medio: a cada 10,000 Km</th>
+								<th class="col-md-10" ng-if="detalle_mantenimiento.TIPO_MANTENIMIENTO_ID == 3">Servicio 3 Completo: a cada 50,000 Km</th>
+								<th class="col-md-1 text-center">Solicitado</th>
+								<th class="col-md-1 text-center">Realizado</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="revision in detalle_mantenimiento.REVISIONES">
+								<td>{{ revision.NOMBRE }}</td>
+								<td class="text-center">
+									x
+								</td>
+								<td class="text-center" ng-if="revision.REALIZADO == 1">
+									x
+								</td>
+								<td class="text-center" ng-if="revision.REALIZADO == null">
+
+								</td>
+							</tr>
+							<tr ng-repeat="otra_revision in detalle_mantenimiento.OTRAS_REVISIONES">
+								<td>{{ otra_revision.NOMBRE }}</td>
+								<td class="text-center">
+									x
+								</td>
+								<td class="text-center" ng-if="otra_revision.REALIZADO == 1">
+									x
+								</td>
+								<td class="text-center" ng-if="otra_revision.REALIZADO == null">
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="col-md-12" style="display: none;">
+						<table class="table table-hover table-condensed" id="evaluacion">
+							<thead>
+								<tr>
+									<th class="col-md-8">Descripción</th>
+									<th class="col-md-2 text-center">Máximo %</th>
+									<th class="col-md-2 text-center">Calificación %</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="item_evaluacion in detalle_mantenimiento.EVALUACION">
+									<td>{{ item_evaluacion.NOMBRE }}</td>
+									<td class="text-center">{{ item_evaluacion.MAXIMO }}</td>
+									<td class="text-center">{{ item_evaluacion.CALIFICACION }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+
+				<!-- Se muestra el mensaje si no se encuentran registros -->
+				<div class="col-md-12" ng-show="filter_data_mantenimientos == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_mantenimientos > 0">
+					<div pagination="" page="current_grid_mantenimientos" on-select-page="page_position_mantenimientos(page)" boundary-links="true" total-items="filter_data_mantenimientos" items-per-page="data_limit_mantenimientos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_mantenimientos" max-size="max_size_mantenimientos" num-pages="numPages">
+					</div>
+				</div>
+			</div>
+
+			<!-- Contenido del tab de vales de combustible -->
+			<div class="tab-pane fade in active" id="t2">
+				<br>
+				<div class="row" >
+				  	<!-- <div class="col-md-2">
+					    <button ng-click="validarVale(vehiculo.INVENTARIOID)" type="button" class="btn btn-success btn-block" ng-disabled="vehiculo.ACTIVO == 0" >Nuevo Vale
+							<i class="fas fa-plus"></i>
+						</button>
+
+					</div> -->
+					<!-- <div class="col-md-2">
+						<button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#talonarioModal">Nuevo Talonario
+							<i class="fas fa-plus"></i>
+						</button>
+					</div> -->
+
+					<div class="col-md-3">
+						<label>No. de vales restantes: <span class="badge">{{ vales_restantes }}</span></label>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_vales" ng-change="filter_vales()" class="form-control" type="text" name="" placeholder="Buscar vales">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_vales > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-1">No.&nbsp;<a ng-click="sort_with_vales('NO_VALE')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with_vales('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Hora&nbsp;<a ng-click="sort_with_vales('HORA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-1">Gestión</th>
+									<th class="col-md-2">Estado&nbsp;<a ng-click="sort_with_vales('ESTADO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-3">Responsable&nbsp;<a ng-click="sort_with_vales('RESPONSABLE')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="vale in searched_vales = (vales | filter:search_vales | orderBy : base_vales :reverse_vales) | beginning_data:(current_grid_vales - 1) * data_limit_vales | limitTo:data_limit_vales">
+									<td>{{vale.NO_VALE}}</td>
+									<td>{{vale.FECHA}}</td>
+									<td>{{vale.HORA}}</td>
+									<td>{{ vale.NO_GESTION }}</td>
+									<td ng-if="vale.ESTADO == 5">
+										<span class="label label-primary">EMITIDO</span>
+									</td>
+									<td ng-if="vale.ESTADO == 6">
+										<span class="label label-success">FINALIZADO</span>
+									</td>
+									<td ng-if="vale.ESTADO == 7">
+										<span class="label label-danger">ANULADO</span>
+									</td>
+									<td ng-if="vale.ESTADO == 8">
+										<span class="label label-warning">ENTREGADO</span>
+									</td>
+									<td>
+										{{vale.NIT}} {{vale.NOMBRE}} {{vale.APELLIDO}}
+									</td>
+									<td>
+										<a ng-click="modalDetallesVale(vale.VALEID)" class="btn btn-default btn-sm" title="Detalles" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-eye-open"></i>
+										</a>
+										<a ng-click="mostrarEditarVale(vale.VALEID)" class="btn btn-primary btn-sm" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</a>
+										<a ng-click="modalArchivoVale(vale.VALEID)" class="btn btn-success btn-sm" title="Adjuntar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+											<i class="glyphicon glyphicon-glyphicon glyphicon-paperclip"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Se muestra el mensaje si no se encuentran registros -->
+				<div class="col-md-12" ng-show="filter_data_vales == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_vales > 0">
+					<div pagination="" page="current_grid_vales" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data_vales" items-per-page="data_limit_vales" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" max-size="max_size_vales">
+					</div>
+				</div>
+			</div>
+
+			<!-- Contenido del tab de reportes -->
+			<div class="tab-pane fade" id="t3">
+
+				<br>
+				<div class="row">
+
+					<div class="col-md-3">
+						<button class="btn btn-success btn-block" data-toggle="modal" href='#modalReporteMensual'>Reporte Consumo de Combustible</button>
+					</div>
+
+					<div class="col-md-2">
+						<button class="btn btn-primary btn-block" data-toggle="modal" ng-click="modalReporteRendimiento()">Reporte de Rendimiento</button>
+					</div>
+
+					<div class="col-md-3">
+						<button class="btn btn-danger btn-block" data-toggle="modal" href='#modalReporteEntradaSalidas'>Reporte Entradas y Salidas</button>
+					</div>
+
+					<div class="col-md-2">
+						<button class="btn btn-warning btn-block" ng-click="reporteMantenimiento()" >Reporte Mantenimientos</button>
+					</div>
+
+					<div class="col-md-1 col-md-offset-1" ng-show="reporte_generado || reporte_generado_e_s || reporte_mantenimiento_ || estado_reporte_rendimiento || estado_reporte_vales">
+
+						<button class="btn btn-default" title="Imprimir" ng-click="imprimirReporte(no_reporte)">
+							<i class="glyphicon glyphicon-print"></i>
+						</button>
+
+					</div>
+
+				</div>
+				<br>
+				<div class="row">
+					<div class="col-md-3">
+						<button class="btn btn-info btn-block" ng-click="reporteVales()">Reporte de Vales</button>
+					</div>
+				</div>
+
+				<br>
+
+				<!-- Reporte de Combustible Mensual -->
+				<div class="" ng-show="reporte_generado" id="reporte">
+
+					<div class="row">
+						<h3 class="text-center">Consumo de Combustible - {{ mes }}</h3>
+					</div>
+
+					<br>
+
+					<!-- Tabla -->
+					<div class="col-md-6" id="reporte_combustible">
+						<table class="table table-hover" id="tabla_reporte_semanal">
+							<thead>
+								<th>No.</th>
+								<th>Semana</th>
+								<th class="text-right">Cuota</th>
+								<th class="text-right">Abastecido</th>
+								<th class="text-right">Sobrante</th>
+							</thead>
+							<tbody>
+								<tr ng-repeat="semana in semanas">
+									<td>{{ $index + 1 }}</td>
+									<td>{{ semana.FECHA_INICIO}} al {{ semana.FECHA_FIN }}</td>
+									<td align="right">{{ semana.CUOTA }}</td>
+									<td ng-if="semana.CONSUMO != null" align="right">{{ semana.CONSUMO }}</td>
+									<td ng-if="semana.CONSUMO == null" align="right">0</td>
+									<td align="right">{{ semana.SOBRANTE }}</td>
+								</tr>
+								<tr>
+									<td><strong>Totales</strong></td>
+									<td></td>
+									<td align="right"><strong>{{ total_cuota }}</strong></td>
+									<td align="right"><strong>{{ total_abastecido }}</strong></td>
+									<td align="right"><strong>{{ total_restante }}</strong></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Grafica -->
+					<div class="col-md-6" id="graph-container">
+						<canvas id="myChart" style="width: 25%;"></canvas>
+					</div>
+
+				</div>
+
+				<!-- Reporte Entradas y Salidas -->
+				<div class="" ng-show="reporte_generado_e_s" id="reporte_entradas_salidas" >
+
+					<div class="row">
+						<h3 class="text-center">Reporte Entradas / Salidas - {{ mes }}</h3>
+					</div>
+
+					<br>
+
+					<div style="display: none">
+						<table id="table_reporte_e_s">
+							<thead>
+								<tr>
+									<th>Fecha</th>
+									<th>Responsable</th>
+									<th>Hora Salida</th>
+									<th>Hora Entrada</th>
+									<th>Km Salida</th>
+									<th>Km Entrada</th>
+									<th>Vale</th>
+									<th>Galones</th>
+									<th>Viajes</th>
+									<th>Personas</th>
+									<th>Visitas Campo</th>
+									<th>Juridico</th>
+									<th>Técnico</th>
+									<th>CIMA</th>
+									<th>IUSI</th>
+									<th>Avisos Not.</th>
+									<th>Expedientes</th>
+									<th>Cartas</th>
+									<th>UDI</th>
+									<th>Admon.</th>
+									<th>Regencia</th>
+									<th>Otros</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="movimiento in movimientos">
+									<td>{{ movimiento.FECHA }}</td>
+									<td>{{ movimiento.NOMBRE }}</td>
+									<td>{{ movimiento.HORA_SALIDA }}</td>
+									<td>{{ movimiento.HORA_ENTRADA }}</td>
+									<td>{{ movimiento.KM_SALIDA }}</td>
+									<td>{{ movimiento.KM_ENTRADA }}</td>
+									<td>{{ movimiento.NO_VALE }}</td>
+									<td>{{ movimiento.GALONES }}</td>
+									<td>{{ movimiento.NO_VIAJES }}</td>
+									<td>{{ movimiento.PERSONAS }}</td>
+									<td>{{ movimiento.VISITAS_CAMPO }}</td>
+									<td>{{ movimiento.JURIDICO }}</td>
+									<td>{{ movimiento.TECNICO }}</td>
+									<td>{{ movimiento.SIMA }}</td>
+									<td>{{ movimiento.IUSI }}</td>
+									<td>{{ movimiento.AVISOS_NOT }}</td>
+									<td>{{ movimiento.EXPEDIENTES }}</td>
+									<td>{{ movimiento.CARTAS }}</td>
+									<td>{{ movimiento.UDI }}</td>
+									<td>{{ movimiento.ADMINISTRACION }}</td>
+									<td>{{ movimiento.REGENCIA }}</td>
+									<td>{{ movimiento.OTROS }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Tabla -->
+					<div class="container-fluid">
+						<div class="row">
+							<div class="table-responsive">
+								<table class="table table-hover table-condensed" style="width: 1900px; table-layout: auto; max-width: 200%;">
+									<thead>
+										<tr>
+											<th>Fecha</th>
+											<th >Responsable</th>
+											<th>Hora Salida</th>
+											<th>Hora Entrada</th>
+											<th>Km Salida</th>
+											<th>Km Entrada</th>
+											<th>Vale</th>
+											<th>Galones</th>
+											<th>Viajes</th>
+											<th>Personas</th>
+											<th>Visitas Campo</th>
+											<th>Juridico</th>
+											<th>Técnico</th>
+											<th>CIMA</th>
+											<th>IUSI</th>
+											<th>Avisos Not.</th>
+											<th>Expedientes</th>
+											<th>Cartas</th>
+											<th>UDI</th>
+											<th>Admon.</th>
+											<th>Regencia</th>
+											<th>Otros</th>
+											<th>Observación</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="movimiento in searched_movimientos = (movimientos | filter:search_vales | orderBy : base_movimientos :reverse_vales) | beginning_data:(current_grid_movimientos - 1) * data_limit_movimientos | limitTo:data_limit_movimientos">
+											<td>{{ movimiento.FECHA }}</td>
+											<td>{{ movimiento.NOMBRE }}</td>
+											<td>{{ movimiento.HORA_SALIDA }}</td>
+											<td>{{ movimiento.HORA_ENTRADA }}</td>
+											<td>{{ movimiento.KM_SALIDA }}</td>
+											<td>{{ movimiento.KM_ENTRADA }}</td>
+											<td>{{ movimiento.NO_VALE }}</td>
+											<td>{{ movimiento.GALONES }}</td>
+											<td>{{ movimiento.NO_VIAJES }}</td>
+											<td>{{ movimiento.PERSONAS }}</td>
+											<td>{{ movimiento.VISITAS_CAMPO }}</td>
+											<td>{{ movimiento.JURIDICO }}</td>
+											<td>{{ movimiento.TECNICO }}</td>
+											<td>{{ movimiento.SIMA }}</td>
+											<td>{{ movimiento.IUSI }}</td>
+											<td>{{ movimiento.AVISOS_NOT }}</td>
+											<td>{{ movimiento.EXPEDIENTES }}</td>
+											<td>{{ movimiento.CARTAS }}</td>
+											<td>{{ movimiento.UDI }}</td>
+											<td>{{ movimiento.ADMINISTRACION }}</td>
+											<td>{{ movimiento.REGENCIA }}</td>
+											<td>{{ movimiento.OTROS }}</td>
+											<td>{{ movimiento.OBSERVACION }}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<!-- Se muestra el mensaje si no se encuentran registros -->
+					<div class="col-md-12" ng-show="filter_data_movimientos == 0">
+						<h4 class="text-center">-- No se encontraron registros --</h4>
+					</div>
+
+					<div class="col-md-12" ng-show="filter_data_movimientos > 0">
+						<div pagination="" page="current_grid_movimientos" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data_movimientos" items-per-page="data_limit_movimientos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" max-size="max_size_movimientos">
+						</div>
+					</div>
+				</div>
+
+				<!-- Reporte Mantenimiento -->
+				<div ng-show="reporte_mantenimiento_" id="reporte_mantenimiento">
+
+					<div class="row">
+						<h3 class="text-center">Reporte de Mantenimiento {{ reporte_m.FECHA_INICIO }} - {{ reporte_m.FECHA_FIN }}</h3>
+					</div>
+
+					<div class="row" style="display: none;">
+						<div class="col-md-4">
+							<table class="table table-hover" id="table_detalles_vehiculo">
+								<tbody>
+									<tr>
+										<td>Tipo</td>
+										<td>{{ vehiculo.TIPO }}</td>
+									</tr>
+									<tr>
+										<td>Marca</td>
+										<td>{{ vehiculo.MARCA }}</td>
+									</tr>
+									<tr>
+										<td>Modelo</td>
+										<td>{{ vehiculo.MODELO }}</td>
+									</tr>
+									<tr>
+										<td>Linea</td>
+										<td>{{ vehiculo.LINEA }}</td>
+									</tr>
+									<tr>
+										<td>Color</td>
+										<td>{{ vehiculo.COLOR }}</td>
+									</tr>
+									<tr>
+										<td>Placa</td>
+										<td>{{ vehiculo.PLACA }}</td>
+									</tr>
+									<tr>
+										<td>Combustible</td>
+										<td>{{ vehiculo.TIPO_COMBUSTIBLE }}</td>
+									</tr>
+									<tr>
+										<td>No. Motor</td>
+										<td>{{ vehiculo.NO_MOTOR }}</td>
+									</tr>
+									<tr>
+										<td>No. Chasis</td>
+										<td>{{ vehiculo.NO_CHASIS }}</td>
+									</tr>
+									<tr>
+										<td>Responsable</td>
+										<td>{{ vehiculo.NOMBRE }} {{ vehiculo.APELLIDO }}</td>
+									</tr>
+									<tr>
+										<td>Area Asignada</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<br>
+					<div class="row">
+						<div class="col-md-12">
+							<table class="table table-hover" id="table_reporte_mantenimiento">
+								<thead>
+									<tr>
+										<th>Fecha</th>
+										<th>Tipo</th>
+										<th>Km realizado</th>
+										<th>Km siguiente</th>
+										<th>Documento</th>
+										<th>Valor</th>
+										<th>Repuestos cambiados</th>
+										<th>Compra o realización</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="registro in reporte_mantenimiento">
+										<td class="col-md-1">{{ registro.FECHA }}</td>
+										<td class="col-md-1">{{ registro.TIPO_MANTENIMIENTO_ID }}</td>
+										<td>{{ registro.KILOMETRAJE_ACTUAL }}</td>
+										<td>{{ registro.KILOMETRAJE_PROXIMO }}</td>
+										<td class="col-md-1">{{ registro.NO_FACTURA }}</td>
+										<td class="col-md-1">{{ registro.VALOR_FACTURA }}</td>
+										<td class="col-md-3">
+
+											<ul>
+												<li ng-repeat="revision in registro.TRABAJO_REALIZADO">{{ revision }}</li>
+											</ul>
+
+											<ul>
+												<li ng-repeat="revision in registro.TRABAJO_EXTRA">{{ revision }}</li>
+											</ul>
+
+										</td>
+										<td class="col-md-3">{{ registro.NOMBRE_PROVEEDOR }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Reporte de Combustible Anual -->
+				<div ng-show="reporte_combustible_anual" id="reporte_combustible_anual">
+
+					<div class="row">
+						<h3 class="text-center">Consumo de Combustible - {{ year }}</h3>
+					</div>
+
+
+					<table class="table table-hover table-condensed">
+						<thead>
+							<th></th>
+							<th>Enero</th>
+							<th>Febrero</th>
+							<th>Marzo</th>
+							<th>Abril</th>
+							<th>Mayo</th>
+							<th>Junio</th>
+							<th>Julio</th>
+							<th>Agosto</th>
+							<th>Septiembre</th>
+							<th>Octubre</th>
+							<th>Noviembre</th>
+							<th>Diciembre</th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Galones Total</td>
+								<td ng-repeat="total in galones_total track by $index">{{ total }}</td>
+							</tr>
+							<tr>
+								<td>Galones Autorizados</td>
+								<td ng-repeat="autorizado in galones_autorizados track by $index">{{ autorizado }}</td>
+							</tr>
+							<tr>
+								<td>% Diferencia</td>
+								<td ng-repeat="diferencia in diferencias track by $index">{{ diferencia }}%</td>
+							</tr>
+							<tr>
+								<td>Galones Pendientes</td>
+								<td ng-repeat="pendiente in pendientes track by $index">{{ pendiente }}</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<br>
+
+					<!-- Grafica -->
+					<div class="col-md-12" id="graph-container_combustible_anual">
+						<canvas id="grafica_combustible_anual" style="width: 25%;"></canvas>
+					</div>
+
+					<br>
+				</div>
+
+				<!-- Reporte de Rendimiento Mensual -->
+				<div ng-show="estado_reporte_rendimiento" id="reporte_rendimiento_mensual">
+
+					<div class="row">
+						<h3 class="text-center">Reporte de Rendimiento - {{ mes_inicio }} a {{ mes_fin }}</h3>
+					</div>
+
+					<div class="row">
+						<!-- Grafica -->
+						<div class="col-md-12" id="graph-container_rendimiento_mensual">
+							<canvas id="grafica_rendimiento_mensual" style="width: 25%;"></canvas>
+						</div>
+					</div>
+
+					<br><br>
+
+					<div class="row">
+
+						<div class="col-md-8 col-md-offset-2">
+							<table class="table table-hover" id="tabla_rendimiento_mensual">
+								<thead>
+									<tr>
+										<th>Mes</th>
+										<th class="text-right">Km Inicio</th>
+										<th class="text-right">Km Final</th>
+										<th class="text-right">Km Recorridos</th>
+										<th class="text-right">Consumo</th>
+										<th class="text-right">Km por Galón</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="mes in meses">
+										<td>{{ mes.MES }}</td>
+										<td class="text-right">{{ mes.KM_SALIDA }}</td>
+										<td class="text-right">{{ mes.KM_ENTRADA }}</td>
+										<td class="text-right">{{ mes.KM_RECORRIDOS }}</td>
+										<td class="text-right">{{ mes.CONSUMO }}</td>
+										<td class="text-right">{{ mes.KM_GALON }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<br><br>
+					</div>
+
+				</div>
+
+				<!-- Reporte de Vales -->
+				<div id="reporte_vales" ng-show="estado_reporte_vales">
+
+					<div class="row">
+						<h3 class="text-center">Reporte de Vales - {{ fecha_inicio }} a {{ fecha_fin }}</h3>
+					</div>
+
+					<br>
+
+					<div class="row">
+
+						<div style="display: none">
+							<table id="tabla_reporte_vales">
+								<thead>
+									<tr>
+										<th>No. Vale</th>
+										<th>No. Gestión</th>
+										<th>Fecha de Emisión</th>
+										<th>Hora de Emisión</th>
+										<th>Galones</th>
+										<th>No. Placa</th>
+										<th>Piloto</th>
+										<th>Fecha de Recepción</th>
+										<th>Hora de Recepción</th>
+										<th>Nombre Receptor</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="datos_vales in datos_reporte_vales">
+										<td>{{ datos_vales.NO_VALE }}</td>
+										<td>{{ datos_vales.NO_GESTION }}</td>
+										<td>{{ datos_vales.FECHA }}</td>
+										<td>{{ datos_vales.HORA }}</td>
+										<td>{{ datos_vales.CONSUMO }}</td>
+										<td>{{ datos_vales.PLACA }}</td>
+										<td>{{ datos_vales.PILOTO }}</td>
+										<td>{{ datos_vales.FECHA_ENTREGA }}</td>
+										<td>{{ datos_vales.HORA_ENTREGA }}</td>
+										<td>{{ datos_vales.PERSONA_ENTREGA }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="col-lg-12">
+
+							<table class="table" id="tabla_reporte_vales">
+								<thead>
+									<tr>
+										<th class="text-right">No. Vale</th>
+										<th class="text-right">No. Gestión</th>
+										<th>Fecha de Emisión</th>
+										<th>Hora de Emisión</th>
+										<th class="text-right">Galones</th>
+										<th>No. Placa</th>
+										<th>Piloto</th>
+										<th>Fecha de Recepción</th>
+										<th>Hora de Recepción</th>
+										<th>Nombre Receptor</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="datos_vales in searched_movimientos = (datos_reporte_vales | filter:search_reporte_vales | orderBy : base_reporte_vales :reverse_reporte_vales) | beginning_data:(current_grid_reporte_vales - 1) * data_limit_reporte_vales | limitTo:data_limit_reporte_vales">
+										<td class="text-right">{{ datos_vales.NO_VALE }}</td>
+										<td class="text-right">{{ datos_vales.NO_GESTION }}</td>
+										<td>{{ datos_vales.FECHA }}</td>
+										<td>{{ datos_vales.HORA }}</td>
+										<td class="text-right">{{ datos_vales.CONSUMO }}</td>
+										<td>{{ datos_vales.PLACA }}</td>
+										<td>{{ datos_vales.PILOTO }}</td>
+										<td>{{ datos_vales.FECHA_ENTREGA }}</td>
+										<td>{{ datos_vales.HORA_ENTREGA }}</td>
+										<td>{{ datos_vales.PERSONA_ENTREGA }}</td>
+									</tr>
+								</tbody>
+							</table>
+
+						</div>
+
+						<div class="col-md-12" ng-show="filter_data_reporte_vales == 0">
+							<h4 class="text-center">-- No se encontraron registros --</h4>
+						</div>
+
+						<div class="col-md-12" ng-show="filter_data_reporte_vales > 0">
+							<div pagination="" page="current_grid_reporte_vales" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data_reporte_vales" items-per-page="data_limit_reporte_vales" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" max-size="max_size_reporte_vales">
+							</div>
+						</div>
+
+					</div>
+
+					<br>
+					<br>
+
+				</div>
+
+			</div>
+
+			<!-- Contenedor del tab de Historial -->
+			<div class="tab-pane fade" id="t4">
+				<br>
+				<div class="row">
+
+					<div class="col-md-2">
+					    <button type="button" class="btn btn-success btn-block" ng-click="modalRegistro()"  ng-disabled="vehiculo.ACTIVO == 0">Nuevo Registro
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_e_historial" ng-change="filter_e_historial()" class="form-control" type="text" name="" placeholder="Buscar en el historial">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+
+				<div class="col-md-12" ng-show="filter_data_e_historial > 0">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>Fecha Salida&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Hora Salida&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Km Salida&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Fecha Entrada&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Hora Entrada&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Km Entrada&nbsp;<a ng-click="sort_with_e_historial('FECHA_SALIDA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+								<th>Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="e in searched_e_historial = (e_historial | filter:search_e_historial | orderBy : base_e_historial :reverse_e_historial) | beginning_data:(current_grid_e_historial - 1) * data_limit_e_historial | limitTo:data_limit_e_historial">
+								<td>{{e.FECHA_SALIDA}}</td>
+								<td>{{e.HORA_SALIDA}}</td>
+								<td>{{e.KM_SALIDA}}</td>
+								<td>{{e.FECHA_ENTRADA}}</td>
+								<td>{{e.HORA_ENTRADA}}</td>
+								<td>{{e.KM_ENTRADA}}</td>
+								<td ng-if="e.ULTIMO == 1">
+									<button class="btn btn-default btn-sm" ng-click="modalDetalle(e.HISTORIALID)" title="Detalles" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+										<i class="glyphicon glyphicon-eye-open"></i>
+									</button>
+									<button class="btn btn-primary btn-sm" ng-click="modalEditar(e.HISTORIALID)" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+										<i class="glyphicon glyphicon-pencil"></i>
+									</button>
+									<button class="btn btn-danger btn-sm" ng-click="eliminarHistorial(e.HISTORIALID, e.INVENTARIOID)" title="Eliminar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+								<td ng-if="e.ULTIMO == 0">
+									<button class="btn btn-default btn-sm" ng-click="modalDetalle(e.HISTORIALID)" title="Detalles" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+										<i class="glyphicon glyphicon-eye-open"></i>
+									</button>
+									<button class="btn btn-primary btn-sm" ng-click="modalEditar(e.HISTORIALID)" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" ng-disabled="vehiculo.ACTIVO == 0">
+										<i class="glyphicon glyphicon-pencil"></i>
+									</button>
+									<button class="btn btn-danger btn-sm" ng-click="eliminarHistorial(e.HISTORIALID, e.INVENTARIOID)" title="Eliminar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" disabled>
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="col-md-12" ng-show="filter_data_e_historial > 0">
+						<div pagination="" page="current_grid_e_historial" on-select-page="page_position_e_historial(page)" boundary-links="true" total-items="filter_data_e_historial" items-per-page="data_limit_e_historial" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_e_historial" max-size="max_size_e_historial" num-pages="numPages">
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_e_historial == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Modal para editar el vale -->
+	<div class="modal fade" id="modalEditarVale" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Edición de Vale No. {{edit_vale.NO_VALE}}
+					</h4>
+				</div>
+				<form ng-submit="editarVale()" enctype="multipart/form-data">
+					<div class="modal-body">
+						<input type="hidden" ng-model="edit_vale.INVENTARIOID" name="">
+						<div class="row">
+						    <div class="col-md-12">
+						      	<h4 class="text-center">Datos del Vale</h4>
+						    </div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">No.</label>
+								<input ng-value="edit_vale.NO_VALE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Fecha</label>
+								<input ng-value="edit_vale.FECHA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Hora</label>
+								<input ng-value="edit_vale.HORA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Gasolinera</label>
+								<input ng-value="edit_vale.GASOLINERA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Tipo de Combustible</label>
+								<input ng-value="edit_vale.TIPO_COMBUSTIBLE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Responsable</label>
+								<input ng-value="edit_vale.NIT + ' ' + edit_vale.NOMBRE + ' ' + edit_vale.APELLIDO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Área</label>
+								<input ng-value="edit_vale.DEPARTAMENTO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Dirección</label>
+								<input ng-value="edit_vale.DIRECCION" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Fecha y Hora de Entrega</label>
+								<input ng-value="edit_vale.FECHA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Responsable Entrega</label>
+								<input ng-value="edit_vale.PERSONA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+						    <h4 class="text-center">Datos del Vehículo</h4>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label>Placa</label>
+								<input ng-value="edit_vale.PLACA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Tipo</label>
+								<input ng-value="edit_vale.TIPO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Marca</label>
+								<input ng-value="edit_vale.MARCA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Color</label>
+								<input ng-value="edit_vale.COLOR" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Modelo</label>
+								<input ng-value="edit_vale.MODELO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Linea</label>
+								<input ng-value="edit_vale.LINEA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<h4 class="text-center">Recepción o Anulación de Vale</h4>
+						</div>
+		      			<div class="col-md-3" ng-if="estado_vale == 8">
+		      				<div class="form-group">
+								<label>Estado</label>
+								<select class="form-control" ng-change="estadoSelected()" ng-model="edit_vale.ESTADO_"required>
+									<option value="">-- Seleccione una opción --</option>
+									<option value="6">Finalizado</option>
+									<option value="7">Anulado</option>
+								</select>
+			  				</div>
+		      			</div>
+		      			<!-- Si el estado seleccionado es finalizado mostrar -->
+		      			<div ng-show="edit_vale.ESTADO == 6 && edit_vale.ESTADO_ENTREGA == 0">
+		      				<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control">
+				  				</div>
+		      				</div>
+			      			<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control">
+				  				</div>
+			      			</div>
+			      			<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Fecha de Despacho</label>
+									<input ng-model="edit_vale.FECHA_DESPACHO" type="text" class="form-control fecha_despacho">
+				  				</div>
+			      			</div>
+		      			</div>
+		      			<!-- Si el estado seleccionado es Anulado mostrar -->
+		      			<div ng-if="edit_vale.ESTADO == 7 && edit_vale.ESTADO_ENTREGA == 0">
+		      				<div class="col-md-2">
+			      				<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" readonly>
+				  				</div>
+		      				</div>
+			      			<div class="col-md-2">
+			      				<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" readonly>
+				  				</div>
+			      			</div>
+	      				</div>
+
+			      		<!-- Si el vale ya fue entregado como finalizado -->
+			      		<div ng-if="edit_vale.ESTADO_ENTREGA == 1">
+			      			<div class="col-md-3 ">
+				      			<div class="form-group">
+									<label>Estado</label>
+									<input value="Finalizado"  type="text" class="form-control" readonly>
+					  			</div>
+			      			</div>
+		      				<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" >
+				  				</div>
+		      				</div>
+			      			<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" >
+				  				</div>
+
+			      			</div>
+			      			<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Fecha de Despacho</label>
+									<input ng-model="edit_vale.FECHA_DESPACHO" type="text" class="form-control" >
+				  				</div>
+				  				
+			      			</div>
+		      			</div>
+
+		      			<!-- Si el vale ya fue entregado como anulado -->
+		      			<div ng-if="edit_vale.ESTADO == 7 && edit_vale.ESTADO_ENTREGA == 2">
+		      				<div class="col-md-3">
+			      				<div class="form-group">
+									<label>Estado</label>
+									<input value="Anulado"  type="text" class="form-control" readonly>
+				  				</div>
+		      				</div>
+		      				<div class="col-md-2">
+			      				<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" readonly>
+				  				</div>
+		      				</div>
+			      			<div class="col-md-2">
+			      				<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" readonly>
+				  				</div>
+			      			</div>
+		      			</div>
+
+			      	</div>
+			    </div>
+			      	<div class="modal-footer">
+			      		<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				        <button type="submit" class="btn btn-success">Editar</button>
+			      	</div>
+		      	</form>
+		    </div>
+	  	</div>
+	</div>
+
+	<!-- Modal para registro de Vale -->
+	<div class="modal fade" id="valeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Registro de Nuevo Vale</h4>
+				</div>
+				<form id="form_valeModal" ng-submit="registrarVale()">
+					<div class="modal-body">
+						<h3 class="text-center">Datos del Vale</h3>
+						<!-- Div con los datos del vale -->
+						<input type="hidden" id="INVENTARIOID" name="INVENTARIOID" ng-value="vale.INVENTARIOID" ng-model="vale.INVENTARIOID">
+						<div class="row">
+						    <div class="col-md-12">
+						       	<div class="col-md-2">
+								   	<div class="form-group">
+										<label  for="exampleInputEmail1">No.</label>
+										<input type="text" class="form-control" id="no_vale" name="no_vale" ng-model="vale.NO_VALE" placeholder="" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+								   	<div class="form-group">
+										<label>Fecha</label>
+										<input type="text" class="form-control datepicker" ng-model="vale.FECHA" required>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-4">
+								   	<div class="form-group">
+										<label for="exampleInputEmail1">Gasolinera</label>
+										<input type="text" class="form-control" ng-model="vale.GASOLINERA" required>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Tipo de Combustible</label>
+										<input type="text" class="form-control" name="tipo_combustible" id="tipo_combustible" ng-value="vehiculo.TIPO_COMBUSTIBLE" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">No. de Placa</label>
+										<input type="text" ng-value="vehiculo.PLACA" ng-model="vale.no_placa" class="form-control" name="m_no_placa" id="m_no_placa" name="no_placa" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Tipo</label>
+										<input type="text" ng-value="vehiculo.TIPO" ng-model="vale.tipo_v" class="form-control" id="m_tipo" name="m_tipo" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Marca</label>
+										<input type="text" ng-value="vehiculo.MARCA" ng-model="vale.marca_v" class="form-control" id="m_marca" name="m_marca" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Color</label>
+										<input type="text" ng-value="vehiculo.COLOR" ng-model="vale.color_v" class="form-control" id="m_color" name="m_color" readonly>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-5">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Responsable</label>
+										<select class="form-control selectpicker" data-live-search="true" required="required" ng-model="vale.RESPONSABLE" id="pilotos">
+											<option value="">-- Seleccione un responsable --</option>
+											<option ng-repeat="piloto in pilotos" value="{{ piloto.NIT }}" ng-model="vale.RESPONSABLE">{{piloto.NIT}} {{piloto.NOMBRE}} {{piloto.APELLIDO}}</option>
+										</select>
+										<a class="btn btn-default" ng-click="agregar_piloto()">
+											Agregar
+											<i class="glyphicon glyphicon-plus"></i>
+										</a>
+						  			</div>
+					  			</div>
+					  			<div class="col-md-4">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Departamento</label>
+										<input type="text" class="form-control" ng-model="vale.DEPARTAMENTO">
+						  			</div>
+					  			</div>
+					  			<div class="col-md-3">
+					  				<div class="form-group">
+										<label for="exampleInputEmail1">Dirección</label>
+										<input type="text" ng-model="vale.DIRECCION" class="form-control">
+						  			</div>
+					  			</div>
+								<div class="col-md-8">
+									<div class="form-group">
+										<label for="exampleInputEmail1">Comision(es) a efectuar</label>
+										<textarea class="form-control" ng-model="vale.COMISION" rows="6" style="resize:none" required></textarea>
+									</div>
+								</div>
+
+						    </div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-success">Registrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalDetallesVale" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Detalles de Vale No. {{detalle_vale.NO_VALE}}
+					</h4>
+				</div>
+				<div class="modal-body">
+						<input type="hidden" ng-model="detalle_vale.INVENTARIOID" name="">
+						<div class="row">
+						    <div class="col-md-12">
+						      	<h4 class="text-center">Datos del Vale</h4>
+						    </div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">No.</label>
+								<input ng-value="detalle_vale.NO_VALE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Fecha</label>
+								<input ng-value="detalle_vale.FECHA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Hora</label>
+								<input ng-value="detalle_vale.HORA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label for="exampleInputEmail1">Gasolinera</label>
+								<input ng-value="detalle_vale.GASOLINERA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Tipo de Combustible</label>
+								<input ng-value="detalle_vale.TIPO_COMBUSTIBLE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Responsable</label>
+								<input ng-value="detalle_vale.NIT + ' ' + detalle_vale.NOMBRE + ' ' + detalle_vale.APELLIDO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Área</label>
+								<input ng-value="detalle_vale.DEPARTAMENTO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+						    <div class="form-group">
+								<label>Dirección</label>
+								<input ng-value="detalle_vale.DIRECCION" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Fecha y Hora de Entrega</label>
+								<input ng-value="detalle_vale.FECHA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+						    <div class="form-group">
+								<label>Responsable Entrega</label>
+								<input ng-value="detalle_vale.PERSONA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+						    <h4 class="text-center">Datos del Vehículo</h4>
+						</div>
+						<div class="col-md-2">
+						    <div class="form-group">
+								<label>Placa</label>
+								<input ng-value="detalle_vale.PLACA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Tipo</label>
+								<input ng-value="detalle_vale.TIPO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Marca</label>
+								<input ng-value="detalle_vale.MARCA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Color</label>
+								<input ng-value="detalle_vale.COLOR" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Modelo</label>
+								<input ng-value="detalle_vale.MODELO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Linea</label>
+								<input ng-value="detalle_vale.LINEA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<h4 class="text-center">Recepción o Anulación de Vale</h4>
+						</div>
+		      			<div class="col-md-3">
+		      				<div class="form-group">
+								<label>Estado</label>
+								<select class="form-control" ng-model="detalle_vale.ESTADO" readonly>
+									<option value="5">Emitido</option>
+									<option value="6">Finalizado</option>
+									<option value="7">Anulado</option>
+									<option value="8">Entregado</option>
+								</select>
+			  				</div>
+		      			</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Consumo</label>
+								<input ng-model="detalle_vale.CONSUMO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Kilometraje</label>
+								<input ng-model="detalle_vale.KILOMETRAJE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+
+			      	</div>
+			    </div>
+			    <div class="modal-footer">
+			      	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			    </div>
+		    </div>
+	  	</div>
+	</div>
+
+
+	<!-- Modal para registro de Talonario -->
+	<div class="modal fade" id="talonarioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  	<div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      	<div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Registro de Nuevo Talonario de Vales</h4>
+		      	</div>
+		      	<form ng-submit="registrarTalonario()">
+			      	<div class="modal-body">
+			      		<input type="hidden" ng-value="vehiculo.INVENTARIOID">
+			        	<div class="row">
+			        		<div class="col-md-12">
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Talonario</label>
+										<input type="text" class="form-control" ng-model="talonario.no" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Inicio</label>
+										<input type="text" class="form-control" ng-model="talonario.inicio" required>
+			  						</div>
+			        			</div>
+			        			<div class="col-md-4">
+			        				<div class="form-group">
+									    <label for="exampleInputEmail1">No. de Fin</label>
+										<input type="text" class="form-control" ng-model="talonario.fin" required>
+			  						</div>
+			        			</div>
+			        		</div>
+			        	</div>
+			      	</div>
+			      	<div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			        	<button type="submit" class="btn btn-success">Registrar</button>
+			      	</div>
+		      	</form>
+		    </div>
+	  	</div>
+	</div>
+
+	<!-- Modal para cuota de combustible -->
+	<div class="modal fade" id="cuotaCombustibleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+	  				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title" id="myModalLabel">Establecer cuota de combustible</h4>
+				</div>
+				<form ng-submit="establecerCuota()">
+					<div class="modal-body">
+						<input type="hidden" ng-value="cuota.INVENTARIOID">
+		  				<div id="div_cuota">
+			  				<div class="row">
+			  					<div class="col-md-4">
+					  				<div class="form-group">
+									    <label for="exampleInputEmail1">Fecha de inicio</label>
+										<input type="date" class="form-control" ng-model="cuota.FECHA_INICIO" required>
+						  			</div>
+					 			</div>
+					 			<div class="col-md-4">
+					  				<div class="form-group">
+									    <label for="exampleInputEmail1">Fecha de finalización</label>
+										<input type="date" ng-model="cuota.FECHA_FIN" class="form-control" required>
+						  			</div>
+					 			</div>
+					 			<div class="col-md-4">
+					  				<div class="form-group">
+									    <label for="exampleInputEmail1">Cuota de combustible (galones)</label>
+										<input type="text" ng-model="cuota.CUOTA" class="form-control" required>
+						  			</div>
+					 			</div>
+			  				</div>
+
+		  				</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				        <button type="submit" class="btn btn-primary">Establecer</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para registro en Historial de Vehiculos -->
+	<div class="modal fade" id="modalBitacoraVehiculo" ng-focus="refrescar_select()">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Registro en Historial Entradas y Salidas</h4>
+				</div>
+				<form ng-submit="registroHistorialVehiculo()" id="formegistroHistorialVehiculo">
+					<input type="hidden" ng-model="historial.INVENTARIOID" ng-value="historial.INVENTARIOID">
+					<div class="modal-body">
+						<input type="hidden" ng-model="historial.KM_ACTUAL" ng-value="vehiculo.KM_ACTUAL">
+						<div class="row">
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Fecha de Salida</label>
+									<input type="text" ng-model="historial.FECHA_SALIDA" class="form-control datepicker" id="fecha_salida" required>
+							  	</div>
+						 	</div>
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Hora de Salida</label>
+									<input ng-model="historial.HORA_SALIDA" type="text" class="form-control timepicker" id="hora_salida" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Km de Salida</label>
+									<input ng-model="historial.KM_SALIDA"  type="text" class="form-control" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Fecha de Entrada</label>
+									<input type="text" ng-model="historial.FECHA_ENTRADA" class="form-control datepicker" id="fecha_entrada" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Hora de Entrada</label>
+									<input ng-model="historial.HORA_ENTRADA" type="text" class="form-control timepicker" id="hora_entrada" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Km de Entrada</label>
+									<input ng-model="historial.KM_ENTRADA" type="text" class="form-control" required>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Responsable</label>
+									<select class="form-control selectpicker" data-live-search="true" required="required" ng-model="historial.RESPONSABLE" id="pilotos">
+										<option value="">-- Seleccione un responsable --</option>
+										<option ng-repeat="piloto in pilotos" value="{{ piloto.NIT }}" ng-model="historial.RESPONSABLE">{{piloto.NIT}} {{piloto.NOMBRE}} {{piloto.APELLIDO}}</option>
+									</select>
+									<!--
+									<button class="btn btn-default">
+										Agregar
+										<i class="glyphicon glyphicon-plus"></i>
+									</button>
+									-->
+									<a class="btn btn-default" ng-click="agregar_piloto()">
+										Agregar
+										<i class="glyphicon glyphicon-plus"></i>
+									</a>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Observaciones</label>
+									<textarea ng-model="historial.OBSERVACION" class="form-control" rows="3"></textarea>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de vale</label>
+						 			<input type="text" ng-model="historial.NO_VALE" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Galones</label>
+						 			<input type="text" ng-model="historial.GALONES" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de Viajes</label>
+						 			<input type="text" ng-model="historial.NO_VIAJES" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Personas</label>
+						 			<input type="text" ng-model="historial.PERSONAS" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Visitas Campo</label>
+						 			<input type="text" ng-model="historial.VISITAS_CAMPO" class="form-control" name="">
+						 		</div>
+						 	</div>
+
+						 	<div class="col-md-12">
+						 		<h3 class="text-center">Documentos / Notificaciones</h3>
+						 	</div>
+
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Juridico</label>
+						 			<input type="text" ng-model="historial.JURIDICO" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Técnico</label>
+						 			<input type="text" ng-model="historial.TECNICO" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>SIMA</label>
+						 			<input type="text" ng-model="historial.SIMA" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>IUSI</label>
+						 			<input type="text" ng-model="historial.IUSI" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Avisos Not.</label>
+						 			<input type="text" ng-model="historial.AVISOS_NOT" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Expedientes</label>
+						 			<input type="text" ng-model="historial.EXPEDIENTES" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Cartas</label>
+						 			<input type="text" ng-model="historial.CARTAS" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>UDI</label>
+						 			<input type="text" ng-model="historial.UDI" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Logística</label>
+						 			<input type="text" ng-model="historial.ADMINISTRACION" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Regencia</label>
+						 			<input type="text" ng-model="historial.REGENCIA" class="form-control" name="">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-4">
+						 		<div class="form-group">
+						 			<label>Otros</label>
+						 			<input type="text" ng-model="historial.OTROS" class="form-control" name="">
+						 		</div>
+						 	</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para editar cuota de combustible -->
+	<div class="modal fade" id="modalEditarCuota">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Editar Cuota de Combustible</h4>
+				</div>
+				<form ng-submit="editarCuota()">
+					<div class="modal-body">
+						<input type="hidden" ng-value="edit_cuota.CUOTAID">
+						<input type="hidden" ng-value="edit_cuota.INVENTARIOID">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Fecha de inicio</label>
+									<input type="text" ng-model="edit_cuota.FECHA_INICIO" class="form-control" readonly="">
+							  	</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Fecha de finalización</label>
+									<input type="text" ng-model="edit_cuota.FECHA_FIN" class="form-control" readonly="">
+							  	</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>Cuota</label>
+									<input type="text" ng-model="edit_cuota.CUOTA" class="form-control" required>
+							  	</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar Cambios</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para crear un nuevo documento -->
+	<div class="modal fade" id="documento">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Subir documento</h4>
+				</div>
+				<form ng-submit="subirDocumento()" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="form-control" ng-model="documento.NOMBRE" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Descripción</label>
+										<textarea class="form-control" rows="6" required="required" ng-model="documento.DESCRIPCION"></textarea required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="exampleInputFile">Seleccionar archivo</label>
+	    								<input type="file" id="exampleInputFile" file-input="files" onchange="angular.element(this).scope().imageUpload(event)" required>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+
+							      <img class="img-responsive" ng-if=" isImage == 1 " ng-src="{{ step }}" alt="">
+
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-success">Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para edicion de documento -->
+	<div class="modal fade" id="editarDocumento">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Editar documento</h4>
+				</div>
+				<form ng-submit="editarDocumento()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="form-control" ng-model="editar_documento.NOMBRE" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Descripción</label>
+										<textarea class="form-control" rows="6" required="required" ng-model="editar_documento.DESCRIPCION"></textarea required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="exampleInputFile">Seleccionar archivo</label>
+		    							<input type="file" id="editar_archivo" file-input="files" onchange="angular.element(this).scope().imageUpload_(event)">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" ng-if="editar_documento.IS_IMAGE == 1">
+							      <img class="img-responsive" ng-src="{{ editar_documento.ARCHIVO }}" alt="">
+							</div>
+							<div class="col-md-6" ng-if="editar_documento.IS_IMAGE == 0">
+							      <img class="img-responsive" src="public/img/document.png" alt="">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar cambios</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para generar reporte Mensual -->
+	<div class="modal fade" id="modalReporteMensual">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reportes de Combustible</h4>
+				</div>
+				<form ng-submit="reporteMensual()">
+
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6 col-md-offset-3">
+								<label>Tipo de Reporte</label>
+								<select class="form-control" required="required" ng-model="tipo_reporte">
+									<option value="">--Seleccione un tipo --</option>
+									<option value="1">Reporte Mensual</option>
+									<option value="2">Reporte Anual</option>
+								</select>
+							</div>
+						</div>
+
+						<br>
+
+						<div class="row" ng-show="tipo_reporte == 1">
+							<div class="col-md-6 col-md-offset-3">
+								<div class="form-group">
+									<label>Mes</label>
+									<input type="text" id="mes" class="form-control month-picker" ng-required="tipo_reporte == 1">
+								</div>
+							</div>
+						</div>
+
+						<div class="row" ng-show="tipo_reporte == 2">
+							<div class="col-md-6 col-md-offset-3">
+								<div class="form-group">
+									<label>Año</label>
+									<input type="text" id="year" class="form-control year-picker" ng-required="tipo_reporte == 2">
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar Reporte</button>
+					</div>
+
+				</form>
+				<!--
+				<form ng-submit="reporteMensual()">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Mes</label>
+									<input type="text" id="mes" class="form-control month-picker" required>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar Reporte</button>
+					</div>
+				</form>
+				-->
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para generar reporte sobre Entradas y Salidas -->
+	<div class="modal fade" id="modalReporteEntradaSalidas">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Reporte Mensual Entradas y Salidas</h4>
+				</div>
+				<form ng-submit="reporteEntradasSalidas()">
+					<div class="modal-body">
+						<input type="hidden" ng-model="reporte_e_s.INVENTARIOID">
+						<div class="row">
+							<div class="col-md-4 col-md-offset-4">
+								<div class="form-group">
+									<label>Mes</label>
+									<input type="text" class="form-control month-picker" id="mes2" required>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Generar Reporte</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para subir archivos al vale -->
+	<div class="modal fade" id="modalArchivoVale">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Subir archivo</h4>
+				</div>
+				<form ng-submit="subirArchivoVale()" enctype="multipart/form-data">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Nombre</label>
+										<input type="text" class="form-control" ng-model="documento_vale.NOMBRE" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Descripción</label>
+										<textarea class="form-control" rows="6" required="required" ng-model="documento_vale.DESCRIPCION"></textarea required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="exampleInputFile">Seleccionar archivo</label>
+		    							<input type="file" id="exampleInputFile" file-input="files" onchange="angular.element(this).scope().imageUpload(event)" required>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+							    <img class="img-responsive" ng-if=" isImage == 1 " ng-src="{{ step }}" alt="">
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-primary">Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para detalles de Historial Entrada / Salida -->
+	<div class="modal fade" id="modalDetalleBitacoraVehiculo">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Detalles de Registro en Historial Entradas y Salidas</h4>
+				</div>
+				<form ng-submit="registroHistorialVehiculo()">
+					<input type="hidden" ng-model="historial.INVENTARIOID" ng-value="historial.INVENTARIOID">
+					<div class="modal-body">
+						<input type="hidden" ng-model="historial.KM_ACTUAL" ng-value="vehiculo.KM_ACTUAL">
+						<div class="row">
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Fecha de Salida</label>
+									<input type="text" ng-model="registro_historial.FECHA_SALIDA" class="form-control" id="fecha_salida" readonly>
+							  	</div>
+						 	</div>
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Hora de Salida</label>
+									<input ng-model="registro_historial.HORA_SALIDA" type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Km de Salida</label>
+									<input ng-model="registro_historial.KM_SALIDA"  type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Fecha de Entrada</label>
+									<input type="text" ng-model="registro_historial.FECHA_ENTRADA" class="form-control" id="fecha_entrada" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Hora de Entrada</label>
+									<input ng-model="registro_historial.HORA_ENTRADA" type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Km de Entrada</label>
+									<input ng-model="registro_historial.KM_ENTRADA" type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Responsable</label>
+								    <input type="text" class="form-control" ng-model="registro_historial.NOMBRE" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Observaciones</label>
+									<textarea ng-model="registro_historial.OBSERVACION" class="form-control" rows="3" readonly></textarea>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de vale</label>
+						 			<input type="text" ng-model="registro_historial.NO_VALE" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Galones</label>
+						 			<input type="text" ng-model="registro_historial.GALONES" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de Viajes</label>
+						 			<input type="text" ng-model="registro_historial.NO_VIAJES" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Personas</label>
+						 			<input type="text" ng-model="registro_historial.PERSONAS" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Visitas Campo</label>
+						 			<input type="text" ng-model="registro_historial.VISITAS_CAMPO" class="form-control" readonly>
+						 		</div>
+						 	</div>
+
+						 	<div class="col-md-12">
+						 		<h3 class="text-center">Documentos / Notificaciones</h3>
+						 	</div>
+
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Juridico</label>
+						 			<input type="text" ng-model="registro_historial.JURIDICO" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Técnico</label>
+						 			<input type="text" ng-model="registro_historial.TECNICO" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>SIMA</label>
+						 			<input type="text" ng-model="registro_historial.SIMA" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>IUSI</label>
+						 			<input type="text" ng-model="registro_historial.IUSI" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Avisos Not.</label>
+						 			<input type="text" ng-model="registro_historial.AVISOS_NOT" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Expedientes</label>
+						 			<input type="text" ng-model="registro_historial.EXPEDIENTES" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Cartas</label>
+						 			<input type="text" ng-model="registro_historial.CARTAS" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>UDI</label>
+						 			<input type="text" ng-model="registro_historial.UDI" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Logística</label>
+						 			<input type="text" ng-model="registro_historial.ADMINISTRACION" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Regencia</label>
+						 			<input type="text" ng-model="registro_historial.REGENCIA" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						 	<div class="col-md-4">
+						 		<div class="form-group">
+						 			<label>Otros</label>
+						 			<input type="text" ng-model="registro_historial.OTROS" class="form-control" readonly>
+						 		</div>
+						 	</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para editar registro de Historial Entrada / Salida -->
+	<div class="modal fade" id="modalEditaBitacoraVehiculo">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Detalles de Registro en Historial Entradas y Salidas</h4>
+				</div>
+				<form ng-submit="editarHistorial()">
+					<input type="hidden" ng-model="registro_historial.HISTORIALID" ng-value="registro_historial.HISTORIALID">
+					<div class="modal-body">
+						<input type="hidden" ng-model="historial.KM_ACTUAL" ng-value="vehiculo.KM_ACTUAL">
+						<div class="row">
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Fecha de Salida</label>
+									<input type="text" ng-model="registro_historial.FECHA_SALIDA" class="form-control" id="fecha_salida" readonly>
+							  	</div>
+						 	</div>
+							<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Hora de Salida</label>
+									<input ng-model="registro_historial.HORA_SALIDA" type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Km de Salida</label>
+									<input ng-model="registro_historial.KM_SALIDA"  type="text" class="form-control">
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Fecha de Entrada</label>
+									<input type="text" ng-model="registro_historial.FECHA_ENTRADA" class="form-control" id="fecha_entrada" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Hora de Entrada</label>
+									<input ng-model="registro_historial.HORA_ENTRADA" type="text" class="form-control" readonly>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-4">
+						  		<div class="form-group">
+								    <label>Km de Entrada</label>
+									<input ng-model="registro_historial.KM_ENTRADA" type="text" class="form-control">
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Responsable</label>
+								    <input type="text" class="form-control" ng-model="registro_historial.NOMBRE" readonly>
+								    <!-- <select class="form-control selectpicker" data-live-search="true" required="required" ng-model="historial.RESPONSABLE" id="pilotos">
+										<option value="">-- Seleccione un responsable --</option>
+										<option ng-repeat="piloto in pilotos" value="{{ piloto.NIT }}" ng-model="historial.RESPONSABLE">{{piloto.NIT}} {{piloto.NOMBRE}} {{piloto.APELLIDO}}</option>
+									</select> -->
+							  	</div>
+						 	</div>
+						 	<div class="col-md-6">
+						  		<div class="form-group">
+								    <label for="exampleInputEmail1">Observaciones</label>
+									<textarea ng-model="registro_historial.OBSERVACION" class="form-control" rows="3"></textarea>
+							  	</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de vale</label>
+						 			<input type="text" ng-model="registro_historial.NO_VALE" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Galones</label>
+						 			<input type="text" ng-model="registro_historial.GALONES" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>No. de Viajes</label>
+						 			<input type="text" ng-model="registro_historial.NO_VIAJES" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Personas</label>
+						 			<input type="text" ng-model="registro_historial.PERSONAS" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Visitas Campo</label>
+						 			<input type="text" ng-model="registro_historial.VISITAS_CAMPO" class="form-control">
+						 		</div>
+						 	</div>
+
+						 	<div class="col-md-12">
+						 		<h3 class="text-center">Documentos / Notificaciones</h3>
+						 	</div>
+
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Juridico</label>
+						 			<input type="text" ng-model="registro_historial.JURIDICO" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Técnico</label>
+						 			<input type="text" ng-model="registro_historial.TECNICO" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>SIMA</label>
+						 			<input type="text" ng-model="registro_historial.SIMA" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>IUSI</label>
+						 			<input type="text" ng-model="registro_historial.IUSI" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Avisos Not.</label>
+						 			<input type="text" ng-model="registro_historial.AVISOS_NOT" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Expedientes</label>
+						 			<input type="text" ng-model="registro_historial.EXPEDIENTES" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Cartas</label>
+						 			<input type="text" ng-model="registro_historial.CARTAS" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>UDI</label>
+						 			<input type="text" ng-model="registro_historial.UDI" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Logística</label>
+						 			<input type="text" ng-model="registro_historial.ADMINISTRACION" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-2">
+						 		<div class="form-group">
+						 			<label>Regencia</label>
+						 			<input type="text" ng-model="registro_historial.REGENCIA" class="form-control">
+						 		</div>
+						 	</div>
+						 	<div class="col-md-4">
+						 		<div class="form-group">
+						 			<label>Otros</label>
+						 			<input type="text" ng-model="registro_historial.OTROS" class="form-control">
+						 		</div>
+						 	</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-success">Guardar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para registrar entrega de vale -->
+	<div class="modal fade" id="modalEntregaVale">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Entrega de Vale</h4>
+				</div>
+				<form ng-submit="registrarEntregaVale()">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Fecha de Entrega</label>
+								<input type="text" ng-model="entrega_vale.FECHA" id="fecha_entrega_vale" class="form-control" required>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label>Responsable</label>
+								<input type="text" ng-model="entrega_vale.RESPONSABLE" class="form-control" required>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<button type="submit" class="btn btn-success">Guardar</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Mediano -->
+	<div class="modal fade" id="modalMed">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div ng-include="modalMed_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Grande -->
+	<div class="modal fade" id="modalBig">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div ng-include="modalBig_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+</div>

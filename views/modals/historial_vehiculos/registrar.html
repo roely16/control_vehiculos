@@ -1,0 +1,168 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h4 class="modal-title">Registro en Historial Entradas y Salidas</h4>
+</div>
+<form ng-submit="registroHistorialVehiculo()" id="formRegistroHistorial" method="POST">
+	<input type="hidden" ng-model="historial.INVENTARIOID" ng-value="historial.INVENTARIOID">
+	<div class="modal-body">
+		<input type="hidden" ng-model="historial.KM_ACTUAL" ng-value="vehiculo.KM_ACTUAL">
+		<div class="row">
+			<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Fecha de Salida</label>
+					<input type="text" ng-model="historial.FECHA_SALIDA" class="form-control datepicker" id="fecha_salida" required>
+			  	</div>
+		 	</div>
+			<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Hora de Salida</label>
+					<input ng-model="historial.HORA_SALIDA" type="text" ng-value="historial.HORA_SALIDA" class="form-control timepicker"  required>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Km de Salida</label>
+					<input ng-model="historial.KM_SALIDA"  type="text" class="form-control" required>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Fecha de Entrada</label>
+					<input type="text" ng-model="historial.FECHA_ENTRADA"  class="form-control datepicker" id="fecha_entrada" required>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Hora de Entrada</label>
+					<input ng-model="historial.HORA_ENTRADA" type="text" class="form-control timepicker"  required>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-4">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Km de Entrada</label>
+					<input ng-model="historial.KM_ENTRADA" type="text" class="form-control" required>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-6">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Responsable</label>
+					<select class="form-control selectpicker" data-live-search="true" required="required" ng-model="historial.RESPONSABLE">
+						<option value="">-- Seleccione un responsable --</option>
+						<option ng-repeat="piloto in pilotos" value="{{ piloto.NIT }}" ng-model="historial.RESPONSABLE">{{piloto.NIT}} {{piloto.NOMBRE}} {{piloto.APELLIDO}}</option>
+					</select>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-6">
+		  		<div class="form-group">
+				    <label for="exampleInputEmail1">Observaciones</label>
+					<textarea ng-model="historial.OBSERVACION" class="form-control" rows="3"></textarea>
+			  	</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>No. de vale</label>
+		 			<input type="text" ng-model="historial.NO_VALE" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Galones</label>
+		 			<input type="text" ng-model="historial.GALONES" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>No. de Viajes</label>
+		 			<input type="text" ng-model="historial.NO_VIAJES" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Personas</label>
+		 			<input type="text" ng-model="historial.PERSONAS" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Visitas Campo</label>
+		 			<input type="text" ng-model="historial.VISITAS_CAMPO" class="form-control" name="">
+		 		</div>
+		 	</div>
+
+		 	<div class="col-md-12">
+		 		<h3 class="text-center">Documentos / Notificaciones</h3>
+		 	</div>
+
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Juridico</label>
+		 			<input type="text" ng-model="historial.JURIDICO" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Técnico</label>
+		 			<input type="text" ng-model="historial.TECNICO" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>SIMA</label>
+		 			<input type="text" ng-model="historial.SIMA" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>IUSI</label>
+		 			<input type="text" ng-model="historial.IUSI" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Avisos Not.</label>
+		 			<input type="text" ng-model="historial.AVISOS_NOT" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Expedientes</label>
+		 			<input type="text" ng-model="historial.EXPEDIENTES" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Cartas</label>
+		 			<input type="text" ng-model="historial.CARTAS" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>UDI</label>
+		 			<input type="text" ng-model="historial.UDI" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Administración</label>
+		 			<input type="text" ng-model="historial.ADMINISTRACION" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-2">
+		 		<div class="form-group">
+		 			<label>Regencia</label>
+		 			<input type="text" ng-model="historial.REGENCIA" class="form-control" name="">
+		 		</div>
+		 	</div>
+		 	<div class="col-md-4">
+		 		<div class="form-group">
+		 			<label>Otros</label>
+		 			<input type="text" ng-model="historial.OTROS" class="form-control" name="">
+		 		</div>
+		 	</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		<button type="submit" class="btn btn-primary">Guardar</button>
+	</div>
+</form>

@@ -1,0 +1,178 @@
+<div ng-controller="configuracionCtrl">
+	<div class="row">
+		<h3 class="text-center">Configuraciones Generales</h3>
+	</div>
+
+	<br>
+
+	<div class="row">
+		<ul class="nav nav-tabs nav-justified" id="myTabs">
+  			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab"">Administración de Vehículos</a></li>
+  			<li role="presentation"><a data-target="#t2" data-toggle="tab"">Roles</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+			<br>
+
+			<div class="tab-pane fade in active" id="t1">
+				<div class="row">
+					<div class="col-md-4 col-md-offset-4 text-center">
+						<div class="form-group">
+							<label>Responsable</label>
+							<select class="form-control" required="required" ng-change="cargar_vehiculos_administrador()" ng-model="responsable">
+								<option value="">-- Seleccione un administrador --</option>
+								<option value="{{ administrador.NIT }}" ng-repeat="administrador in administradores">{{ administrador.NOMBRE }}</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div ng-if="responsable != NULL" >
+
+					<div class="row">
+						<div class="col-md-2">
+							<button class="btn btn-success btn-block" ng-click="modal_agregar_vehiculo()">
+								Agregar Vehículo
+								<i class="glyphicon glyphicon-plus"></i>
+							</button>
+						</div>						
+					</div>
+
+					<br>
+
+					<div class="row" ng-show="cantidad_vehiculos > 0">
+						<div class="col-md-12">
+							<table class="table table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>No.</th>
+										<th class="col-md-1">Placa</th>
+										<th class="col-md-1">Marca</th>
+										<th class="col-md-1">Modelo</th>
+										<th class="col-md-1">Tipo</th>
+										<th class="col-md-3">Linea</th>
+										<th class="col-md-3">Color</th>
+										<th class="col-md-1">Acción</th>	
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="vehiculo in vehiculos">
+										<td>{{ $index + 1 }}</td>
+										<td>{{ vehiculo.PLACA }}</td>
+										<td>{{ vehiculo.MARCA }}</td>
+										<td>{{ vehiculo.MODELO }}</td>
+										<td>{{ vehiculo.TIPO }}</td>
+										<td>{{ vehiculo.LINEA }}</td>
+										<td>{{ vehiculo.COLOR }}</td>
+										<td>
+											<button class="btn btn-danger btn-sm" ng-click="eliminar_vehiculo(vehiculo.ID, vehiculo.ADMINISTRADOR)">
+												<i class="glyphicon glyphicon-trash"></i>
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="col-md-12" ng-show="cantidad_vehiculos == 0">
+						<h4 class="text-center">-- No se encontraron registros --</h4>
+					</div>
+
+
+				</div>
+			</div>
+
+			<div class="tab-pane fade" id="t2">
+
+				<br>
+
+				<div class="row">
+					
+					<div class="col-md-2">
+						<button type="button" ng-click="modal_nuevo_rol()" class="btn btn-success btn-block">Nuevo Rol
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input class="form-control" ng-model="search" ng-change="filter()" type="text" name="" placeholder="Buscar responsable">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+						</div>			
+					</div>			
+
+				</div>
+
+				<br>
+
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-3">Nombre</th>
+									<th class="col-md-1">NIT</th>
+									<th class="col-md-6">Roles</th>
+									<th class="col-md-2">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="rol in searched = (roles | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+									<td>{{ rol.NOMBRE }}</td>
+									<td>{{ rol.EMPLEADONIT }}</td>
+									<td>
+										
+										<span ng-if="rol.FIRMA_REGISTRADA == 1" class="label label-default">FIRMA REGISTRADA</span>
+										<span ng-if="rol.PILOTO == 1" class="label label-primary">PILOTO</span>
+										<span ng-if="rol.SOLICITAR_VALE == 1" class="label label-success">SOLICITAR VALE</span>
+										<span ng-if="rol.ADMINISTRADOR == 1" class="label label-danger">ADMINISTRADOR</span>
+
+									</td>
+									<td>
+										<button class="btn btn-primary btn-sm" ng-click="mostrar_editar_rol(rol.ROLID)">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+										<button class="btn btn-danger btn-sm" ng-click="eliminar_rol(rol.ROLID)">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data > 0">
+					<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal mediano -->
+	<div class="modal fade" id="modalMed">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div ng-include="modalMed_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Grande -->
+	<div class="modal fade" id="modalBig">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div ng-include="modalBig_template_url"></div>
+			</div>
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,97 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Editar Rol</h4>
+	</div>
+	<form ng-submit="registrarMantenimiento()">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Nombre del Empleado</label>
+						<input type="text" class="form-control" ng-model="responsable_rol.NOMBRE" readonly>	
+					</div>
+				</div>
+			</div>
+
+			<br>
+			<div class="row">
+				<div class="col-md-6">
+					<select class="form-control" id="select_rol">
+						<option value="">--Seleccione un rol --</option>
+						<option value="FIRMA_REGISTRADA" ng-if="roles_responsable.FIRMA_REGISTRADA == NULL">FIRMA REGISTRADA</option>
+						<option value="PILOTO" ng-if="roles_responsable.PILOTO == NULL">PILOTO</option>
+						<option value="SOLICITAR_VALE" ng-if="roles_responsable.SOLICITAR_VALE == NULL">SOLICITAR VALE</option>
+						<option value="ADMINISTRADOR" ng-if="roles_responsable.ADMINISTRADOR == NULL">ADMINISTRADOR</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<button class="btn btn-default" ng-click="agregar_rol()">
+						Agregar
+						<i class="glyphicon glyphicon-plus"></i>
+					</button>
+				</div>
+			</div>
+
+			<br>
+			<div class="row">
+				<div class="col-md-12">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>Rol</th>
+								<th class="col-md-1">Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-if="roles_responsable.FIRMA_REGISTRADA != NULL">
+								<td>
+									<span class="label label-default">FIRMA REGISTRADA</span>
+								</td>
+								<td>
+									<button class="btn btn-danger btn-sm" ng-click="eliminar_rol_modal('FIRMA_REGISTRADA')">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<tr ng-if="roles_responsable.PILOTO != NULL">
+								<td>
+									<span class="label label-primary">PILOTO</span>
+								</td>
+								<td>
+									<button class="btn btn-danger btn-sm" ng-click="eliminar_rol_modal('PILOTO')">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<tr ng-if="roles_responsable.SOLICITAR_VALE != NULL">
+								<td>
+									<span class="label label-success">SOLICITAR VALE</span>
+								</td>
+								<td>
+									<button class="btn btn-danger btn-sm" ng-click="eliminar_rol_modal('SOLICITAR_VALE')">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<tr ng-if="roles_responsable.ADMINISTRADOR != NULL">
+								<td>
+									<span class="label label-danger">ADMINISTRADOR</span>
+								</td>
+								<td>
+									<button class="btn btn-danger btn-sm" ng-click="eliminar_rol_modal('ADMINISTRADOR')">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>			
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			<button type="button" ng-click="editar_rol()" class="btn btn-primary">Guardar</button>
+		</div>
+	</form>
+</div>
