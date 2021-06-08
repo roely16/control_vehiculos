@@ -1,9 +1,14 @@
-<div ng-controller="ValesCtrl">
+<div ng-controller="ValesCtrl" ng-init="obtenerVales()">
 	<br>
 	<div class="row" >
 		<div class="col-md-2">
 			<button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#talonarioModal">Nuevo Talonario
 				<i class="fas fa-plus"></i>
+			</button>
+		</div>
+		<div class="col-md-2">
+			<button type="button" ng-click="obtenerValesDisponibles()" class="btn btn-danger btn-block" data-toggle="modal" data-target="#anularModal">Anular Vale
+				<i class="fas fa-times-circle"></i>
 			</button>
 		</div>
 		<div class="col-md-3">
@@ -57,6 +62,9 @@
 							<td>{{ vale.NO_GESTION }}</td>
 							<td>{{vale.RESPONSABLE}} {{vale.NOMBRE}} {{vale.APELLIDO}}</td>
 							<td>
+								<a ng-click="mostrarEditarVale(vale.VALEID)" class="btn btn-primary btn-sm" title="Editar" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-pencil"></i>
+								</a>
 								<a ng-href="#/vales/detalles/{{vale.VALEID}}" class="btn btn-default btn-sm" title="Detalles"">
 				  					<i class="glyphicon glyphicon-eye-open"></i>
 				  				</a>
@@ -120,4 +128,324 @@
 	  	</div>
 	</div>
 
+	<!-- Modal para editar el vale -->
+	<div class="modal fade" id="modalEditarVale" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">
+						Edición de Vale No. {{edit_vale.NO_VALE}}
+					</h4>
+				</div>
+				<form ng-submit="editarVale()" enctype="multipart/form-data">
+					<div class="modal-body">
+						<input type="hidden" ng-model="edit_vale.INVENTARIOID" name="">
+						<div class="row">
+							<div class="col-md-12">
+									<h4 class="text-center">Datos del Vale</h4>
+							</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">No.</label>
+								<input ng-value="edit_vale.NO_VALE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Fecha</label>
+								<input ng-value="edit_vale.FECHA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Hora</label>
+								<input ng-value="edit_vale.HORA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Gasolinera</label>
+								<input ng-value="edit_vale.GASOLINERA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Tipo de Combustible</label>
+								<input ng-value="edit_vale.TIPO_COMBUSTIBLE" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Responsable</label>
+								<input ng-value="edit_vale.NIT + ' ' + edit_vale.NOMBRE + ' ' + edit_vale.APELLIDO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Área</label>
+								<input ng-value="edit_vale.DEPARTAMENTO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Dirección</label>
+								<input ng-value="edit_vale.DIRECCION" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Fecha y Hora de Entrega</label>
+								<input ng-value="edit_vale.FECHA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Responsable Entrega</label>
+								<input ng-value="edit_vale.PERSONA_ENTREGA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<h4 class="text-center">Datos del Vehículo</h4>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Placa</label>
+								<input ng-value="edit_vale.PLACA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Tipo</label>
+								<input ng-value="edit_vale.TIPO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Marca</label>
+								<input ng-value="edit_vale.MARCA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Color</label>
+								<input ng-value="edit_vale.COLOR" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Modelo</label>
+								<input ng-value="edit_vale.MODELO" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>Linea</label>
+								<input ng-value="edit_vale.LINEA" type="text" class="form-control" readonly>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<h4 class="text-center">Recepción o Anulación de Vale</h4>
+						</div>
+							<div class="col-md-3" ng-if="estado_vale == 8">
+								<div class="form-group">
+								<label>Estado</label>
+								<select class="form-control" ng-change="estadoSelected()" ng-model="edit_vale.ESTADO_"required>
+									<option value="">-- Seleccione una opción --</option>
+									<option value="6">Finalizado</option>
+									<option value="7">Anulado</option>
+								</select>
+								</div>
+							</div>
+							<!-- Si el estado seleccionado es finalizado mostrar -->
+							<div ng-show="edit_vale.ESTADO == 6 && edit_vale.ESTADO_ENTREGA == 0">
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control">
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Fecha de Despacho</label>
+									<input ng-model="edit_vale.FECHA_DESPACHO" type="text" class="form-control fecha_despacho">
+									</div>
+								</div>
+							</div>
+							<!-- Si el estado seleccionado es Anulado mostrar -->
+							<div ng-if="edit_vale.ESTADO == 7 && edit_vale.ESTADO_ENTREGA == 0">
+								<div class="col-md-2">
+									<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" readonly>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" readonly>
+									</div>
+								</div>
+							</div>
+
+							<!-- Si el vale ya fue entregado como finalizado -->
+							<div ng-if="edit_vale.ESTADO_ENTREGA == 1">
+								<div class="col-md-3 ">
+									<div class="form-group">
+									<label>Estado</label>
+									<input value="Finalizado"  type="text" class="form-control" readonly>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" >
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" >
+									</div>
+
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Fecha de Despacho</label>
+									<input ng-model="edit_vale.FECHA_DESPACHO" type="text" class="form-control" >
+									</div>
+
+								</div>
+							</div>
+
+							<!-- Si el vale ya fue entregado como anulado -->
+							<div ng-if="edit_vale.ESTADO == 7 && edit_vale.ESTADO_ENTREGA == 2">
+								<div class="col-md-3">
+									<div class="form-group">
+									<label>Estado</label>
+									<input value="Anulado"  type="text" class="form-control" readonly>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+									<label>Consumo</label>
+									<input ng-model="edit_vale.CONSUMO" type="text" class="form-control" readonly>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+									<label>Kilometraje</label>
+									<input ng-model="edit_vale.KILOMETRAJE" type="text" class="form-control" readonly>
+									</div>
+								</div>
+							</div>
+
+						</div>
+				</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button type="submit" class="btn btn-success">Editar</button>
+						</div>
+					</form>
+			</div>
+			</div>
+	</div>
+
+	<div class="modal fade" id="modalEntregaVale">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Entrega de Vale</h4>
+				</div>
+				<form ng-submit="registrarEntregaVale()">
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label>Fecha de Entrega</label>
+								<input type="text" ng-model="entrega_vale.FECHA" id="fecha_entrega_vale" class="form-control" required>
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label>Responsable</label>
+								<input type="text" ng-model="entrega_vale.RESPONSABLE" class="form-control" required>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<button type="submit" class="btn btn-success">Guardar</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal para anular vale -->
+	<div class="modal fade" id="anularModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+		  <div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				  <h4 class="modal-title" id="myModalLabel">Anular Vales</h4>
+				</div>
+				<forms>
+					<div class="modal-body">
+						
+					  <div class="row">
+						  <div class="col-md-12">
+							<table class="table table-hover table-condensed">
+								<thead>
+									<tr>
+										<th>No. de Vale</th>
+										<th>Talonario</th>
+										<th>Estado</th>
+										<th>Acción</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="vale in vales_disponibles">
+										<td>
+											{{ vale.NO_VALE }}
+										</td>
+										<td>
+											{{ vale.TALONARIO }}
+										</td>
+										<td ng-if="vale.ESTADO == 4">
+											<span class="label label-primary">DISPONIBLE</span>
+										</td>
+										<td ng-if="vale.ESTADO == 9">
+											<span class="label label-danger">ANULADO</span>
+										</td>
+										<td>
+											<a ng-click="cambiarEstadoVale(vale)" class="btn btn-primary btn-sm" title="Cambiar Estado" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+												<i class="glyphicon glyphicon-refresh"></i>
+											</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						  </div>
+					  </div>
+					</div>
+					<div class="modal-footer">
+					  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					  <button type="submit" class="btn btn-success">Registrar</button>
+					</div>
+				</forms>
+		  </div>
+		</div>
+  </div>
 </div>

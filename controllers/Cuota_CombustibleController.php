@@ -8,7 +8,7 @@
 
 		}
 
-		function modificar_cuota{
+		function modificar_cuota(){
 
 		}
 

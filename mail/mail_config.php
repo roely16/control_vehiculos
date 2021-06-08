@@ -13,7 +13,7 @@
 
         function Mailconfig() {
 
-            $this->host = '172.23.50.25';
+            $this->host = 'mail2.muniguate.com';
             $this->charset = 'UTF-8';
             $this->smtp_auth = false;
             $this->username = "soportecatastro";

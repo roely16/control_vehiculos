@@ -74,13 +74,16 @@
 			$regencia = $request["REGENCIA"];
 			$otros = $request["OTROS"];
 			$km_servicio = $request["KM_SERVICIO"];
-
+//die("$km_actual < $km_entrada && $km_salida >= $km_actual");
 			/* Verificar que el Km de entrada sea mayor al Km actual */
 
 			/* Ingresa el mismo dia */
 
 
-			if ($km_actual < $km_entrada && $km_salida >= $km_actual) {
+			//if ($km_actual < $km_entrada && $km_salida >= $km_actual) {
+           // die("$km_salida >= $km_actual");
+			//	if ($km_salida <= $km_actual) {
+					if (true) {
 
 				/* Comienza IF */
 
@@ -92,10 +95,11 @@
 
 					$stid = oci_parse($conn, $query);
 					oci_execute($stid);
-
-					/* Actualizar Kilometraje del vehiculo */
-					$vehiculo_ctrl = new VehiculoController();
-					$vehiculo_ctrl->actualizar_kilometraje($inventarioid, $km_entrada);
+                    $km_salida = $km_actual;
+                    
+					/* Actualizar Kilometraje del vehiculo  no es necesario actualizar ya que se actualiza segun los vales */ 
+					//$vehiculo_ctrl = new VehiculoController();
+					//$vehiculo_ctrl->actualizar_kilometraje($inventarioid, $km_entrada);
 
 					/* Actualizar la bitacora */
 					$bitacora_ctrl = new Bitacora_EventosController();
@@ -133,6 +137,7 @@
 							$km_recordatorio = $km_entrada + 200;
 
 							$query = "UPDATE ADM_FICHA_VEHICULOS SET NOTIFICACION_SERVICIO = 1, KM_RECORDATORIO = $km_recordatorio WHERE INVENTARIOID = $inventarioid";
+                            
 							$stid = oci_parse($this->conn, $query);
 							oci_execute($stid);
 
@@ -150,8 +155,10 @@
 								/* Actualizar kilometra del proximo recordatorio */
 								$km_recordatorio = $km_entrada + 200;
 								$query = "UPDATE ADM_FICHA_VEHICULOS SET KM_RECORDATORIO = $km_recordatorio WHERE INVENTARIOID = $inventarioid";
+                                
 								$stid = oci_parse($this->conn, $query);
 								oci_execute($stid);
+                                
 
 							}
 
@@ -168,7 +175,7 @@
 					}
 					
 
-					return array(1, $historial, $km_entrada, $bitacora, $usuario, $res_km, $text);
+					return array(1, $historial, $km_actual, $bitacora, $usuario, $res_km, $text);
 
 				}
 
@@ -284,9 +291,10 @@
 
 			/* Actualizar kilometraje del vehículo */
 			$query = "UPDATE ADM_FICHA_VEHICULOS SET KM_ACTUAL = $km_salida_ WHERE INVENTARIOID = $inventario_id";
+            /*
 			$stid = oci_parse($this->conn, $query);
 			oci_execute($stid);
-
+*/
 			/* Obtener historial */
 			$historial = $this->obtener_historial($inventario_id);
 

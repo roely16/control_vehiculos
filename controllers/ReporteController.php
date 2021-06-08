@@ -678,6 +678,7 @@
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
 
 				$inventario_id = $data["INVENTARIOID"];
+				$placa = $data["PLACA"];
 
 				/* Verificar si le fuente es de Historial de Entradas y Salidos o Vales */
 
@@ -726,10 +727,26 @@
 
 					$resultado_mes_anterior = oci_fetch_array($stid_);
 
-					$conteo_registros = count($resultado_mes_anterior);
+					// $conteo_registros = count($resultado_mes_anterior);
 
-					$resultado["KM_SALIDA"] = $resultado_mes_anterior["KM_SALIDA"];
+					if ($placa == "P-203DGB") {
+						# code...
 
+						if ($resultado_mes_anterior["KM_SALIDA"] == 0) {
+						
+							$resultado["KM_SALIDA"] = 245789;
+
+						}else{
+
+							$resultado["KM_SALIDA"] = $resultado_mes_anterior["KM_SALIDA"];
+
+						}
+						
+					}else{
+
+						$resultado["KM_SALIDA"] = $resultado_mes_anterior["KM_SALIDA"];
+
+					}
 
 				}
 
@@ -871,7 +888,7 @@
 
 			if ($vales_anulados == 1) {
 
-				$vales_estados = array(5,6,7);
+				$vales_estados = array(5,6,7,9);
 
 			}else if($vales_anulados == 2){
 
@@ -883,14 +900,28 @@
 
 			if ($tipo_reporte == 1) {
 
+				/* Obtener el máximo y mínimo */
+				$query = "	SELECT MAX(NO_VALE) AS MAX , MIN(NO_VALE) AS MIN
+							FROM ADM_VALES
+							WHERE TO_DATE(FECHA, 'DD/MM/YY') BETWEEN TO_DATE('$fecha_inicio', 'DD/MM/YY') AND TO_DATE('$fecha_fin', 'DD/MM/YY')";
+
+				$stid = oci_parse($conn, $query);
+				oci_execute($stid);
+
+				$result = oci_fetch_array($stid, OCI_ASSOC);
+				$min = $result["MIN"];
+				$max = $result["MAX"];
+
 				$query = "SELECT T1.NO_VALE, T1.NO_GESTION, T1.FECHA, T1.HORA, T1.CONSUMO, T1.ESTADO, TO_CHAR(T1.FECHA_DESPACHO, 'DD/MM/YYYY') AS FECHA_DESPACHO, T2.PLACA, CONCAT(CONCAT(T3.NOMBRE, ' '), T3.APELLIDO) AS PILOTO,
 				TO_CHAR(T1.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA, TO_CHAR(T1.FECHA_ENTREGA, 'HH:MI AM') AS HORA_ENTREGA, T1.PERSONA_ENTREGA
 				FROM ADM_VALES T1
-				INNER JOIN ADM_FICHA_VEHICULOS T2
+				LEFT JOIN ADM_FICHA_VEHICULOS T2
 				ON T1.INVENTARIOID = T2.INVENTARIOID
-				INNER JOIN RH_EMPLEADOS T3
+				LEFT JOIN RH_EMPLEADOS T3
 				ON T1.RESPONSABLE = T3.NIT
 				WHERE TO_DATE(FECHA, 'DD/MM/YY') BETWEEN TO_DATE('$fecha_inicio', 'DD/MM/YY') AND TO_DATE('$fecha_fin', 'DD/MM/YY')
+				AND T1.ESTADO IN ($estados_separados)
+				OR T1.NO_VALE BETWEEN $min AND $max
 				AND T1.ESTADO IN ($estados_separados)
 				ORDER BY T1.NO_VALE ASC";
 

@@ -22,26 +22,26 @@
 			INNER JOIN EQP_INVENTARIO ON ADM_FICHA_VEHICULOS.INVENTARIOID = EQP_INVENTARIO.INVENTARIOID
 			WHERE ADM_GESTIONES.TIPOGESTION = 1 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0)
 			ORDER BY ADM_GESTIONES.GESTIONID DESC";
-
+//echo $query;
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
 
 			$solicitudes_pendientes = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-
 				$solicitudes_pendientes[] = $data;
 
 			}
 
-			$query = "SELECT ADM_GESTIONES.GESTIONID, TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, 
-                ADM_GESTIONES.INVENTARIOID, ADM_GESTIONES.STATUS,RH_EMPLEADOS.NOMBRE, ADM_GESTIONES.DETALLE, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, 
-                ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO, ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, EQP_INVENTARIO.ACTIVO AS ESTADO_VEHICULO 
-                FROM ADM_GESTIONES INNER JOIN RH_EMPLEADOS  ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
-                INNER JOIN ADM_FICHA_VEHICULOS ON ADM_GESTIONES.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
+			$query = "SELECT ADM_GESTIONES_CORRECTIVAS.GESTIONID, TO_CHAR(ADM_GESTIONES_CORRECTIVAS.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA,
+                ADM_GESTIONES_CORRECTIVAS.INVENTARIOID, ADM_GESTIONES_CORRECTIVAS.ESTADO ,RH_EMPLEADOS.NOMBRE, ADM_GESTIONES_CORRECTIVAS.MOTIVO, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, 
+                ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO, ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, EQP_INVENTARIO.ACTIVO AS ESTADO_VEHICULO, ADM_GESTIONES_CORRECTIVAS.TIPO, ADM_GESTIONES_CORRECTIVAS.ESTADO AS STATUS
+                FROM ADM_GESTIONES_CORRECTIVAS 
+                INNER JOIN RH_EMPLEADOS  ON ADM_GESTIONES_CORRECTIVAS.EMPLEADOID = RH_EMPLEADOS.NIT
+                INNER JOIN ADM_FICHA_VEHICULOS ON ADM_GESTIONES_CORRECTIVAS.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
                 INNER JOIN EQP_INVENTARIO ON ADM_FICHA_VEHICULOS.INVENTARIOID = EQP_INVENTARIO.INVENTARIOID
-                WHERE ADM_GESTIONES.TIPOGESTION = 5 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0)
-                ORDER BY ADM_GESTIONES.GESTIONID DESC";
+                WHERE ADM_GESTIONES_CORRECTIVAS.TIPO IN ('CORRECTIVA','PREVENTIVA') AND  ADM_GESTIONES_CORRECTIVAS.ESTADO = 0
+                ORDER BY ADM_GESTIONES_CORRECTIVAS.GESTIONID DESC";
 
             $stid = oci_parse($conn, $query);
 			oci_execute($stid);
@@ -49,25 +49,47 @@
 			$solicitudes_mantenimiento_pendientes = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-
 				$solicitudes_mantenimiento_pendientes[] = $data;
 
 			}
+            
+            
+            $query = "SELECT ADM_GESTIONES.GESTIONID, TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, 
+                ADM_GESTIONES.INVENTARIOID, ADM_GESTIONES.STATUS,RH_EMPLEADOS.NOMBRE, CAST(ADM_GESTIONES.DETALLE AS VARCHAR2(3999)), RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, 
+                ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO, ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, EQP_INVENTARIO.ACTIVO AS ESTADO_VEHICULO 
+                FROM ADM_GESTIONES INNER JOIN RH_EMPLEADOS  ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
+                INNER JOIN ADM_FICHA_VEHICULOS ON ADM_GESTIONES.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
+                INNER JOIN EQP_INVENTARIO ON ADM_FICHA_VEHICULOS.INVENTARIOID = EQP_INVENTARIO.INVENTARIOID
+                WHERE ADM_GESTIONES.TIPOGESTION = 6 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0 )
+                ORDER BY ADM_GESTIONES.GESTIONID DESC";
 
-			return array($solicitudes_pendientes, $solicitudes_mantenimiento_pendientes);
+            $stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$solicitudes_repuestos_pendientes = array();
+
+			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
+                
+                $data['NOMBRE'] = utf8_encode($data['NOMBRE']);
+                $data['APELLIDO'] = utf8_encode($data['APELLIDO']);
+				$solicitudes_repuestos_pendientes[] = $data;
+
+			}
+
+			return array($solicitudes_pendientes, $solicitudes_mantenimiento_pendientes, $solicitudes_repuestos_pendientes);
 		}
 
-		function detalles_solicitud($id){
-
-			//Conectar a la base de datos
+        function detalles_solicitud_preventiva_correctiva($id){
+            //Conectar a la base de datos
 			$dbc = new Oracle();
 			$conn = $dbc->connect();
 
-			$query = "SELECT ADM_GESTIONES.GESTIONID, TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, ADM_GESTIONES.DETALLE , RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, RH_EMPLEADOS.EMAILMUNI FROM 
-				ADM_GESTIONES 
+			$query = "SELECT ADM_GESTIONES_CORRECTIVAS.GESTIONID, TO_CHAR(ADM_GESTIONES_CORRECTIVAS.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, ADM_GESTIONES_CORRECTIVAS.MOTIVO , RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, RH_EMPLEADOS.EMAILMUNI,ADM_GESTIONES_CORRECTIVAS.TIPO FROM 
+				ADM_GESTIONES_CORRECTIVAS 
 				INNER JOIN RH_EMPLEADOS 
-				ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
-				WHERE ADM_GESTIONES.GESTIONID = $id";
+				ON ADM_GESTIONES_CORRECTIVAS.EMPLEADOID = RH_EMPLEADOS.NIT
+				WHERE ADM_GESTIONES_CORRECTIVAS.GESTIONID = $id";
+            //echo $query;
 
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
@@ -75,6 +97,34 @@
 			$gestion = oci_fetch_object($stid);
 
 			return $gestion;
+        }
+        
+		function detalles_solicitud($id){
+
+			//Conectar a la base de datos
+            
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$query = "SELECT ADM_GESTIONES.GESTIONID, TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, cast(ADM_GESTIONES.DETALLE as varchar2(2000)) as DETALLE , RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, RH_EMPLEADOS.EMAILMUNI FROM 
+				ADM_GESTIONES 
+				INNER JOIN RH_EMPLEADOS 
+				ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
+				WHERE ADM_GESTIONES.GESTIONID = $id";
+//echo $query;
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+            $data = oci_fetch_array($stid); 
+            
+			//$gestion = oci_fetch_object($stid);
+            $gestion = array();
+            $gestion['GESTIONID'] = $data[0];
+            $gestion['FECHA'] = $data[1];
+            $gestion['DETALLE'] = utf8_encode($data[2]);
+            $gestion['NOMBRE'] = utf8_encode($data[3]);
+            $gestion['APELLIDO'] = utf8_encode($data[4]);
+            $gestion['EMAILMUNI'] = $data[5];
+			return ($gestion);
 		}
 
 		function gestiones_vales_pendientes(){
@@ -116,8 +166,9 @@
 				ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO, ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO 
 				FROM ADM_GESTIONES INNER JOIN RH_EMPLEADOS  ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
 				INNER JOIN ADM_FICHA_VEHICULOS ON ADM_GESTIONES.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
-				WHERE ADM_GESTIONES.TIPOGESTION = 5 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0)
+				WHERE ADM_GESTIONES.TIPOGESTION = 8 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0)
 				ORDER BY ADM_GESTIONES.GESTIONID DESC";
+            
 
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
@@ -197,6 +248,32 @@
 			    <li>Click en detalles en la gestion buscada</li>				
 			    <li>Click en movimiento interno para ver el usuario que la rechazo o en el historial de la gestion</li>						
 			    </ul><br>";
+
+			/* Enviar correo */
+			$mail = new Mail();
+
+			$mail->send_mail($usuario->EMAILMUNI, 'Rechazo de gestión', $text);
+
+			$solicitudes_pendientes = $this->gestiones_mantenimientos_pendientes();
+
+			return $solicitudes_pendientes;
+		}
+        
+		function cancelar_gestion_m_p_c($id){
+
+			//Conectar a la base de datos
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$query = "UPDATE ADM_GESTIONES_CORRECTIVAS SET ESTADO = 3,STATUS = 3 WHERE GESTIONID = $id";
+
+			$stid = oci_parse($conn, $query);
+
+			oci_execute($stid);
+
+			$usuario = $this->detalles_solicitud($id);
+			$text = "La gestión No. de mantenimiento correctivo/preventivo ".$id." se encuentra RECHAZADA<br>
+<br>";
 
 			/* Enviar correo */
 			$mail = new Mail();

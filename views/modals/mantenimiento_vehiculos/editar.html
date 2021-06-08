@@ -18,13 +18,19 @@
 					</div>
 					<div class="col-md-2">
 						<div class="form-group">
-							<label>Kilometraje Actual</label>
+							<label>KM Actual</label>
 							<input type="text" class="form-control" ng-model="edit_mantenimiento.KILOMETRAJE_ACTUAL" ng-value="" readonly></input>
 						</div>
 					</div>
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<div class="form-group">
-							<label>Tipo de Mantenimiento</label>
+							<label>KM Servicio</label>
+							<input type="text" class="form-control" ng-model="edit_mantenimiento.KILOMETRAJE_MANTENIMIENTO" ng-value="" readonly></input>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label>Tipo</label>
 							<span class="label label-success" ng-if="edit_mantenimiento.TIPO_MANTENIMIENTO_ID == 1">
 								SERVICIO MENOR
 							</span>
@@ -42,7 +48,7 @@
 							</span>
 						</div>
 					</div>
-					<div class="col-md-5">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label>Responsable</label>
 							<input type="text" class="form-control" ng-model="edit_mantenimiento.RESPONSABLE_1" readonly>

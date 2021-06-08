@@ -2,7 +2,6 @@
 	<div class="row">
 		<h3 class="text-center">Detalles del Vehículo</h3>
 	</div>
-
 	<div class="row">
 		<input type="hidden" name="id_vehiculo" id="id_vehiculo">
 		<div class="col-md-2">
@@ -49,14 +48,20 @@
 	  	</div>
 	  	<div class="col-md-2">
 			<div class="form-group">
-				<label for="exampleInputEmail1">Kilometraje Actual</label>
+				<label for="exampleInputEmail1">Kilometraje segun vales</label>
 				<input type="text" class="form-control" ng-model="vehiculo.KM_ACTUAL" readonly>
 		  	</div>
 	  	</div>
 	  	<div class="col-md-2">
 			<div class="form-group">
-				<label for="exampleInputEmail1">Kilometraje Servicio</label>
+				<label for="exampleInputEmail1">Kilometraje ultimo servicio</label>
 				<input type="text" class="form-control" ng-model="vehiculo.KM_SERVICIO" readonly>
+		  	</div>
+	  	</div>
+	  	<div class="col-md-2">
+			<div class="form-group">
+				<label for="exampleInputEmail1">Kilometraje prox. servicio</label>
+				<input type="text" class="form-control" ng-model="vehiculo.KM_RECORDATORIO" readonly>
 		  	</div>
 	  	</div>
 	  	<div class="col-md-2">
@@ -80,14 +85,22 @@
 	<div class="row">
 		<!-- Conjunto de Tabs -->
 		<ul class="nav nav-tabs " id="myTabs">
-  			<li role="presentation" class="active"><a data-target="#t2" data-toggle="tab"">Vales de combustible</a></li>
+
+			<li ng-repeat="tab in tabs" ng-class="{ 'active': $index == 0 }" role="presentation">
+				<a data-target="#{{ tab.URL }}" data-toggle="tab">
+					{{ tab.NOMBRE }}
+				</a>
+			</li>
+
+  			<!-- <li role="presentation" class="active"><a data-target="#t2" data-toggle="tab"">Vales de combustible</a></li>
   			<li role="presentation"><a data-target="#t7" data-toggle="tab"">Cuotas de Combustible</a></li>
   			<li role="presentation"><a data-target="#t1" data-toggle="tab">Mantenimientos</a></li>
   			<li role="presentation"><a data-target="#t6" data-toggle="tab">Accesorios</a></li>
   			<li role="presentation"><a data-target="#t4" data-toggle="tab">Historial de Entradas y Salidas</a></li>
   			<li role="presentation"><a data-target="#t8" data-toggle="tab">Documentos</a></li>
   			<li role="presentation"><a data-target="#t5" data-toggle="tab">Bitácora</a></li>
-  	  	  	<li role="presentation"><a data-target="#t3" data-toggle="tab">Reportes</a></li>
+  	  	  	<li role="presentation"><a data-target="#t3" data-toggle="tab">Reportes</a></li> -->
+
 		</ul>
 
 		<div class="tab-content">
@@ -118,19 +131,23 @@
 							<thead>
 								<tr>
 									<th class="col-md-2">Nombre&nbsp;<a ng-click="sort_with_documentos('NOMBRE')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
-									<th class="col-md-4">Descripción&nbsp;<a ng-click="sort_with_documentos('DESCRIPCION')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
-									<th class="col-md-3">Archivo</th>
-									<th class="col-md-2">Acción</th>
+									<th class="col-md-2">Descripción&nbsp;<a ng-click="sort_with_documentos('DESCRIPCION')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-2">Tipo servicio&nbsp;<a ng-click="sort_with_documentos('TIPO_SERVICIO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-2">Fecha&nbsp;<a ng-click="sort_with_documentos('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">Archivo</th>
+									<th class="col-md-3">Acción</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr ng-repeat="documento in searched_documentos = (documentos | filter:search_documento | orderBy : base_documentos :reverse_documentos) | beginning_data:(current_grid_documentos - 1) * data_limit_documentos | limitTo:data_limit_documentos">
 									<td>{{ documento.NOMBRE }}</td>
 									<td>{{ documento.DESCRIPCION }}</td>
+                                    <td>{{ documento.TIPO_SERVICIO }}</td>
+                                    <td>{{ documento.FECHA }}</td>
 									<td ng-if=" documento.TIPO_ARCHIVO == 'image/jpeg' || documento.TIPO_ARCHIVO == 'image/png' || documento.TIPO_ARCHIVO == 'image/jpg' ">
 										<img style="width: 20%" ng-src="{{ documento.ARCHIVO }}" class="img-responsive">
 									</td>
-									<td ng-if=" documento.TIPO_ARCHIVO != 'image/jpeg'">
+									<td ng-if=" documento.TIPO_ARCHIVO != 'image/jpeg' && documento.TIPO_ARCHIVO == 'image/png' && documento.TIPO_ARCHIVO == 'image/jpg'">
 										<img style="width: 15%" src="public/img/document.png" class="img-responsive">
 									</td>
 									<td>
@@ -266,7 +283,7 @@
 					</div>
 				</div>
 			</div>
-
+           
 			<!-- Tab para mostrar la bitacora -->
 			<div class="tab-pane fade" id="t5">
 				<br>
@@ -288,6 +305,7 @@
 									<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with_e_eventos('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
 									<th class="col-md-2">Hora&nbsp;<a ng-click="sort_with_e_eventos('HORA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
 									<th class="col-md-10">Evento&nbsp;<a ng-click="sort_with_e_eventos('EVENTO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Placa&nbsp;<a ng-click="sort_with_e_eventos('PLACA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -295,6 +313,7 @@
 									<td>{{evento.FECHA}}</td>
 									<td>{{evento.HORA}}</td>
 									<td>{{evento.EVENTO}}</td>
+                                    <td>{{evento.PLACAS}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -311,7 +330,143 @@
 					</div>
 				</div>
 			</div>
+            <!-- Tab de repuestos -->
+<div class="tab-pane fade" id="t9">
+				<br>
+				<div class="row">
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_b_repuestos" ng-change="filter_b_repuestos()" class="form-control" type="text" name="" placeholder="Buscar en Gestiones de Repuestos">
+							<span class="input-group-addon"><i class="fa fa-search"></i></span>
+						</div>
+					</div>
+				</div>
 
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_b_repuestos > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with_e_repuestos('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">No. Gesti&oacute;n&nbsp;<a ng-click="sort_with_e_repuestos('GESTIONID')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-10">Gesti&oacute;n&nbsp;<a ng-click="sort_with_e_repuestos('TITULO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Usuario asignado&nbsp;<a ng-click="sort_with_e_repuestos('USUARIO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Fecha asignaci&oacute;n&nbsp;<a ng-click="sort_with_e_repuestos('FECHA_INICIO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Fecha finalizaci&oacute;n&nbsp;<a ng-click="sort_with_e_repuestos('FECHA_FIN')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a>
+                                    </th>
+                                    <th class="colmd-10">
+                                        Acci&oacute;n
+                                    </th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="repuesto in searched_b_repuestos = (b_repuestos | filter:search_b_repuestos | orderBy : base_b_repuestos :reverse_b_repuestos) | beginning_data:(current_grid_b_repuestos - 1) * data_limit_b_eventos | limitTo:data_limit_b_eventos">
+									<td>{{repuesto.FECHA}}</td>
+									<td>{{repuesto.GESTIONID}}</td>
+									<td>{{repuesto.TITULO}}</td>
+                                    <td>{{repuesto.USUARIO}}</td>
+                                    <td>{{repuesto.FECHA_INICIO}}</td>
+                                    <td>{{repuesto.FECHA_FIN}}</td>
+                                    <td>
+                                        <button class="btn btn-default btn-sm" ng-click="modalDetalleRepuesto(repuesto.GESTIONID)" title="Detalles" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+										<i class="glyphicon glyphicon-eye-open"></i>
+									</button>
+                                    </td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Se muestra el mensaje si no se encuentran registros -->
+				<div class="col-md-12" ng-show="filter_data_b_repuestos == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4><br><br><br>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_b_repuestos > 0">
+					<div pagination="" page="current_grid_b_repuestos" on-select-page="page_position_b_repuestos(page)" boundary-links="true" total-items="filter_data_b_repuestos" items-per-page="data_limit_b_repuestos" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_b_repuestos" max-size="max_size_b_repuestos" num-pages="numPages">
+					</div>
+				</div>
+			</div>
+            <!-- fin Tab de respuestos -->
+
+    <!-- tab de gestiones correctivas -->
+            
+<div class="tab-pane fade" id="t10">
+				<br>
+				<div class="row">
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input ng-model="search_b_correctivas" ng-change="filter_b_correctivas()" class="form-control" type="text" name="" placeholder="Buscar Gestiones correctivas">
+							<span class="input-group-addon"><i class="fa fa-search"></i></span>
+						</div>
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data_b_correctivas > 0">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr>
+									<th class="col-md-1">Fecha&nbsp;<a ng-click="sort_with_e_correctivas('FECHA')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-2">No. Gesti&oacute;n&nbsp;<a ng-click="sort_with_e_correctivas('GESTIONID')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+									<th class="col-md-10">Gesti&oacute;n&nbsp;<a ng-click="sort_with_e_correctivas('MOTIVO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Usuario&nbsp;<a ng-click="sort_with_e_correctivas('USUARIO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Piloto&nbsp;<a ng-click="sort_with_e_correctivas('PILOTO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+                                    <th class="col-md-10">Estado&nbsp;<a ng-click="sort_with_e_correctivas('ESTADO')" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a>
+                                    </th>
+                                    <th class="colmd-10">
+                                        Acci&oacute;n
+                                    </th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="correctiva in searched_b_correctivas = (b_correctivas | filter:search_b_correctivas | orderBy : base_b_correctivas :reverse_b_correctivas) | beginning_data:(current_grid_b_correctivas - 1) * data_limit_b_eventos | limitTo:data_limit_b_eventos">
+									<td>{{correctiva.FECHA}}</td>
+									<td>{{correctiva.GESTIONID}}</td>
+									<td>{{correctiva.MOTIVO}}</td>
+                                    <td>{{correctiva.USUARIO}}</td>
+                                    <td>{{correctiva.PILOTO}}</td>
+                                    <td ng-if="correctiva.ESTADO == 'INGRESADA'">
+										<span class="label label-primary">INGRESADA</span>
+									</td>
+									<td ng-if="correctiva.ESTADO == 'EN PROCESO'">
+										<span class="label label-warning">EN PROCESO</span>
+									</td>
+									<td ng-if="correctiva.ESTADO == 'FINALIZADA'">
+										<span class="label label-success">FINALIZADA</span>
+									</td>
+                                    <td ng-if="correctiva.ESTADO == 'RECHAZADA'">
+										<span class="label label-danger">RECHAZADA</span>
+									</td>
+                                    <td>
+                                        <button class="btn btn-default btn-sm" ng-click="modalDetalleCorrectiva(correctiva.GESTIONID)" title="Detalles" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+										<i class="glyphicon glyphicon-eye-open"></i>
+									</button>
+                                    </td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<!-- Se muestra el mensaje si no se encuentran registros -->
+				<div class="col-md-12" ng-show="filter_data_b_correctivas == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4><br><br><br>
+				</div>
+
+				<div class="col-md-12" ng-show="filter_data_b_c > 0">
+					<div pagination="" page="current_grid_b_correctivas" on-select-page="page_position_b_correctivas(page)" boundary-links="true" total-items="filter_data_b_correctivas" items-per-page="data_limit_b_correctivas" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid_b_correctivas" max-size="max_size_b_correctivas" num-pages="numPages">
+					</div>
+				</div>
+			</div>
+            
+    <!-- fin tab gestiones correctivas-->
+    
+    
+    
 			<!-- Contenido del tab de Mantenimientos -->
 			<div class="tab-pane fade" id="t1">
 
@@ -406,6 +561,14 @@
 											<i class="glyphicon glyphicon-print"></i>
 										</button>
 
+                                        <!-- Subir documento relacionarlo al mantenimiento-->
+                                        
+                                        <button class="btn btn-sm btn-success"  data-toggle="modal" 
+                                                ng-click="nuevoDocumento(mantenimiento.MANTENIMIENTOID)" 
+                                                title="Asociar Documento"  data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+											<i class="glyphicon glyphicon-glyphicon glyphicon-paperclip"></i>
+										</button>
+                                        <!-- -->
 									</td>
 								</tr>
 							</tbody>
@@ -483,7 +646,7 @@
 			</div>
 
 			<!-- Contenido del tab de vales de combustible -->
-			<div class="tab-pane fade in active" id="t2">
+			<div class="tab-pane fade" id="t2">
 				<br>
 				<div class="row" >
 				  	<!-- <div class="col-md-2">
@@ -1382,7 +1545,7 @@
 									<label>Fecha de Despacho</label>
 									<input ng-model="edit_vale.FECHA_DESPACHO" type="text" class="form-control" >
 				  				</div>
-				  				
+
 			      			</div>
 		      			</div>
 
@@ -2009,6 +2172,32 @@
 							<div class="col-md-6">
 								<div class="col-md-12">
 									<div class="form-group">
+										<label>Fecha</label>
+                                        
+										<input type="text" class="form-control calendar" ng-model="documento.FECHA" id="fecha" required>
+									</div>
+								</div>
+                                
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Tipo servicio</label>
+                                        <select class="form-control" ng-model="documento.TIPO_SERVICIO">
+                                            <option value="CORRECTIVO">CORRECTIVO</option>
+                                            <option value="PREVENTIVO">PREVENTIVO</option>
+                                            <option value="REPUESTOS">REPUESTOS</option>
+                                            <option value="LIBRE">LIBRE</option>
+                                        </select>
+                                        <input type="hidden" ng-model="documento.MANTENIMIENTOID" id="mantenimientoid" >
+									</div>
+								</div>
+                                <div class="col-md-12">
+									<div class="form-group">
+										<label>Placas</label>
+										<input type="text" class="form-control" value="" ng-model="documento.PLACAS" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
 										<label>Nombre</label>
 										<input type="text" class="form-control" ng-model="documento.NOMBRE" required>
 									</div>
@@ -2016,7 +2205,7 @@
 								<div class="col-md-12">
 									<div class="form-group">
 										<label>Descripción</label>
-										<textarea class="form-control" rows="6" required="required" ng-model="documento.DESCRIPCION"></textarea required>
+										<textarea class="form-control" rows="6" required="required" ng-model="documento.DESCRIPCION"></textarea>
 									</div>
 								</div>
 								<div class="col-md-12">
@@ -2054,6 +2243,29 @@
 					<div class="modal-body">
 						<div class="row">
 							<div class="col-md-6">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Fecha</label>
+										<input type="text" class="form-control" ng-model="editar_documento.FECHA" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Tipo servicio</label>
+                                        <select class="form-control" ng-model="editar_documento.TIPO_SERVICIO">
+                                            <option value="CORRECTIVO">CORRECTIVO</option>
+                                            <option value="PREVENTIVO">PREVENTIVO</option>
+                                            <option value="PREVENTIVO">REPUESTOS</option>
+                                            <option value="PREVENTIVO">LIBRE</option>
+                                        </select>
+									</div>
+								</div>
+                                <div class="col-md-12">
+									<div class="form-group">
+										<label>Placas</label>
+										<input type="text" class="form-control" ng-model="editar_documento.PLACAS" required>
+									</div>
+								</div>
 								<div class="col-md-12">
 									<div class="form-group">
 										<label>Nombre</label>
@@ -2206,6 +2418,27 @@
 							<div class="col-md-6">
 								<div class="col-md-12">
 									<div class="form-group">
+										<label>Fecha</label>
+										<input type="text" class="form-control" ng-model="editar_documento.FECHA" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Tipo servicio</label>
+                                        <select class="form-control">
+                                            <option value="CORRECTIVO">CORRECTIVO</option>
+                                            <option value="PREVENTIVO">PREVENTIVO</option>
+                                        </select>
+									</div>
+								</div>
+                                <div class="col-md-12">
+									<div class="form-group">
+										<label>Placas</label>
+										<input type="text" class="form-control" ng-model="editar_documento.PLACAS" required>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
 										<label>Nombre</label>
 										<input type="text" class="form-control" ng-model="documento_vale.NOMBRE" required>
 									</div>
@@ -2236,6 +2469,107 @@
 			</div>
 		</div>
 	</div>
+    <!-- Modal para detalle de la gestion solicitada tipo repuestos-->
+    <div class="modal fade" id="modalDetalleRepuesto">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Detalles de Gesti&oacute;n de Repuestos  <i class="glyphicon glyphicon-wrench">&nbsp;</i></h4>
+				</div>
+                <div class="modal-body">
+                    <div class="row">
+							<div class="col-md-10">
+						  		<div class="form-group">
+								    <label style="color: #1210ED">No. de Gesti&oacute;n</label>: <b>
+                                    <any ng-bind="detalle_repuesto.TITULO"></any>
+                                    </b>
+							  	</div>
+						  		<div class="form-group">
+								    <label style="color: #1210ED">Solicitud</label><br><b>
+                                    <div ng-bind-html="detalle_repuesto.DETALLE" ></div>
+                                    </b>
+							  	</div>
+						  		<div class="form-group">
+								    <label style="color: #1210ED">Solicitante</label>:<b>
+                                    <any ng-bind="detalle_repuesto.COLABORADOR"></any>
+                                    </b>
+							  	</div>
+                                <div class="form-group">
+								    <label style="color: #1210ED">Coordinaci&oacute;n, Secci&oacute;n, Unidad</label>:<b>
+                                    <any ng-bind="detalle_repuesto.AREA"></any>
+                                    </b>
+							  	</div>
+                                <div class="form-group">
+								    <label style="color: #1210ED">Estado de la gesti&oacute;n</label>:<b><span ng-style="{'color':detalle_repuesto.COLOR}">
+                                    <any ng-bind="detalle_repuesto.ESTADO"></any>
+                                    </span>
+                                    </b>
+							  	</div>
+						 	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal para detalle de la gestion solicitada tipo repuestos-->
+    <!-- Modal detalle de la gestión correctiva -->
+    <div class="modal fade" id="modalDetalleCorrectiva">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Detalles de Gesti&oacute;n Correctiva  <i class="glyphicon glyphicon-wrench">&nbsp;</i></h4>
+				</div>
+                <div class="modal-body">
+                    <div class="row">
+							<div class="col-md-10">
+						  		<div class="form-group">
+								    <label style="color: #1210ED">No. de Gesti&oacute;n</label>: <b>
+                                    <any ng-bind="detalle_correctiva.GESTIONID"></any> <font color="#789fe0">Fecha de Ingreso {{detalle_correctiva.FECHA}}</font>
+                                    </b>
+							  	</div>
+						  		<div class="form-group">
+								    <label style="color: #1210ED">Motivo</label><br><b>
+                                    <div ng-bind-html="detalle_correctiva.MOTIVO" ></div>
+                                    </b>
+							  	</div>
+						  		<div class="form-group">
+								    <label style="color: #1210ED">Solicitante</label>:<b>
+                                    <any ng-bind="detalle_correctiva.USUARIO"></any>
+                                    </b>
+							  	</div>
+                                <div class="form-group">
+								    <label style="color: #1210ED">Reportado por</label>:<b>
+                                    <any ng-bind="detalle_correctiva.PILOTO"></any>
+                                    </b>
+							  	</div>
+                                <div class="form-group">
+								    <label style="color: #1210ED">Estado de la gesti&oacute;n</label>:<b><span ng-style="{'color':detalle_correctiva.COLOR}">
+                                    <any ng-bind="detalle_correctiva.ESTADO"></any>
+                                    </span>
+                                    </b>
+							  	</div>
+                                 <div class="form-group">
+								    <label style="color: #1210ED">Cambiar a estado</label>:<b>
+                                     <select name="estado_gestion" id="estado_gestion" ng-model="estado_gestion">
+                                         <option value="1">EN PROCESO</option>
+                                         <option value="2">FINALIZADA</option>
+                                         <option value="3">RECHAZADA</option>
+                                     </select>
+                                    </b>
+							  	</div>
+                                <div class="form-group">
+                                    <button  name="grabar_estado" class="btn btn-success" ng-click="actualizarCorrectiva(detalle_correctiva.GESTIONID)">
+                                    Actualizar estado <i class="glyphicon glyphicon-ok">&nbsp;</i></button>
+                                </div>
+						 	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal detalle de la gestión correctiva -->
 
 	<!-- Modal para detalles de Historial Entrada / Salida -->
 	<div class="modal fade" id="modalDetalleBitacoraVehiculo">

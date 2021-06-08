@@ -31,7 +31,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 	}
 
 	$scope.filter = function(){
-		
+
 		$timeout(function(){
 			$scope.filter_data = $scope.searched.length
 		}, 20)
@@ -47,7 +47,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 		$http({
 
 			method: 'GET',
-			url: 'routes/vehiculos/obtener.php'
+			url: 'routes/vehiculos/obtener_vehiculos_cuotas.php'
 
 		}).then(function successCallback(response){
 
@@ -83,7 +83,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 
 		   i++
 
-		});	
+		});
 
 
 		$http({
@@ -142,7 +142,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 			$('#modalEditarCuota').modal('show')
 
 			$scope.edit_cuota = response.data
-	
+
 		})
 	}
 
@@ -165,7 +165,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 
 				});
 
-			/* Se actualiza la tabla de Cuotas */	
+			/* Se actualiza la tabla de Cuotas */
 			$scope.cuotas = response.data[0]
 
 		})
@@ -198,7 +198,7 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 					/* Actualizar tabla de cuotas */
 
 					$scope.cuotas = response.data[0]
-					$scope.filter_data = $scope.cuotas.length				
+					$scope.filter_data = $scope.cuotas.length
 
 					swal("La cuota ha sido eliminada éxito!", {
 			      		icon: "success",
@@ -206,8 +206,8 @@ app.controller('cuotasCombustibleController', ['$scope', '$http', '$routeParams'
 
 				})
 
-		  	} 
-		});	
+		  	}
+		});
 	}
 
 }])

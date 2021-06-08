@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/db/oracle.php';
 
@@ -16,8 +16,9 @@
 
 			$administradores = $this->obtener_administradores();
 			$roles = $this->obtener_roles();
+			$accesos = $this->obtenerAccesos();
 
-			return array($administradores, $roles);
+			return array($administradores, $roles, $accesos);
 		}
 
 		function obtener_administradores(){
@@ -37,7 +38,7 @@
 			$administradores = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-				
+
 				$data["NOMBRE"] = strtr( $data["NOMBRE"], $unwanted_array );
 
 				$administradores[] = $data;
@@ -57,7 +58,7 @@
 			$roles = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-				
+
 				$roles [] = $data;
 
 			}
@@ -75,7 +76,7 @@
 			$vehiculos = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-				
+
 				$vehiculos [] = $data;
 
 			}
@@ -112,7 +113,7 @@
 			$administrador = $request["ADMINISTRADOR"];
 
 			if ($firma_registrada == '1') {
-				
+
 				$query = "UPDATE ADM_ROLES SET FIRMA_REGISTRADA = 1 WHERE ROLID = $rol_id AND EMPLEADONIT = '$empleado_nit'";
 
 				$stid = oci_parse($this->conn, $query);
@@ -195,10 +196,10 @@
 			$roles = $request["ROLES"];
 
 			foreach ($roles as $rol) {
-				
+
 
 				if ($rol == 'FIRMA_REGISTRADA') {
-					
+
 					$query = "UPDATE ADM_ROLES SET FIRMA_REGISTRADA = 1 WHERE EMPLEADONIT = '$nit'";
 					$stid = oci_parse($this->conn, $query);
 					oci_execute($stid);
@@ -214,7 +215,7 @@
 					$query = "UPDATE ADM_ROLES SET SOLICITAR_VALE = 1 WHERE EMPLEADONIT = '$nit'";
 					$stid = oci_parse($this->conn, $query);
 					oci_execute($stid);
-					
+
 				}else if($rol == 'ADMINISTRADOR'){
 
 					$query = "UPDATE ADM_ROLES SET ADMINISTRADOR = 1 WHERE EMPLEADONIT = '$nit'";
@@ -222,7 +223,7 @@
 					oci_execute($stid);
 
 					$administradores = $this->obtener_administradores();
-					
+
 				}
 
 			}
@@ -242,7 +243,7 @@
 			$administradores = $this->obtener_administradores();
 
 			return array($roles, $administradores);
-			
+
 		}
 
 		function eliminar_vehiculo($id, $nit){
@@ -266,8 +267,8 @@
 			$vehiculos = array();
 
 			while ($data = oci_fetch_array($stid,OCI_ASSOC)) {
-				
-				$vehiculos [] = $data;				
+
+				$vehiculos [] = $data;
 
 			}
 
@@ -280,7 +281,7 @@
 			$vehiculos = $request["VEHICULOS"];
 
 			foreach ($vehiculos as $vehiculo) {
-			
+
 				$query = "INSERT INTO ADM_ADMINISTRADOR_VEHICULO (ADMINISTRADOR, VEHICULOID) VALUES ('$responsable', $vehiculo)";
 				$stid = oci_parse($this->conn, $query);
 				oci_execute($stid);
@@ -291,6 +292,218 @@
 
 
 			return $vehiculos;
+		}
+
+		function buscar_responsable($busqueda){
+
+			$query = "	SELECT *
+						FROM RH_EMPLEADOS
+						WHERE UPPER(CONCAT(CONCAT(NIT, ' '), CONCAT(CONCAT(NOMBRE, ' '), APELLIDO))) LIKE UPPER('%$busqueda%')";
+
+			$stid = oci_parse($this->conn, $query);
+			oci_execute($stid);
+
+			$empleados = array();
+
+			while ($data = oci_fetch_array($stid, OCI_ASSOC)) {
+
+				$empleados [] = $data;
+
+			}
+
+			return $empleados;
+
+		}
+
+		function accesosPersona($request){
+
+			$tipo = $request["TIPO"];
+			$responsable = $request["RESPONSABLE"][0];
+
+			$query = "	SELECT *
+						FROM ADM_MENU_VALES
+						WHERE TIPO = $tipo
+						AND ID NOT IN (
+							SELECT ID_ACCESO
+							FROM ADM_ACCESOS_VALES
+							WHERE USUARIO = '$responsable')
+						ORDER BY ID ASC";
+
+			$stid = oci_parse($this->conn, $query);
+			oci_execute($stid);
+
+			$accesos = array();
+
+			while ($data = oci_fetch_array($stid, OCI_ASSOC)) {
+
+				$accesos [] = $data;
+
+			}
+
+			return $accesos;
+
+		}
+
+		function registrarAccesos($request){
+
+			$responsable = $request["RESPONSABLE"][0];
+			$accesos = $request["ACCESOS"];
+
+			foreach ($accesos as $acceso) {
+
+				$query = "INSERT INTO ADM_ACCESOS_VALES (USUARIO, ID_ACCESO) VALUES ('$responsable', $acceso)";
+
+				$stid = oci_parse($this->conn, $query);
+				oci_execute($stid);
+
+			}
+
+			$personas_acceso = $this->obtenerAccesos();
+
+			return $personas_acceso;
+
+		}
+
+		function obtenerAccesos(){
+
+			$query = "	SELECT DISTINCT(T1.USUARIO) AS NIT, CONCAT(T2.NOMBRE, CONCAT(' ', T2.APELLIDO )) AS NOMBRE
+						FROM ADM_ACCESOS_VALES T1
+						INNER JOIN RH_EMPLEADOS T2
+						ON T1.USUARIO = T2.NIT";
+
+			$stid = oci_parse($this->conn, $query);
+			oci_execute($stid);
+
+			$personas = array();
+
+			while ($data = oci_fetch_array($stid, OCI_ASSOC)) {
+
+				$nit = $data["NIT"];
+
+				// Buscar accesos de menu principal
+				$query = "	SELECT UPPER(T2.NOMBRE) AS ACCESO
+							FROM ADM_ACCESOS_VALES T1
+							INNER JOIN ADM_MENU_VALES T2
+							ON T1.ID_ACCESO = T2.ID
+							WHERE T1.USUARIO = '$nit' AND T2.TIPO = 1";
+
+				$stid_ = oci_parse($this->conn, $query);
+				oci_execute($stid_);
+
+				$accesos1 = array();
+
+				while ($data_ = oci_fetch_array($stid_, OCI_ASSOC)) {
+
+					$accesos1 [] = $data_;
+
+				}
+
+				// Buscar accesos de detalle de vehiculo
+				$query = "	SELECT UPPER(T2.NOMBRE) AS ACCESO
+							FROM ADM_ACCESOS_VALES T1
+							INNER JOIN ADM_MENU_VALES T2
+							ON T1.ID_ACCESO = T2.ID
+							WHERE T1.USUARIO = '$nit' AND T2.TIPO = 2";
+
+				$stid_ = oci_parse($this->conn, $query);
+				oci_execute($stid_);
+
+				$accesos2 = array();
+
+				while ($data_ = oci_fetch_array($stid_, OCI_ASSOC)) {
+
+					$accesos2 [] = $data_;
+
+				}
+
+				$data["MENU_PRINCIPAL"] = $accesos1;
+				$data["DETALLE"] = $accesos2;
+
+				$personas [] = $data;
+
+			}
+
+			return $personas;
+
+		}
+
+		function accesosReponsable($nit){
+
+			$data = array();
+
+			// Buscar accesos de menu principal
+			$query = "	SELECT UPPER(T2.NOMBRE) AS ACCESO, T1.USUARIO, T1.ID_ACCESO
+						FROM ADM_ACCESOS_VALES T1
+						INNER JOIN ADM_MENU_VALES T2
+						ON T1.ID_ACCESO = T2.ID
+						WHERE T1.USUARIO = '$nit' AND T2.TIPO = 1";
+
+			$stid_ = oci_parse($this->conn, $query);
+			oci_execute($stid_);
+
+			$accesos1 = array();
+
+			while ($data_ = oci_fetch_array($stid_, OCI_ASSOC)) {
+
+				$accesos1 [] = $data_;
+
+			}
+
+			// Buscar accesos de detalle de vehiculo
+			$query = "	SELECT UPPER(T2.NOMBRE) AS ACCESO, T1.USUARIO, T1.ID_ACCESO
+						FROM ADM_ACCESOS_VALES T1
+						INNER JOIN ADM_MENU_VALES T2
+						ON T1.ID_ACCESO = T2.ID
+						WHERE T1.USUARIO = '$nit' AND T2.TIPO = 2";
+
+			$stid_ = oci_parse($this->conn, $query);
+			oci_execute($stid_);
+
+			$accesos2 = array();
+
+			while ($data_ = oci_fetch_array($stid_, OCI_ASSOC)) {
+
+				$accesos2 [] = $data_;
+
+			}
+
+			$data["MENU_PRINCIPAL"] = $accesos1;
+			$data["DETALLE"] = $accesos2;
+
+			return $data;
+
+		}
+
+		function eliminarAcceso($request){
+
+			$usuario = $request["USUARIO"];
+			$id_acceso = $request["ID_ACCESO"];
+
+			$query = "DELETE FROM ADM_ACCESOS_VALES WHERE USUARIO = '$usuario' AND ID_ACCESO = $id_acceso";
+
+			$stid = oci_parse($this->conn, $query);
+			oci_execute($stid);
+
+			$accesos = $this->accesosReponsable($usuario);
+
+			$persona_acceso = $this->obtenerAccesos();
+
+			return array($accesos, $persona_acceso);
+
+		}
+
+		function eliminarAccesoPersona($request){
+
+			$nit = $request["nit"];
+
+			$query = "DELETE FROM ADM_ACCESOS_VALES WHERE USUARIO = '$nit'";
+			$stid = oci_parse($this->conn, $query);
+			oci_execute($stid);
+
+			$personas_acceso = $this->obtenerAccesos();
+
+			return $personas_acceso;
+
 		}
 
 	}

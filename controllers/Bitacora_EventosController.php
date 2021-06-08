@@ -14,7 +14,7 @@
 
 			$hora = date('h:i:s A');
 			$fecha = date('d/m/Y');
-
+            
 			$query = "INSERT INTO ADM_BITACORA_VEHICULOS(FECHA, HORA, EVENTO, INVENTARIOID) VALUES ('$fecha', '$hora', '$evento', $inventarioid)";
 
 			$stid = oci_parse($conn, $query);
@@ -30,7 +30,7 @@
 			$dbc = new Oracle();
 			$conn = $dbc->connect();
 
-			$query = "SELECT * FROM ADM_BITACORA_VEHICULOS WHERE INVENTARIOID = $id ORDER BY BITACORAID DESC";
+			$query = "SELECT V.BITACORAID, V.FECHA, V.HORA, V.EVENTO, V.INVENTARIOID, (SELECT PLACA FROM ADM_FICHA_VEHICULOS WHERE INVENTARIOID = V.INVENTARIOID) AS PLACAS FROM ADM_BITACORA_VEHICULOS V WHERE INVENTARIOID = $id ORDER BY BITACORAID DESC";
 
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
@@ -59,12 +59,12 @@
 
 			$query = "SELECT RH_EMPLEADOS.*, ADM_ROLES.* FROM RH_EMPLEADOS
 			INNER JOIN ADM_ROLES ON RH_EMPLEADOS.NIT = ADM_ROLES.EMPLEADONIT WHERE RH_EMPLEADOS.NIT = '$nit'";
-
+//echo $query;
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
 
 			$usuario = oci_fetch_object($stid);
-
+//print_r($usuario);
 			return $usuario;
 		}
 	}

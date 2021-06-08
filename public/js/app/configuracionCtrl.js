@@ -16,6 +16,8 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 
 	}).then(function successCallback(response){
 
+		console.log(response.data)
+
 		$scope.administradores = response.data[0]
 
 		$scope.roles = response.data[1]
@@ -24,6 +26,8 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 		$scope.data_limit = 5
 		$scope.maxSize = 5
 		$scope.bigCurrentPage = 1
+
+		$scope.personas_acceso = response.data[2]
 
 	})
 
@@ -98,7 +102,7 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 		}else if(data == 'ADMINISTRADOR'){
 
 			$scope.roles_responsable.ADMINISTRADOR = 1
-			
+
 		}
 	}
 
@@ -121,7 +125,7 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 		}else if(rol == 'ADMINISTRADOR'){
 
 			$scope.roles_responsable.ADMINISTRADOR = null
-			
+
 		}
 	}
 
@@ -223,9 +227,213 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 					$scope.administradores = response.data[1]
 
 				})
-		  	} 
+		  	}
 
-		});	
+		});
+	}
+
+	$scope.registrar_acceso = function(){
+
+		console.log($scope.acceso)
+
+		$http({
+
+			method: 'POST',
+			url: 'routes/configuracion/registrar_acceso.php',
+			data: $scope.acceso
+
+		}).then(function successCallback(response){
+
+			$('#modalMed').modal('hide')
+
+			swal("Excelente!", "Se han asignado los accesos con éxito!", "success");
+
+			$scope.personas_acceso = response.data
+
+		})
+
+	}
+
+	$scope.accesosPersona = function(){
+
+		console.log($scope.acceso)
+
+		if ($scope.acceso.TIPO) {
+
+			$http({
+
+				method: 'POST',
+				url: 'routes/configuracion/accesos_persona.php',
+				data: $scope.acceso
+
+			}).then(function successCallback(response){
+
+				$scope.accesos = response.data
+
+				console.log(response.data)
+
+			})
+
+		}else{
+
+			$scope.accesos = null
+
+		}
+
+	}
+
+	$scope.modal_nuevo_acceso = function(){
+
+		$scope.acceso = {}
+		$scope.acceso.BUSQUEDA = ''
+		$scope.acceso.RESPONSABLE = ''
+		$scope.acceso.TIPO = ''
+		$scope.acceso.ACCESOS = {}
+
+		$scope.accesos = null
+		$scope.responsables = null
+
+		$scope.checkbox_acceso
+
+		$scope.modalMed_template_url = "views/modals/configuracion/agregar_acceso.html"
+
+		$('#modalMed').modal('show')
+
+	}
+
+	$scope.buscar_responsable_acceso = function(){
+
+		if ($scope.acceso.BUSQUEDA) {
+
+			console.log($scope.acceso)
+
+			$http({
+
+				method: 'GET',
+				url: 'routes/configuracion/buscar_responsable.php',
+				params: { busqueda: $scope.acceso.BUSQUEDA }
+
+			}).then(function successCallback(response){
+
+				console.log(response.data)
+
+				$scope.responsables = response.data
+
+			})
+
+		}else[
+
+			$scope.responsables = {}
+
+		]
+
+	}
+
+	$scope.responsableSeleccionado = function(){
+
+		$scope.acceso.TIPO = ''
+		$scope.accesos = null
+	}
+
+	$scope.mostrar_editar_accesos = function(nit){
+
+		$http({
+
+			method: 'GET',
+			url: 'routes/configuracion/permisos_responsable.php',
+			params: { nit: nit }
+
+		}).then(function successCallback(response){
+
+			$scope.accesos_menu = response.data.MENU_PRINCIPAL
+			$scope.accesos_detalle = response.data.DETALLE
+
+			$scope.modalMed_template_url = "views/modals/configuracion/editar_accesos.html"
+
+			$('#modalMed').modal('show')
+
+		})
+
+	}
+
+	$scope.eliminarAcceso = function(acceso){
+
+		swal({
+			title: "¿Está seguro?",
+			text: "Una vez eliminado el registro no se podrá recuperar!",
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Eliminar',
+			cancelButtonText: 'Cancelar'
+		})
+		.then((result) => {
+
+			if (result.value) {
+
+				$http({
+
+					method: 'POST',
+					url: 'routes/configuracion/eliminar_acceso.php',
+					data: acceso
+
+				}).then(function successCallback(response){
+
+					$scope.accesos_menu = response.data[0].MENU_PRINCIPAL
+					$scope.accesos_detalle = response.data[0].DETALLE
+
+					$scope.personas_acceso = response.data[1]
+
+					swal("Excelente!", "Se ha eliminado el acceso con éxito!", "success");
+
+				})
+
+			}
+
+		});
+
+	}
+
+	$scope.eliminarAccesoPersona = function(nit){
+
+
+		swal({
+			title: "¿Está seguro?",
+			text: "Una vez eliminado el registro no se podrá recuperar!",
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Eliminar',
+			cancelButtonText: 'Cancelar'
+		})
+		.then((result) => {
+
+			if (result.value) {
+
+				data = {
+					"nit": nit
+				}
+
+				$http({
+
+					method: 'POST',
+					url: 'routes/configuracion/eliminar_persona_acceso.php',
+					data: data
+
+				}).then(function successCallback(response){
+
+					$scope.personas_acceso = response.data
+
+					swal("Excelente!", "Se ha eliminado el acceso con éxito!", "success");
+
+					console.log(response.data)
+
+				})
+
+			}
+		});
 	}
 
 	/* Administracion de Vehiculos */
@@ -284,13 +492,13 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 
 					});
 
-					
+
 
 				})
 
-		  	} 
+		  	}
 
-		});	
+		});
 	}
 
 	$scope.modal_agregar_vehiculo = function(){
@@ -373,7 +581,7 @@ app.controller('configuracionCtrl', ['$scope', '$http', '$routeParams', '$timeou
 	}
 
 	$scope.filter = function(){
-		
+
 		$timeout(function(){
 			$scope.filter_data = $scope.searched.length
 		}, 20)

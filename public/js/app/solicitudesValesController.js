@@ -22,7 +22,8 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 
 		$scope.solicitudes_pendientes = response.data[0]
 		$scope.solicitudes_mantenimiento_pendientes = response.data[1]
-		
+		$scope.solicitudes_repuestos_pendientes = response.data[2]
+        
 		$scope.current_grid = 1
 		$scope.data_limit = 5
 		$scope.filter_data = $scope.solicitudes_pendientes.length
@@ -30,6 +31,10 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 		$scope.current_grid_m = 1
 		$scope.data_limit_m = 5
 		$scope.filter_data_m = $scope.solicitudes_mantenimiento_pendientes.length
+        
+        $scope.current_grid_r = 1
+		$scope.data_limit_r = 5
+		$scope.filter_data_r = $scope.solicitudes_repuestos_pendientes.length
 
 	})
 
@@ -49,6 +54,23 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 
 		})
 	}
+    
+	$scope.modalDetalleGestionPC = function(id){
+
+		$http({
+
+			method: 'GET',
+			url: 'routes/solicitudes_pendientes/detalles_solicitud_preventiva_correctiva.php',
+			params: {id: id}
+
+		}).then(function successCallback(response){
+
+			$('#modalDetalleGestionPC').modal('show')
+
+			$scope.gestion = response.data
+
+		})
+	} 
 
 	$scope.cancelarGestion = function(id){
 
@@ -156,6 +178,61 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 		})
 	}
 
+    //Cancelar Gestion Mantenimiento correctivo/preventivo
+    $scope.cancelarGestionMantenimientoPC = function(id){
+
+		swal({
+
+	  		title: '¿Está seguro?',
+			text: "Para rechazar la gestión, escriba RECHAZAR",
+		  	input: 'text',
+		  	inputPlaceholder: 'RECHAZAR',
+		  	showCancelButton: true,
+		  	inputValidator: (value) => {
+
+		    	return !value && 'Es necesario ingresar RECHAZAR!'
+
+		  	}
+
+		})
+		.then((result) => {
+
+			if (result.value.toUpperCase() == "RECHAZAR") {
+
+				$http({
+
+					method: 'GET',
+					url: 'routes/solicitudes_pendientes/cancelar_gestion_m_p_c.php',
+					params: {id: id}
+
+				}).then(function successCallback(response){
+
+					console.log(response.data)
+
+					$scope.solicitudes_mantenimiento_pendientes = response.data
+
+					$scope.current_grid_m = 1
+					$scope.data_limit_m = 5
+					$scope.filter_data_m = $scope.solicitudes_mantenimiento_pendientes.length
+
+					swal(
+						'Excelente',
+					  	'La gestión se ha cancelado con éxito!',
+					  	'success'
+					)
+
+				})
+
+			} else {
+
+				swal("Error!", "No se puede cancelar la gestión", "error");
+
+			} 
+
+		})
+	}
+    //Fin Cancelar Gestion Mantenimiento correctivo/preventivo
+    
 	$scope.modalUnirVale = function(id_gestion){
 
 		$scope.unir_vale = {}

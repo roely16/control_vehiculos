@@ -32,6 +32,20 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 	    });
 	})
 
+	// Obtener menú
+	$http({
+
+		method:'GET',
+		url: 'routes/vehiculos/obtener_tabs.php'
+
+	}).then(function successCallback(response){
+
+		$scope.tabs = response.data
+		
+		$("#"+$scope.tabs[0].URL).addClass( "in active" );
+
+	})
+
  	$http({
 
 		method:'GET',
@@ -53,7 +67,23 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 		$scope.total_vales = $scope.vales.length
 
 		$scope.vales_restantes = response.data[5]["COUNT(VALEID)"]
-
+        
+        //Repuestos
+        $scope.b_repuestos = response.data[9] //agregado listado de gestiones repuestos
+        $scope.current_grid_b_repuestos = 1
+		$scope.data_limit_b_repuestos = 5
+		$scope.max_size_b_repuestos = 5
+		$scope.filter_data_b_repuestos = $scope.b_repuestos.length
+		$scope.total_b_repuestos = $scope.b_repuestos.length
+        
+        //Gestiones Correctivas
+        $scope.b_correctivas = response.data[10] //agregado listado de gestiones correctivas
+        $scope.current_grid_b_correctivas = 1
+		$scope.data_limit_b_correctivas = 5
+		$scope.max_size_b_correctivas = 5
+		$scope.filter_data_b_correctivas = $scope.b_correctivas.length
+		$scope.total_b_correctivas = $scope.b_correctivas.length
+        
 		//Bitacora
 		$scope.b_eventos = response.data[2]
 
@@ -878,13 +908,13 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 				$('#modalEditarVale').modal('show')
 
 				// $('#modalEditarVale').on('show.bs.modal', function (e) {
-  					
+
 				// 	console.log('Mostrar modal')
 
 				// })
 
 				$('#modalEditarVale').on('shown.bs.modal', function () {
-  					
+
 					$(".fecha_despacho").datepicker()
 
 				})
@@ -1352,6 +1382,48 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 		$scope.historial.KM_SERVICIO = $scope.vehiculo.KM_SERVICIO
 	}
 
+    //Detalle de la gestion de Repuestos
+    $scope.modalDetalleRepuesto = function(id){
+        $http({
+            method: 'GET',
+            url: 'routes/repuestos/detalle_gestion_repuesto.php',
+            params: {id:id}
+        }).then(function sucessCallback(response){
+            $scope.detalle_repuesto = response.data
+            $('#modalDetalleRepuesto').modal('show');
+        })
+    }
+    
+    //Detalle de la gestion de Servicio Correctivo
+    $scope.modalDetalleCorrectiva = function(id){
+        $http({
+            method: 'GET',
+            url: 'routes/correctivas/detalle_gestion_correctiva.php',
+            params: {id:id}
+        }).then(function sucessCallback(response){
+            $scope.detalle_correctiva = response.data
+            $('#modalDetalleCorrectiva').modal('show');
+        })
+    }
+    $scope.actualizarCorrectiva = function(id){
+        let estado = $scope.estado_gestion;
+        $http({
+            method: 'GET',
+            url: 'routes/correctivas/actualizar_gestion_correctiva.php',
+            params: {id:id, estado: estado}
+        }).then(function successCallback(response){
+            let mensaje = response.data.MENSAJE;
+            swal("Excelente!", mensaje, "success")
+					.then((value) => {
+
+						//Cerrar modal
+						
+
+					});
+            
+        });
+    }
+    //Fin Detalle de la gestion de Servicio Correctivo
 	$scope.modalDetalle = function(id){
 
 		$http({
@@ -1494,6 +1566,27 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 		});
 	}
 
+    
+    /* LISTADO REPUESTOS    */
+	$scope.page_position_b_repuestos = function(page_number){
+
+		$scope.current_grid_b_repuestos = page_number
+	}
+
+	$scope.filter_b_repuestos = function(){
+
+		$timeout(function(){
+			$scope.filter_data_b_repuestos = $scope.searched_b_repuestos.length
+
+		}, 20)
+	}
+
+	$scope.sort_with_b_repuestos = function(base_b_repuestos){
+
+		$scope.base_b_repuestos = base_b_repuestos
+		$scope.reverse_b_repuestos = !$scope.reverse_b_repuestos
+	}    
+    
 	/* BITACORA DE EVENTOS */
 
 	$scope.page_position_b_eventos = function(page_number){
@@ -1609,7 +1702,7 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 		$scope.mantenimiento.OTROS_TRABAJOS = array_otras_revisiones
 		$scope.mantenimiento.FECHA = $('#fecha').val()
 		$scope.mantenimiento.HORA = $('#hora').val()
-
+//console.log($scope.mantenimiento);
 		if (array_revisiones.length == 0 && array_otras_revisiones.length == 0) {
 
 			console.log('debe seleccionar al menos una')
@@ -1677,7 +1770,15 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 
 		})
 	}
-
+    //Levantar modal para subir documento
+    $scope.nuevoDocumento = function(id){
+        
+        $('#documento').modal('show')
+        $('#documento').on('shown.bs.modal', function (e) {
+            $('#mantenimientoid').val(id);
+        })
+    }
+    //fin levantar modal para subir documento
 	$scope.mostrarEditarMantenimiento = function(id){
 
 		$http({
@@ -1733,9 +1834,7 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 
 		if ($scope.edit_mantenimiento.TIPO_MANTENIMIENTO_ID < 4) {
 
-			if ($scope.edit_mantenimiento.KILOMETRAJE_PROXIMO > $scope.vehiculo.KM_SERVICIO) {
-
-				$http({
+			$http({
 
 				method: 'POST',
 				url: 'routes/mantenimientos/registrar_factura.php',
@@ -1760,11 +1859,38 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 
 				})
 
-			}else{
+			// if ($scope.edit_mantenimiento.KILOMETRAJE_PROXIMO > $scope.vehiculo.KM_SERVICIO) {
 
-				swal("Error!", "El kilometraje del próximo servicio debe ser mayor al actual", "error");
+			// 	$http({
 
-			}
+			// 	method: 'POST',
+			// 	url: 'routes/mantenimientos/registrar_factura.php',
+			// 	data: $scope.edit_mantenimiento,
+			// 	headers : { 'Content-Type': 'application/x-www-form-urlencoded' }
+
+			// 	}).then(function successCallback(response){
+
+			// 		console.log(response.data)
+
+			// 		$scope.mantenimientos = response.data[0]
+			// 		$scope.filter_data_mantenimientos = $scope.mantenimientos.length
+			// 		$scope.vehiculo.KM_SERVICIO = response.data[1]
+
+			// 		swal("Excelente!", "El mantenimiento se ha editado con éxito!", "success")
+			// 		.then((value) => {
+
+			// 			//Cerrar modal
+			// 			$('#modalBig').modal('hide')
+
+			// 		});
+
+			// 	})
+
+			// }else{
+
+			// 	swal("Error!", "El kilometraje del próximo servicio debe ser mayor al actual", "error");
+
+			// }
 
 		}else{
 
@@ -2144,6 +2270,8 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 			$scope.documento.NOMBRE_ARCHIVO = response.data[1]
 			$scope.documento.TIPO_ARCHIVO = response.data[2]
 			$scope.documento.INVENTARIOID = $scope.vehiculo.INVENTARIOID
+            $scope.documento.FECHA = moment().format('DD/MM/YYYY')
+            $scope.documento.MANTENIMIENTOID  = $("#mantenimientoid").val();
 
 			/* Se crea el registro en la base de datos */
 

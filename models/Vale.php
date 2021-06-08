@@ -12,7 +12,7 @@
 		protected $kilometraje;
 
 		protected $id_gestion;
-		protected $id_vehiculo
+		protected $id_vehiculo;
 		protected $id_estado;
 
 	}

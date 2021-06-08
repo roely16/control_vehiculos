@@ -17,12 +17,16 @@
 			$query_sysdate = "ALTER SESSION SET nls_date_format = 'dd/mm/yyyy'";
 			$stid = oci_parse($this->conn, $query_sysdate);
 			oci_execute($stid);
-
+//print_r($request);
 			$fecha = $request["FECHA"];
+            if($fecha==""){
+                $fecha = date("d/m/Y");
+            }
 			$hora = $request["HORA"];
 			$inventario_id = $request["INVENTARIOID"];
 			$tipo_mantenimiento = $request["TIPO_MANTENIMIENTO_ID"];
 			$km_actual = $request["KILOMETRAJE_ACTUAL"];
+			$km_mantenimiento = $request["KILOMETRAJE_MANTENIMIENTO"];
 			$responsable = $request["RESPONSABLE"];
 			$gestion_id = $request["GESTIONID"];
 			$revisiones = $request["REVISIONES"];
@@ -36,9 +40,11 @@
 				$stid = oci_parse($this->conn, $query);
 				oci_execute($stid);
 			}
-
-			$query = "INSERT INTO ADM_MANTENIMIENTOS_VEHICULOS (INVENTARIOID, TIPO_MANTENIMIENTO_ID, KILOMETRAJE_ACTUAL, FECHA, HORA, RESPONSABLE, GESTIONID, ESTADO, PROVEEDORID) VALUES ('$inventario_id', '$tipo_mantenimiento', '$km_actual', '$fecha', TO_DATE('$hora', 'HH24:MI:SS'), '$responsable', '$gestion_id', 0, $proveedor_id)";
-
+			
+			
+			
+			$query = "INSERT INTO ADM_MANTENIMIENTOS_VEHICULOS (INVENTARIOID, TIPO_MANTENIMIENTO_ID, KILOMETRAJE_ACTUAL, FECHA, HORA, RESPONSABLE, GESTIONID, ESTADO, PROVEEDORID, KILOMETRAJE_MANTENIMIENTO) VALUES ('$inventario_id', '$tipo_mantenimiento', '$km_actual', '$fecha', TO_DATE('$hora', 'HH24:MI:SS'), '$responsable', '$gestion_id', 0, $proveedor_id, '$km_mantenimiento')";
+//echo $query;
 			$stid = oci_parse($this->conn, $query);
 
 			oci_execute($stid);
@@ -55,13 +61,50 @@
 			/* Registro de revisiones */
 			foreach ($revisiones as $revision) {
 
-				$query = "INSERT INTO ADM_DETALLES_MANTENIMIENTO (REVISIONID, MANTENIMIENTOID) VALUES ($revision, $mantenimiento_id)";
-				$stid = oci_parse($this->conn, $query);
-
-				oci_execute($stid);
+				//echo $revision."<br>";
+                
+				// el kilometraje del matenimiento es la suma del kilometraje actual + el kilometraje por el tipo de mantenimiento
+			    $km_x_mantenimiento = 0;
+				$ingresa = false;
+			    switch ($revision) {
+           			case 9000:
+        			    $km_x_mantenimiento = 5000;
+						$ingresa = true;
+        			break;
+    				case 9001:
+        				$km_x_mantenimiento = 10000;
+						$ingresa = true;
+        			break;
+    				case 9002:
+        				$km_x_mantenimiento = 50000;
+						$ingresa = true;
+        			break;
+                    case 9003:
+        				$km_x_mantenimiento = 3000;
+						$ingresa = true;
+        			break;
+                    case 9004:
+        				$km_x_mantenimiento = 3500;
+						$ingresa = true;
+        			break;
+			    }
+				$km_x_mantenimiento = $km_mantenimiento + $km_x_mantenimiento;
+				if($ingresa){
+					$sql = "UPDATE ADM_FICHA_VEHICULOS SET KM_RECORDATORIO = ".$km_x_mantenimiento.", KM_SERVICIO = ".$km_mantenimiento." WHERE INVENTARIOID = ".$inventario_id;
+					$stid = oci_parse($this->conn, $sql);
+			        oci_execute($stid);
+					
+				}else{
+					$query = "INSERT INTO ADM_DETALLES_MANTENIMIENTO (REVISIONID, MANTENIMIENTOID) VALUES ($revision, $mantenimiento_id)";
+                    //echo $query."<br>";
+				    $stid = oci_parse($this->conn, $query);
+				    oci_execute($stid);
+				}
+				
 			}
 
 			/* Registro de otras revisiones */
+           
 			foreach ($otras_revisiones as $otra_revision) {
 
 				$query = "INSERT INTO ADM_DETALLES_MANTENIMIENTO (MANTENIMIENTOID, NOMBRE) VALUES ($mantenimiento_id, '$otra_revision')";
@@ -347,7 +390,36 @@
 				$detalles_tipo_mantenimiento[] = $data;
 
 			}
-
+			
+			
+			$array_extra = array();
+			$array_extra['ID'] = 9000;
+			$array_extra['NOMBRE'] = "Proximo mantenimiento 5,000km";
+			$array_extra['TIPO_MANTENIMIENTO'] = $id;
+			$array_extra['FRECUENCIA'] = 5000;
+			$detalles_tipo_mantenimiento[] = $array_extra;
+			$array_extra['ID'] = 9001;
+			$array_extra['NOMBRE'] = "Proximo mantenimiento 10,000km";
+			$array_extra['TIPO_MANTENIMIENTO'] = $id;
+			$array_extra['FRECUENCIA'] = 10000;
+			$detalles_tipo_mantenimiento[] = $array_extra;
+			$array_extra['ID'] = 9002;
+			$array_extra['NOMBRE'] = "Proximo mantenimiento 50,000km";
+			$array_extra['TIPO_MANTENIMIENTO'] = $id;
+			$array_extra['FRECUENCIA'] = 50000;
+            $detalles_tipo_mantenimiento[] = $array_extra;
+            $array_extra['ID'] = 9003;
+			$array_extra['NOMBRE'] = "Proximo mantenimiento 3,000km";
+			$array_extra['TIPO_MANTENIMIENTO'] = $id;
+			$array_extra['FRECUENCIA'] = 3000;
+            $detalles_tipo_mantenimiento[] = $array_extra;
+            $array_extra['ID'] = 9004;
+			$array_extra['NOMBRE'] = "Proximo mantenimiento 3,500km";
+			$array_extra['TIPO_MANTENIMIENTO'] = $id;
+			$array_extra['FRECUENCIA'] = 3500;
+            $detalles_tipo_mantenimiento[] = $array_extra;
+			
+			$detalles_tipo_mantenimiento[] = $data;
 			return $detalles_tipo_mantenimiento;
 		}
 
@@ -379,7 +451,7 @@
 
 			/* Si es un mantenimiento PREVENTIVO */
 
-			if ($tipo_mantenimiento_id < 4) {
+			if (($tipo_mantenimiento_id < 4) ||($tipo_mantenimiento_id == 62)){
 
 				$km_proximo = $request["KILOMETRAJE_PROXIMO"];
 				$proximo_servicio = $request["PROXIMO_SERVICIO"];

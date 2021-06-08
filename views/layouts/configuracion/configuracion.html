@@ -8,7 +8,8 @@
 	<div class="row">
 		<ul class="nav nav-tabs nav-justified" id="myTabs">
   			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab"">Administración de Vehículos</a></li>
-  			<li role="presentation"><a data-target="#t2" data-toggle="tab"">Roles</a></li>
+			<li role="presentation"><a data-target="#t2" data-toggle="tab"">Roles</a></li>
+			<li role="presentation"><a data-target="#t3" data-toggle="tab"">Accesos</a></li>
 		</ul>
 
 		<div class="tab-content">
@@ -36,7 +37,7 @@
 								Agregar Vehículo
 								<i class="glyphicon glyphicon-plus"></i>
 							</button>
-						</div>						
+						</div>
 					</div>
 
 					<br>
@@ -53,7 +54,7 @@
 										<th class="col-md-1">Tipo</th>
 										<th class="col-md-3">Linea</th>
 										<th class="col-md-3">Color</th>
-										<th class="col-md-1">Acción</th>	
+										<th class="col-md-1">Acción</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -89,7 +90,7 @@
 				<br>
 
 				<div class="row">
-					
+
 					<div class="col-md-2">
 						<button type="button" ng-click="modal_nuevo_rol()" class="btn btn-success btn-block">Nuevo Rol
 							<i class="fas fa-plus"></i>
@@ -99,9 +100,9 @@
 					<div class="col-md-4 pull-right">
 						<div class="input-group">
 							<input class="form-control" ng-model="search" ng-change="filter()" type="text" name="" placeholder="Buscar responsable">
-							<span class="input-group-addon"><i class="fas fa-search"></i></span>	
-						</div>			
-					</div>			
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
 
 				</div>
 
@@ -123,7 +124,7 @@
 									<td>{{ rol.NOMBRE }}</td>
 									<td>{{ rol.EMPLEADONIT }}</td>
 									<td>
-										
+
 										<span ng-if="rol.FIRMA_REGISTRADA == 1" class="label label-default">FIRMA REGISTRADA</span>
 										<span ng-if="rol.PILOTO == 1" class="label label-primary">PILOTO</span>
 										<span ng-if="rol.SOLICITAR_VALE == 1" class="label label-success">SOLICITAR VALE</span>
@@ -154,6 +155,73 @@
 				</div>
 
 			</div>
+
+
+			<div class="tab-pane fade" id="t3">
+
+				<br>
+
+				<div class="row">
+
+					<div class="col-md-2">
+						<button type="button" ng-click="modal_nuevo_acceso()" class="btn btn-success btn-block">Nuevo Acceso
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+
+					<div class="col-md-4 pull-right">
+						<div class="input-group">
+							<input class="form-control" ng-model="buscar_persona_acceso" type="text" name="" placeholder="Buscar responsable">
+							<span class="input-group-addon"><i class="fas fa-search"></i></span>
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+
+				<div class="row">
+					<div class="col-md-12" ng-show="filter_data > 0">
+						<table class="table table-hover table-condensed" style="vertical-align: middle;">
+							<thead>
+								<tr>
+									<th class="col-md-3">Nombre</th>
+									<th class="col-md-1">NIT</th>
+									<th class="col-md-6 text-center">Accesos</th>
+									<th class="col-md-2 text-center">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="persona_acceso in personas_acceso | filter: buscar_persona_acceso">
+									<td>{{ persona_acceso.NOMBRE }}</td>
+									<td>{{ persona_acceso.NIT }}</td>
+									<td class="text-center">
+
+										<button ng-if="persona_acceso.MENU_PRINCIPAL.length > 0" class="btn btn-primary btn-xs" type="button">
+										  MENU PRINCIPAL <span class="badge">{{ persona_acceso.MENU_PRINCIPAL.length }}</span>
+										</button>
+
+										<button ng-if="persona_acceso.DETALLE.length > 0" class="btn btn-success btn-xs" type="button">
+										  DETALLE DE VEHÍCULO <span class="badge">{{ persona_acceso.DETALLE.length }}</span>
+										</button>
+
+									</td>
+									<td class="text-center">
+										<button class="btn btn-primary btn-sm" ng-click="mostrar_editar_accesos(persona_acceso.NIT)">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+										<button class="btn btn-danger btn-sm" ng-click="eliminarAccesoPersona(persona_acceso.NIT)">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+
 		</div>
 	</div>
 

@@ -5,7 +5,9 @@
 	$solicitudes_pendientes_ctrl = new SolicitudesValesController();
 
 	$datos = $solicitudes_pendientes_ctrl->mostrar_solicitudes_pendientes();
+//print_r($datos);
 
 	echo json_encode($datos);
+    
 
 ?>

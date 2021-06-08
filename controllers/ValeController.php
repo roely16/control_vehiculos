@@ -230,7 +230,7 @@
 
 					$mail = new Mail();
 
-					$mail->send_mail($usuario->EMAILMUNI, 'Finalización de gestión', $text);
+					@$mail->send_mail($usuario->EMAILMUNI, 'Finalización de gestión', $text);
 
 				}
 
@@ -240,9 +240,9 @@
 				/*Ejecucion de Query*/
 				$stid = oci_parse($conn, $query);
 				oci_execute($stid);
-
+                
 				//Regitrar en la bitacora
-				$resultado = $bitacora_ctrl->registrar_evento("El usuario " .$usuario->NOMBRE. " " .$usuario->APELLIDO. " ha emitido el vale No. $no_vale", $inventarioid);
+				@$resultado = $bitacora_ctrl->registrar_evento("El usuario " .$usuario->NOMBRE. " " .$usuario->APELLIDO. " ha emitido el vale No. $no_vale", $inventarioid);
 
 				//Retornas los vales para actualizar la tabla
 				$vales = $this->obtener_vales_vehiculo($inventarioid);
@@ -269,7 +269,7 @@
 
 				$total_vales = $row['VALES'];
 
-				$porcentaje_medicion = round( ( ($total_vales) * (0.45495025) * (50) * (50) ) / ( (100) * ($total_vales - 1) + (0.45495025) * (50) * (50) ) );
+				$porcentaje_medicion = round( ( ($total_vales) * (3.8416) * (90) * (10) ) / ( (100) * ($total_vales - 1) + (3.8416) * (90) * (10) ) );
 
 				$query = "SELECT  COUNT(*) AS medicion
                         FROM  msa_medicion_encabezado
@@ -320,57 +320,61 @@
 				    $tema = $row['COMISION'];
 				    $mail = $row['EMAILMUNI'];
 
-				    if ($validar){
+					if ($solicitante != 'JOPEDROZA'){
 
-				        $query = "INSERT INTO msa_medicion_encabezado (id_medicion,
-                                                                   correlativo,
-                                                                   fecha_servicio,
-                                                                   fecha_carga,
-                                                                   colaborador,
-                                                                   cliente,
-                                                                   periodo_del,
-                                                                   periodo_al,
-                                                                   comentario_referencia,
-                                                                   doc_referencia,
-                                                                   para_medir,
-                                                                   contacto,
-                                                                   fecha_envio)
-              				 			                   VALUES (".$idmedicion.",
-                                                                   ".$correl.",
-              				 			                           TO_DATE('".$fecha_servicio."','DD/MM/YYYY'),
-                                                                   SYSDATE,
-              				 					                   UPPER('".$usr_atendio."'),
-                                                                   UPPER('".$solicitante."'),
-                                                                   TO_DATE('".$fecha_inicio."','DD/MM/YYYY'),
-                                                                   TO_DATE('".$fecha_fin."','DD/MM/YYYY'),
-                                                                   '".$tema."',
-                                                                   '".$no_vale."',
-                                                                   'X',
-                                                                   '".$mail."',
-                                                                   SYSDATE)";
+						if ($validar){
 
-				        $stid = oci_parse($conn, $query);
-				        oci_execute($stid, OCI_DEFAULT);
-				        oci_commit($conn);
+							$query = "INSERT INTO msa_medicion_encabezado (id_medicion,
+																	correlativo,
+																	fecha_servicio,
+																	fecha_carga,
+																	colaborador,
+																	cliente,
+																	periodo_del,
+																	periodo_al,
+																	comentario_referencia,
+																	doc_referencia,
+																	para_medir,
+																	contacto,
+																	fecha_envio)
+															VALUES (".$idmedicion.",
+																	".$correl.",
+																	TO_DATE('".$fecha_servicio."','DD/MM/YYYY'),
+																	SYSDATE,
+																	UPPER('".$usr_atendio."'),
+																	UPPER('".$solicitante."'),
+																	TO_DATE('".$fecha_inicio."','DD/MM/YYYY'),
+																	TO_DATE('".$fecha_fin."','DD/MM/YYYY'),
+																	'".$tema."',
+																	'".$no_vale."',
+																	'X',
+																	'".$mail."',
+																	SYSDATE)";
 
-				    }
+							$stid = oci_parse($conn, $query);
+							oci_execute($stid, OCI_DEFAULT);
+							oci_commit($conn);
 
-				    $name   = '';
-				    $attach = '';
-				    $titulo = 'Encuesta para el vale No.'.$no_vale;
+						}
+					
+						$name   = '';
+						$attach = '';
+						$titulo = 'Encuesta para el vale No.'.$no_vale;
 
-				    $texto = '';
-				    $texto.= '<html>';
-				    $texto.= '    <body>';
-				    $texto.= '      Se ha generado una encuesta hacia su persona para calificar el servicio de vales, favor responderla en el siguiente enlace<br><br>';
-				    $texto.= '      http://172.23.25.31/GestionServicios/satisfaccion_ci/encuesta_vales.php?id='.$no_vale.'&medicion=7&correo=S';
-				    $texto.= '    </body>';
-				    $texto.= '</html>';
+						$texto = '';
+						$texto.= '<html>';
+						$texto.= '    <body>';
+						$texto.= '      Se ha generado una encuesta hacia su persona para calificar el servicio de vales, favor responderla en el siguiente enlace<br><br>';
+						$texto.= '      http://172.23.25.31/GestionServicios/satisfaccion_ci/encuesta_vales.php?id='.$no_vale.'&medicion=7&correo=S';
+						$texto.= '    </body>';
+						$texto.= '</html>';
 
-					$message_email = new Mail();
+						$message_email = new Mail();
 
-				    $message_email->send_mail($mail, $titulo, $texto);
-
+						$message_email->send_mail($mail, $titulo, $texto);
+                        $message_email->send_mail("jepaz@muniguate.com", $titulo, $texto);
+					
+					}
 				}
 				/* Fin envio de encuesta por correo electronico gmartinez 27.08.2018*/
 
@@ -453,6 +457,77 @@
 			return $json;
 		}
 
+        
+        //Solicitar gestion por estar cercano a su proximo mantenimiento - Johans Paz
+        function solicitar_gestion_alerta(int $inventarioid){
+            $dbc = new Oracle();
+			$conn = $dbc->connect();
+            //Crear Gestion
+            //obtener el area del responsable del vehiculo
+            
+            $sql = "SELECT NIT , CODAREA, EMAILMUNI, NOMBRE||' '||APELLIDO FROM RH_EMPLEADOS WHERE NIT IN 
+                    (
+                      SELECT DEPENDE FROM RH_EMPLEADOS E, EQP_INVENTARIO I
+                      WHERE I.INVENTARIOID = ".$inventarioid."  AND E.NIT = I.NIT
+                    )";
+            $stid = oci_parse($conn, $sql);
+			oci_execute($stid);
+			$row = oci_fetch_array($stid, OCI_NUM);
+            $quien_pide = $row[0];
+            $area_quien_pide = $row[1];
+			$email_muni = $row[2];
+			$nombre_administrador = $row[3];
+            //Obtener el tipo del proximo mantenimiento para crear el cuerpo de la gestion
+			$sql = "SELECT  NOMBRE, FRECUENCIA FROM ADM_TIPOS_MANTENIMIENTO WHERE ID = ";
+			
+            $sql = "SELECT PLACA, TIPO, MARCA, KM_SERVICIO, KM_ACTUAL, KM_RECORDATORIO FROM ADM_FICHA_VEHICULOS WHERE INVENTARIOID = ".$inventarioid;
+            $stid = oci_parse($conn, $sql);
+			oci_execute($stid);
+			$row = oci_fetch_array($stid, OCI_NUM);
+			$placa = $row[0];
+            $tipo = $row[1];
+            $marca = $row[2];
+			$km_servicio = $row[2];
+			$km_actual = $row[3];
+            $km_recordatorio = $row[4];
+            $vehiculo = "$tipo $marca Placa $placa";
+            $detalle_gestion = "Se Solicita el mantenimiento para el vehiculo  $vehiculo por estar estar cerca servicio de $km_servicio KM";
+            $titulo_gestion = "Nuevo mantenimiento para vehiculo $vehiculo $km_servicio KM";
+            $tipogestion ="5";
+            $area_quien_pide = "";
+            $codarearesolver  = "0";
+            $referencia = "";
+            $monto = 0;
+            $contratoid = 0;
+            //Saber si existe o no una gestion solicitando el mantenimiento y no ha sido finalizada
+            $sql = "SELECT COUNT(*) FROM ADM_GESTIONES WHERE TITULO = '".$titulo_gestion."'";
+            $stid = oci_parse($conn, $sql);
+			oci_execute($stid);
+            $row = oci_fetch_array($stid, OCI_NUM);
+            if($row[0] == 0){
+                $sql = "INSERT INTO ADM_GESTIONES(FECHA,DETALLE,STATUS,EMPLEADOID,TITULO,ASIGNADO,IMAGEN,TIPOGESTION,CODAREA,CODAREARESOLVER,REFERENCIA,MONTO,INVENTARIOID,CONTRATOID) values (SYSDATE,'".$detalle_gestion."', '0','".$quien_pide."', '$titulo_gestion', 0, '','".$tipogestion."', '".$area_quien_pide."', ".$codarearesolver.", '".$referencia."',".$monto.", ".$inventarioid.", ".$contratoid.")";
+                $stid = oci_parse($conn, $sql);
+			   // oci_execute($stid);
+            }
+            
+            //Enviar Alerta
+			
+			$correo_alerta = "
+			Estimado $nombre_administrador<br>
+            Por este medio se le informa que el vehículo $vehiculo tiene $km_actual km recorridos está cerca de llegar al kilometraje correspondiente ($km_recordatorio) para el proximo servicio .
+Favor de tomar en cuenta para las acciones que le competen.<br>
+Saludos.
+			<b>NOTA: Si no se procede a realizar el mantenimiento no podrán solicitarse más vales</b>";
+			//Enviar la alerta
+			
+			$mail = new Mail();
+
+			$mail->send_mail($email_muni, 'Alerta por proximo mantenimiento '.$vehiculo, $correo_alerta);
+			$mail->send_mail("johanspaz@gmail.com", 'Alerta por proximo mantenimiento '.$vehiculo, $correo_alerta);
+			
+            return true;
+        }
+        
 		//Editar vale a finalizado o anulado
 		function editar_vale($request){
 
@@ -476,6 +551,31 @@
 				$stid = oci_parse($conn, $query_sysdate);
 				oci_execute($stid);
 
+				//Actualizacion de el kilometraje del vehiculo asociado al vale Johans Paz
+				$sql = "SELECT INVENTARIOID FROM ADM_VALES WHERE NO_VALE = ".$no_vale;
+				$stid = oci_parse($conn, $sql);
+				oci_execute($stid);
+				$row = oci_fetch_array($stid, OCI_NUM);
+				$inventarioid = $row[0];
+				
+			    $sql = "UPDATE ADM_FICHA_VEHICULOS SET KM_ACTUAL = ".$kilometraje." WHERE INVENTARIOID = ".$inventarioid;
+				$stid = oci_parse($conn, $sql);
+				oci_execute($stid);
+				//Fin Actualizacion de el kilometraje del vehiculo asociado al vale
+				
+				//Verificacion si esta por llegar a su proximo servicio para alertar y crear gestion
+				$alertar = false;
+				$sql = "SELECT KM_RECORDATORIO FROM ADM_FICHA_VEHICULOS WHERE INVENTARIOID = ".$inventarioid;
+				$stid = oci_parse($conn, $sql);
+				oci_execute($stid);
+				$row = oci_fetch_array($stid, OCI_NUM);
+				$km_servicio = $row[0];
+				$restante = $km_servicio - $kilometraje;
+				if(($restante < 1000)&&($restante > 0)){
+					$this->solicitar_gestion_alerta($inventarioid);
+				}
+				
+				//Verificacion si esta por llegar a su proximo servicio para alertar y crear gestion
 				$query = "UPDATE ADM_VALES SET CONSUMO = $consumo, ESTADO = $estado, KILOMETRAJE = $kilometraje, FECHA_DESPACHO = '$fecha_despacho'  WHERE NO_VALE = $no_vale";
 
 			}else{
@@ -632,6 +732,55 @@
 
 
 			return $vales;
+
+		}
+
+		function vales_disponibles(){
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$query = "	SELECT *
+						FROM ADM_VALES
+						WHERE ESTADO IN (4, 9)
+						ORDER BY VALEID";
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+			
+			$json = array();
+
+			while($data = oci_fetch_array($stid,OCI_ASSOC))
+			{
+				$json[] = $data;
+			}
+
+			return $json;
+		
+		}
+
+		function cambiar_estado_vale($request){
+
+			$valeid = $request["VALEID"];
+			$estado = $request["ESTADO"];
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			if ($estado == "4") {
+
+				$query = "UPDATE ADM_VALES SET ESTADO = 9 WHERE VALEID = $valeid";
+
+			}else{
+
+				$query = "UPDATE ADM_VALES SET ESTADO = 4 WHERE VALEID = $valeid";
+
+			}
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			return $request;
 
 		}
 

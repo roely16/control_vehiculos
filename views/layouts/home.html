@@ -1,13 +1,43 @@
 <div class="row">
 
+	<div class="col-sm-6 col-md-4" ng-repeat="acceso in accesos">
+		<div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4;">
+	    	<div class="text-center">
+	    		<i class="{{ acceso.ICON }}" style="color: {{ acceso.COLOR }}"></i>
+	    	</div>
+	      	<div class="caption text-center">
+
+				<div class="" style="margin-bottom: 20px;" ng-if="acceso.NOMBRE == 'SOLICITUDES PENDIENTES'">
+					Vales Pendientes
+		        	<span class="badge" style="background-color: #d9534f;" ng-if="pendientes.PENDIENTES > 0">
+		        		{{ pendientes.PENDIENTES }}
+			      </span>
+		        	<span class="badge" ng-if="pendientes.PENDIENTES == 0">
+		        		0
+		        	</span>
+					<br>
+		        	Gestiones de Mantenimientos Pendientes
+		        	<span class="badge" style="background-color: #d9534f;" ng-if="pendientes_m.PENDIENTES > 0">
+	        			{{ pendientes_m.PENDIENTES }}
+		        	</span>
+		        	<span class="badge" ng-if="pendientes_m.PENDIENTES == 0">
+		        		0
+		        	</span>
+				</div>
+
+		        <p><a href="{{ acceso.URL }}" style="width: 200px; text-align: center;" class="btn btn-primary text-center" role="button">{{ acceso.NOMBRE }}</a></p>
+	      	</div>
+	    </div>
+	</div>
+
+	<!--
 	<div class="col-sm-6 col-md-4"  ng-show="usuario.ADMINISTRADOR == 1">
 	    <div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4;">
 	    	<div class="text-center">
-	    		<i class="fas fa-car fa-8x" style="color:#993434;"></i>		
+	    		<i class="fas fa-car fa-8x" style="color:#993434;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		        <!-- <h3>Vehículos</h3> -->
-		        <!-- <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p> -->
+
 		        <p><a href="#/vehiculos" style="width: 200px; text-align: center;" class="btn btn-primary text-center" role="button">VEHICULOS</a></p>
 	      	</div>
 	    </div>
@@ -16,11 +46,10 @@
   	<div class="col-sm-6 col-md-4" ng-show="usuario.ADMINISTRADOR == 1">
 	    <div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4">
 	    	<div class="text-center">
-	    		<i class="fas fa-file-alt fa-8x" style="color:#2f5b8e;"></i>		
+	    		<i class="fas fa-file-alt fa-8x" style="color:#2f5b8e;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		        <!-- <h3>Vales</h3> -->
-		        <!-- <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p> -->
+
 		        <p><a href="#/vales" style="width: 200px; text-align: center;" class="btn btn-primary" role="button">VALES</a></p>
 	      	</div>
 	    </div>
@@ -29,34 +58,9 @@
   	<div class="col-sm-6 col-md-4" ng-show="usuario.ADMINISTRADOR == 1">
 	    <div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4">
 	      	<div class="text-center">
-	    		<i class="fas fa-hourglass-half fa-8x" style="color: #c66e3b;"></i>		
+	    		<i class="fas fa-hourglass-half fa-8x" style="color: #c66e3b;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		       <!--  <h3>Solicitudes Pendientes 
-		        	
-		        </h3> -->
-		        <!-- <ul class="list-group">
-					<li class="list-group-item">
-						<span class="badge" style="background-color: #d9534f;" ng-if="pendientes.PENDIENTES > 0">
-		        			{{ pendientes.PENDIENTES }}
-			        	</span>
-			        	<span class="badge" ng-if="pendientes.PENDIENTES == 0">
-			        		0
-			        	</span>
-			        	Vales Pendientes
-				  	</li>
-				  	<li class="list-group-item">
-				    	<span class="badge" style="background-color: #d9534f;" ng-if="pendientes_m.PENDIENTES > 0">
-		        			{{ pendientes_m.PENDIENTES }}
-			        	</span>
-			        	<span class="badge" ng-if="pendientes_m.PENDIENTES == 0">
-			        		0
-			        	</span>
-				    	Gestiones de Mantenimientos Pendientes
-				  	</li>
-				</ul> -->
-		       
-					
 					Vales Pendientes
 		        	<span class="badge" style="background-color: #d9534f;" ng-if="pendientes.PENDIENTES > 0">
 		        		{{ pendientes.PENDIENTES }}
@@ -81,11 +85,10 @@
   	<div class="col-sm-6 col-md-4" ng-show="usuario.ADMINISTRADOR == 1">
 	    <div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4">
 	    	<div class="text-center">
-	    		<i class="fas fa-tachometer-alt fa-8x" style="color: #36561f;"></i>		
+	    		<i class="fas fa-tachometer-alt fa-8x" style="color: #36561f;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		        <!-- <h3>Cuotas de Combustible</h3> -->
-		       <!--  <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p> -->
+
 		        <p><a href="#/cuotas_combustible" style="width: 200px; text-align: center;" class="btn btn-primary" role="button">CUOTAS DE COMBUSTIBLE</a></p>
 	      	</div>
 	    </div>
@@ -94,11 +97,10 @@
   	<div class="col-sm-6 col-md-4" ng-show="usuario.ADMINISTRADOR == 1">
 	    <div class="thumbnail" style="border-radius: 25px; border-width: 2px; border-color: #4286f4">
 	      	<div class="text-center">
-	    		<i class="fas fa-chart-bar fa-8x" style="color: #828229;"></i>		
+	    		<i class="fas fa-chart-bar fa-8x" style="color: #828229;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		        <!-- <h3>Reportes</h3> -->
-		        <!-- <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p> -->
+
 		        <p><a href="#/reportes" class="btn btn-primary" style="width: 200px; text-align: center;"  role="button">REPORTES</a></p>
 	      	</div>
 	    </div>
@@ -109,11 +111,11 @@
 	    		<i class="fas fa-cogs fa-8x" style="color: #8a8b8c;"></i>
 	    	</div>
 	      	<div class="caption text-center">
-		        <!-- <h3>Configuración</h3> -->
-		        <!-- <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p> -->
+
 		        <p><a href="#/configuracion" class="btn btn-primary" style="width: 200px; text-align: center;"  role="button">CONFIGURACIÓN</a></p>
 	      	</div>
 	    </div>
   	</div>
+	-->
 
 </div>

@@ -2,8 +2,9 @@
 
 	<div class="row">
 		<ul class="nav nav-tabs">
-  			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab"">Vales de Combustible</a></li>
-  			<li role="presentation"><a data-target="#t2" data-toggle="tab"">Mantenimientos de Vehículos</a></li>
+  			<li role="presentation" class="active"><a data-target="#t1" data-toggle="tab">Vales de Combustible</a></li>
+  			<li role="presentation"><a data-target="#t2" data-toggle="tab">Mantenimientos de Vehículos</a></li>
+            <li role="presentation"><a data-target="#t3" data-toggle="tab">Solicitudes de Repuestos</a></li>
 		</ul>
 	</div>
 
@@ -134,7 +135,7 @@
 								<span class="label label-danger">En Proceso</span>
 							</td>
 							<td>
-								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestion(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestionPC(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
 									<i class="glyphicon glyphicon-eye-open"></i>
 								</button>
 
@@ -146,7 +147,7 @@
 									<i class="glyphicon glyphicon-log-in"></i>
 								</a>
 
-								<button class="btn btn-danger btn-sm" title="Rechazar Gestión" ng-click="cancelarGestionMantenimiento(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+								<button class="btn btn-danger btn-sm" title="Rechazar Gestión" ng-click="cancelarGestionMantenimientoPC(solicitud_m.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
 									<i class="glyphicon glyphicon-remove-sign "></i>
 								</button>
 							</td>
@@ -167,6 +168,74 @@
 
 	</div>
 
+<div class="tab-pane fade" id="t3">
+
+			<br>
+			<br>
+			<div class="row" >
+				<div class="col-md-4 pull-right">
+					<div class="input-group">
+						<input ng-model="search_m" ng-change="filter()" class="form-control" type="text" placeholder="Buscar solicitud de repuestos">
+						<span class="input-group-addon"><i class="fas fa-search"></i></span>	
+					</div>			
+				</div>	
+			</div>
+
+			<br>
+			<br>
+
+			<div class="row">
+
+				<!-- Lista de Cuotas -->
+				<table class="table table-hover table-condensed" ng-show="filter_data_r > 0">
+					<thead>
+						<tr>
+							<th class="col-md-2">No. Gestión&nbsp;<a ng-click="sort_with(GESTIONID)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Fecha y Hora&nbsp;<a ng-click="sort_with(FECHA)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th class="col-md-2">Responsable&nbsp;<a ng-click="sort_with(NOMBRE)" style="color: inherit;"><i class="glyphicon glyphicon-sort"></i></a></th>
+							<th>Placa</th>
+							<th>Tipo</th>
+							<th>Marca</th>
+							<th class="col-md-1">Estado</th>
+							<th class="col-md-2">Acción</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="solicitud_r in searched = (solicitudes_repuestos_pendientes | filter:search_r | orderBy : base :reverse) | beginning_data:(current_grid_r - 1) * data_limit_r | limitTo:data_limit_r">
+							<td>{{ solicitud_r.GESTIONID }}</td>
+							<td>{{ solicitud_r.FECHA }}</td>
+							<td>{{ solicitud_r.NOMBRE }} {{ solicitud_r.APELLIDO }}</td>
+							<td>{{ solicitud_r.PLACA }}</td>
+							<td>{{ solicitud_r.TIPO }}</td>
+							<td>{{ solicitud_r.MARCA }}</td>
+							<td ng-if="solicitud_r.STATUS == 0 || solicitud_r.STATUS == 4">
+								<span class="label label-danger">En Proceso</span>
+							</td>
+							<td>
+								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestion(solicitud_r.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+									<i class="glyphicon glyphicon-eye-open"></i>
+								</button>
+
+								
+
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="col-md-12" ng-show="filter_data_r == 0">
+					<h4 class="text-center">-- No se encontraron registros --</h4>
+				</div>
+
+				<!-- Paginacion -->
+				<div class="col-md-12" ng-show="filter_data_r > 0">
+					<div pagination="" page="current_grid" on-select-page="page_position(page)" boundary-links="true" total-items="filter_data" items-per-page="data_limit" class="pagination-small pull-right" first-text="Primera" last-text="Última" previous-text="&laquo;" next-text="&raquo;" ng-model="current_grid" max-size="maxSize" num-pages="numPages">
+					</div>
+				</div>
+		</div>
+
+	</div>
+        
 	<div class="modal fade" id="modalDetalleGestion">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -179,7 +248,7 @@
 					<div class="row">
 						<div class="col-md-2">
 							<div class="form-group">
-								<label for="exampleInputEmail1">No. Gestión</label>
+								<label for="exampleInputEmail1">No. Gestión </label>
 								<input type="text" class="form-control" ng-model="gestion.GESTIONID" readonly>
 							</div>
 						</div>
@@ -214,7 +283,60 @@
 			</div>
 		</div>
 	</div>
+        
+<!-- Detalle gestion correctiva/preventiva-->        
+<div class="modal fade" id="modalDetalleGestionPC">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Detalles de Gestión</h4>
+				</div>
+				<div class="modal-body">
+					
+					<div class="row">
+						<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">No. Gestión</label>
+								<input type="text" class="form-control" ng-model="gestion.GESTIONID" readonly>
+							</div>
+						</div>
+	<div class="col-md-2">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Tipo</label>
+								<input type="text" class="form-control" ng-model="gestion.TIPO" readonly>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Fecha y Hora</label>
+								<input type="text" class="form-control" ng-model="gestion.FECHA" readonly>
+							</div>
+						</div>
 
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Responsable</label>
+								<input type="text" value="{{ gestion.NIT }} {{ gestion.NOMBRE }} {{ gestion.APELLIDO }}" class="form-control" readonly>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Detalle</label>
+								<textarea class="form-control" rows="8" ng-model="gestion.MOTIVO" readonly></textarea>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<!-- Modal Mediano -->
 	<div class="modal fade" id="modalMed">
 		<div class="modal-dialog">

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/models/Vehiculo.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/models/Eqp_Inventario.php';
@@ -6,24 +6,26 @@
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/HistorialController.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/ValeController.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/DocumentosController.php';
-	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/Mantenimiento_VehiculoController.php';	
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/Mantenimiento_VehiculoController.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/RepuestosController.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/administrativo/control_vehiculos/controllers/CorrectivasController.php';
 
 	class VehiculoController{
 
 		function listar_vehiculos(){
-			
+
 			/* Obtener usuario */
 			$bitacora_ctrl = new Bitacora_EventosController();
 			$usuario = $bitacora_ctrl->obtener_usuario();
 			$nit = $usuario->NIT;
 
 			$query = "SELECT EQP_INVENTARIO.INVENTARIOID, ADM_FICHA_VEHICULOS.FICHAVEHICULOID, ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO,
-			 ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, ADM_FICHA_VEHICULOS.LINEA, ADM_FICHA_VEHICULOS.COLOR, 
+			 ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, ADM_FICHA_VEHICULOS.LINEA, ADM_FICHA_VEHICULOS.COLOR,
 			 ADM_FICHA_VEHICULOS.TIPO_COMBUSTIBLE, ADM_FICHA_VEHICULOS.NO_MOTOR, ADM_FICHA_VEHICULOS.NO_CHASIS, ADM_FICHA_VEHICULOS.TARJETA_CIRC,
-			 ADM_FICHA_VEHICULOS.KM_ACTUAL, ADM_FICHA_VEHICULOS.KM_SERVICIO, ADM_FICHA_VEHICULOS.ACTIVIDAD
+			 ADM_FICHA_VEHICULOS.KM_ACTUAL, ADM_FICHA_VEHICULOS.KM_SERVICIO, ADM_FICHA_VEHICULOS.ACTIVIDAD, ADM_FICHA_VEHICULOS.KM_RECORDATORIO
 			FROM EQP_INVENTARIO
 			INNER JOIN ADM_FICHA_VEHICULOS
-			ON EQP_INVENTARIO.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID 
+			ON EQP_INVENTARIO.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
 			WHERE EQP_INVENTARIO.INVENTARIOID IN (SELECT VEHICULOID FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit')";
 
 			$dbc = new Oracle();
@@ -33,7 +35,7 @@
 			oci_execute($stid);
 
 			$json = array();
-			
+
 			while($data = oci_fetch_array($stid,OCI_ASSOC))
 			{
 				$json[] = $data;
@@ -43,19 +45,54 @@
 
 			return array($json, $usuario, $ruta_servidor);
 		}
-		
+
+		function listar_vehiculos_cuota(){
+
+			/* Obtener usuario */
+			$bitacora_ctrl = new Bitacora_EventosController();
+			$usuario = $bitacora_ctrl->obtener_usuario();
+			$nit = $usuario->NIT;
+
+			$query = "SELECT EQP_INVENTARIO.INVENTARIOID, ADM_FICHA_VEHICULOS.FICHAVEHICULOID, ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO,
+			 ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, ADM_FICHA_VEHICULOS.LINEA, ADM_FICHA_VEHICULOS.COLOR,
+			 ADM_FICHA_VEHICULOS.TIPO_COMBUSTIBLE, ADM_FICHA_VEHICULOS.NO_MOTOR, ADM_FICHA_VEHICULOS.NO_CHASIS, ADM_FICHA_VEHICULOS.TARJETA_CIRC,
+			 ADM_FICHA_VEHICULOS.KM_ACTUAL, ADM_FICHA_VEHICULOS.KM_SERVICIO, ADM_FICHA_VEHICULOS.ACTIVIDAD
+			FROM EQP_INVENTARIO
+			INNER JOIN ADM_FICHA_VEHICULOS
+			ON EQP_INVENTARIO.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
+			WHERE ADM_FICHA_VEHICULOS.ASIGNAR_CUOTA = 'S'";
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$json = array();
+
+			while($data = oci_fetch_array($stid,OCI_ASSOC))
+			{
+				$json[] = $data;
+			}
+
+			$ruta_servidor = $_SERVER['DOCUMENT_ROOT'];
+
+			return array($json, $usuario, $ruta_servidor);
+
+		}
+
 		function mostrar_vehiculo($id){
 
 			$dbc = new Oracle();
 			$conn = $dbc->connect();
 
 			$query = "SELECT EQP_INVENTARIO.INVENTARIOID, EQP_INVENTARIO.ACTIVO, ADM_FICHA_VEHICULOS.FICHAVEHICULOID, ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO,
-				 ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, ADM_FICHA_VEHICULOS.LINEA, ADM_FICHA_VEHICULOS.COLOR, 
+				 ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, ADM_FICHA_VEHICULOS.LINEA, ADM_FICHA_VEHICULOS.COLOR,
 				 ADM_FICHA_VEHICULOS.TIPO_COMBUSTIBLE, ADM_FICHA_VEHICULOS.NO_MOTOR, ADM_FICHA_VEHICULOS.NO_CHASIS, ADM_FICHA_VEHICULOS.TARJETA_CIRC,
-				 ADM_FICHA_VEHICULOS.KM_ACTUAL, ADM_FICHA_VEHICULOS.KM_SERVICIO, ADM_FICHA_VEHICULOS.ACTIVIDAD, RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO
+				 ADM_FICHA_VEHICULOS.KM_ACTUAL, ADM_FICHA_VEHICULOS.KM_SERVICIO, ADM_FICHA_VEHICULOS.ACTIVIDAD, RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO, ADM_FICHA_VEHICULOS.KM_RECORDATORIO 
 				FROM EQP_INVENTARIO
 				INNER JOIN ADM_FICHA_VEHICULOS
-				ON EQP_INVENTARIO.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID 
+				ON EQP_INVENTARIO.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
 				INNER JOIN RH_EMPLEADOS ON EQP_INVENTARIO.NIT = RH_EMPLEADOS.NIT
 				WHERE EQP_INVENTARIO.INVENTARIOID = $id";
 
@@ -82,7 +119,7 @@
 			//Obtener cuotas de combustible
 			$cuotas = $this->obtener_cuotas_combustible($id);
 
-			//Obtener pilotos 
+			//Obtener pilotos
 			$pilotos = $this->obtener_pilotos();
 
 			//Obtener documentos
@@ -92,8 +129,17 @@
 			/* Obtener Mantenimientos */
 			$mantenimiento_ctrl = new Mantenimiento_VehiculoController();
 			$mantenimientos = $mantenimiento_ctrl->mostrar_mantenimientos($id);
-
-			return array($vehiculo, $vales, $b_eventos, $historial, $cuotas, $vales_restantes, $pilotos, $documentos, $mantenimientos);
+            
+            /**/
+            $repuestos_ctrl = new RepuestosController();
+            $repuestos = $repuestos_ctrl->obtener_listado($id);
+            
+            $correctivas_ctrl = new CorrectivasController();
+            $correctivas = $correctivas_ctrl->obtener_listado($id);
+            
+			return array($vehiculo, $vales, $b_eventos, $historial, $cuotas, $vales_restantes, $pilotos, $documentos, $mantenimientos,$repuestos,$correctivas);
+            
+            
 		}
 
 		function registrar_historial($request){
@@ -111,7 +157,7 @@
 			$fecha = date('d-m-Y');
 			$inventario_id = $request["INVENTARIOID"];
 
-			$query = "INSERT INTO ADM_HISTORIAL_VEHICULOS (FECHA, HORA_SALIDA, KM_SALIDA, 
+			$query = "INSERT INTO ADM_HISTORIAL_VEHICULOS (FECHA, HORA_SALIDA, KM_SALIDA,
 			HORA_ENTRADA, KM_ENTRADA, RESPONSABLE, OBSERVACION, INVENTARIOID) VALUES ('$fecha', '$hora_salida', '$km_salida', '$hora_entrada', '$km_entrada', '$responsable', '$observaciones', $inventario_id)";
 
 			$stid = oci_parse($conn, $query);
@@ -149,7 +195,7 @@
 			$stid = oci_parse($conn, $query_sysdate);
 			oci_execute($stid);
 
-			$query_sysdate = "ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '.,'"; 
+			$query_sysdate = "ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '.,'";
 			$stid = oci_parse($conn, $query_sysdate);
 			oci_execute($stid);
 
@@ -217,7 +263,7 @@
                             'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
                             'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y' );
 
-			
+
 			while($data = oci_fetch_array($stid,OCI_ASSOC))
 			{
 				$data["NOMBRE"] = strtr( $data["NOMBRE"], $unwanted_array );
@@ -248,8 +294,8 @@
 
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
-			
-			//Registrar en la bitacora 
+
+			//Registrar en la bitacora
 			$bitacora_ctrl = new Bitacora_EventosController();
 			$usuario = $bitacora_ctrl->obtener_usuario();
 			$resultado = $bitacora_ctrl->registrar_evento("El usuario " .$usuario->NOMBRE. " " .$usuario->APELLIDO. " a colocado " .$kilometraje. " como kilometraje actual del vehículo", $id);
@@ -258,6 +304,41 @@
 			$bitacora = $bitacora_ctrl->obtener_eventos($id);
 
 			return array($id, $kilometraje, $bitacora);
+
+		}
+
+		function obtenerTabs(){
+
+			if(!isset($_SESSION))
+		    {
+		    	session_start();
+		    }
+
+			$nit = $_SESSION['nit'];
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$query = "	SELECT T2.*
+						FROM ADM_ACCESOS_VALES T1
+						INNER JOIN ADM_MENU_VALES T2
+						ON T1.ID_ACCESO = T2.ID
+						WHERE T1.USUARIO = '$nit'
+						AND T2.TIPO = 2
+						ORDER BY T1.ID_ACCESO ASC";
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$accesos = array();
+
+			while ($data = oci_fetch_array($stid, OCI_ASSOC)) {
+
+				$accesos [] = $data;
+
+			}
+
+			return $accesos;
 
 		}
 

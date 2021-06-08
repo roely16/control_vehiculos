@@ -271,7 +271,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="vale in vales">
+					<tr ng-class="vale.ESTADO == '9' ? 'danger' : ''" ng-repeat="vale in vales">
 						<td>{{ vale.NO_VALE }}</td>
 						<td>{{ vale.NO_GESTION }}</td>
 						<td>{{ vale.FECHA }}</td>
@@ -325,7 +325,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="vale in searched = (vales | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
+						<tr ng-class="vale.ESTADO == '9' ? 'danger' : ''" ng-repeat="vale in searched = (vales | filter:search | orderBy : base :reverse) | beginning_data:(current_grid - 1) * data_limit | limitTo:data_limit">
 							<td>{{ vale.NO_VALE }}</td>
 							<td>{{ vale.NO_GESTION }}</td>
 							<td>{{ vale.FECHA }}</td>

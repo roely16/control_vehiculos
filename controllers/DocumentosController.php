@@ -35,13 +35,19 @@
 			$inventario_id = $request["INVENTARIOID"];
 			$nombre_archivo = $request["NOMBRE_ARCHIVO"];
 			$tipo_archivo = $request["TIPO_ARCHIVO"];
-
+            $fecha = $request["FECHA"];
+            $tipo_servicio = $request["TIPO_SERVICIO"];
+            $placas = $request["PLACAS"];
+            $mantenimientoid = (isset($request["MANTENIMIENTOID"])?$request["MANTENIMIENTOID"]:"0");
+            if($mantenimientoid==""){
+                $mantenimientoid = 0;
+            }
 			//Conectar a la base de datos
 			$dbc = new Oracle();
 			$conn = $dbc->connect();
 
-			$query = "INSERT INTO ADM_DOCUMENTOS (NOMBRE, DESCRIPCION, ARCHIVO, NOMBRE_ARCHIVO, INVENTARIOID, TIPO_ARCHIVO) VALUES ('$nombre', '$descripcion', '$directorio', '$nombre_archivo',$inventario_id, '$tipo_archivo')";
-
+			$query = "INSERT INTO ADM_DOCUMENTOS (NOMBRE, DESCRIPCION, ARCHIVO, NOMBRE_ARCHIVO, INVENTARIOID, TIPO_ARCHIVO,FECHA,TIPO_SERVICIO,PLACAS,MANTENIMIENTOID) VALUES ('$nombre', '$descripcion', '$directorio', '$nombre_archivo',$inventario_id, '$tipo_archivo',TO_DATE('$fecha','DD/MM/YYYY'),'$tipo_servicio','$placas',$mantenimientoid)";
+            //echo $query;            
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
 

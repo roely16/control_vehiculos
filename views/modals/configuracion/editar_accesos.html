@@ -1,0 +1,65 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title"><strong>Editar Accesos</strong></h4>
+	</div>
+	<div class="modal-body">
+
+		<div class="row" ng-if="accesos_menu.length > 0">
+			<div class="col-lg-12">
+				<h4 class="text-center">MENÚ PRINCIPAL</h4>
+			</div>
+			<div class="col-lg-12">
+				<table class="table table-condensed">
+		 			<thead>
+		 				<tr>
+		 					<th>Acceso</th>
+							<th class="text-right">Acción</th>
+		 				</tr>
+		 			</thead>
+					<tbody>
+						<tr ng-repeat="acceso_menu in accesos_menu">
+							<td>{{ acceso_menu.ACCESO }}</td>
+							<td class="text-right">
+								<button type="button" ng-click="eliminarAcceso(acceso_menu)" class="btn btn-danger btn-sm">
+									<i class="glyphicon glyphicon-trash"></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="row" ng-if="accesos_detalle.length > 0">
+			<div class="col-lg-12">
+				<h4 class="text-center">DETALLE DE VEHÍCULO</h4>
+			</div>
+			<div class="col-lg-12">
+				<table class="table table-condensed">
+		 			<thead>
+		 				<tr>
+		 					<th>Acceso</th>
+							<th class="text-right">Acción</th>
+		 				</tr>
+		 			</thead>
+					<tbody>
+						<tr ng-repeat="acceso_detalle in accesos_detalle">
+							<td>{{ acceso_detalle.ACCESO }}</td>
+							<td class="text-right">
+								<button type="button" ng-click="eliminarAcceso(acceso_detalle)" class="btn btn-danger btn-sm">
+									<i class="glyphicon glyphicon-trash"></i>
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+		<!-- <button type="submit" class="btn btn-primary">Guardar</button> -->
+	</div>
+</div>
