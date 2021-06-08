@@ -78,12 +78,12 @@
 
 				$consumo = oci_fetch_array($stid_);
 
-				$data["CONSUMO"] = $consumo["SUM(CONSUMO)"];
-				$data["SOBRANTE"] = $data["CUOTA"] - $consumo["SUM(CONSUMO)"];
+				$data["CONSUMO"] = round($consumo["SUM(CONSUMO)"], 2);
+				$data["SOBRANTE"] = round($data["CUOTA"] - $consumo["SUM(CONSUMO)"], 2);
 
-				$total_cuota = $total_cuota + $data["CUOTA"];
-				$total_abastecido = $total_abastecido + $data["CONSUMO"];
-				$total_restante = $total_restante + $data["SOBRANTE"];
+				$total_cuota = round($total_cuota + $data["CUOTA"], 2);
+				$total_abastecido = round($total_abastecido + $data["CONSUMO"], 2);
+				$total_restante = round($total_restante + $data["SOBRANTE"], 2);
 
 				$cuotas[] = $data;
 
@@ -253,8 +253,8 @@
 
 				$consumo_ = oci_fetch_array($stid_);
 
-				$data["CONSUMO"] = $consumo_["TOTAL_CONSUMO"];
-				$data["RESTANTE"] = $data["CUOTA"] - $data["CONSUMO"];
+				$data["CONSUMO"] = round($consumo_["TOTAL_CONSUMO"], 2);
+				$data["RESTANTE"] = round($data["CUOTA"] - $data["CONSUMO"], 2);
 
 				/* Cuotas de Combustible */
 				$cuota = str_replace(',', '.', $data["CUOTA"]);
@@ -273,9 +273,9 @@
 				$restante_grafica [] = $data["CUOTA"] - $data["CONSUMO"];
 
 				/* Totales */
-				$total_cuota = $total_cuota + $cuota;
-				$total_abastecido = $total_abastecido + $data["CONSUMO"];
-				$total_sobrante = $total_sobrante + ($data["CUOTA"] - $data["CONSUMO"]);
+				$total_cuota = round($total_cuota + $cuota, 2);
+				$total_abastecido = round($total_abastecido + $data["CONSUMO"], 2);
+				$total_sobrante = round($total_sobrante + ($data["CUOTA"] - $data["CONSUMO"]), 2);
 
 				$semanas[] = $data;
 
@@ -315,7 +315,7 @@
 
 				$consumo_ = oci_fetch_array($stid_);
 
-				$data["CONSUMO"] = $consumo_["TOTAL_CONSUMO"];
+				$data["CONSUMO"] = round($consumo_["TOTAL_CONSUMO"], 2);
 				$data["RESTANTE"] = round($data["CUOTA"] - $consumo_["TOTAL_CONSUMO"], 2);
 
 				/* Cuotas de Combustible */
@@ -336,9 +336,9 @@
 				$restante_grafica_v [] = $restante;
 
 				/* Totales */
-				$total_cuota_v = $total_cuota_v + $cuota;
-				$total_abastecido_v = $total_abastecido_v + $consumo_["TOTAL_CONSUMO"];
-				$total_sobrante_v = $total_sobrante_v + ($cuota - $data["CONSUMO"]);
+				$total_cuota_v = round($total_cuota_v + $cuota, 2);
+				$total_abastecido_v = round($total_abastecido_v + $consumo_["TOTAL_CONSUMO"], 2);
+				$total_sobrante_v = round($total_sobrante_v + ($cuota - $data["CONSUMO"]), 2);
 
 				$vehiculos[] = $data;
 			}
@@ -539,7 +539,7 @@
 
 				}
 
-				$galones_pendientes [] = $total["TOTAL"] - $total_consumido["TOTAL_CONSUMO"];
+				$galones_pendientes [] = round($total["TOTAL"] - $total_consumido["TOTAL_CONSUMO"], 2);
 
 			}
 
