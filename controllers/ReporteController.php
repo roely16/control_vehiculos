@@ -183,15 +183,48 @@
 			$stid = oci_parse($conn, $query_sysdate);
 			oci_execute($stid);
 
-			$query = "SELECT SUM(CUOTA) AS CUOTA, TO_CHAR(FECHA_INICIO, 'dd/mm/yyyy') AS FECHA_INICIO, TO_CHAR(FECHA_FIN, 'dd/mm/yyyy') AS FECHA_FIN, CONCAT(CONCAT(FECHA_INICIO, ' al '), FECHA_FIN) AS SEMANA
-				    FROM ADM_CUOTAS_COMBUSTIBLE
-				    WHERE FECHA_INICIO
-				    BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
-				    AND FECHA_FIN
-				    BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
-				    AND INVENTARIOID IN (SELECT VEHICULOID FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit')
-				    GROUP BY FECHA_INICIO, FECHA_FIN
-				    ORDER BY FECHA_INICIO ASC";
+			/*
+
+				$query = "	SELECT 
+							SUM(CUOTA) AS CUOTA, 
+							TO_CHAR(FECHA_INICIO, 'dd/mm/yyyy') AS FECHA_INICIO, 
+							TO_CHAR(FECHA_FIN, 'dd/mm/yyyy') AS FECHA_FIN, 
+							CONCAT(CONCAT(FECHA_INICIO, ' al '), FECHA_FIN) AS SEMANA
+						FROM ADM_CUOTAS_COMBUSTIBLE
+						WHERE FECHA_INICIO
+						BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+						AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+						AND FECHA_FIN
+						BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+						AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+						AND INVENTARIOID IN (
+							SELECT VEHICULOID 
+							FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit'
+						)
+						GROUP BY FECHA_INICIO, FECHA_FIN
+						ORDER BY TO_DATE(FECHA_FIN) ASC";
+			
+			*/
+
+			
+			$query = "	SELECT 
+							SUM(CUOTA) AS CUOTA, 
+							TO_CHAR(FECHA_INICIO, 'dd/mm/yyyy') AS FECHA_INICIO, 
+							TO_CHAR(FECHA_FIN, 'dd/mm/yyyy') AS FECHA_FIN, 
+							CONCAT(CONCAT(FECHA_INICIO, ' al '), FECHA_FIN) AS SEMANA
+						FROM ADM_CUOTAS_COMBUSTIBLE
+						WHERE FECHA_INICIO
+						BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+						AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+						OR FECHA_FIN
+						BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+						AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+						AND INVENTARIOID IN (
+							SELECT VEHICULOID 
+							FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit'
+						)
+						GROUP BY FECHA_INICIO, FECHA_FIN
+						ORDER BY TO_DATE(FECHA_FIN) ASC";
 
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
@@ -243,8 +276,45 @@
 				$fecha_inicio = $data["FECHA_INICIO"];
 				$fecha_fin = $data["FECHA_FIN"];
 
-				$query_semanas = "SELECT SUM(CONSUMO) AS TOTAL_CONSUMO FROM ADM_VALES WHERE NVL(FECHA_DESPACHO, FECHA) BETWEEN TO_DATE ('$fecha_inicio', 'dd/mm/yyyy') AND TO_DATE ('$fecha_fin', 'dd/mm/yyyy')
-					AND INVENTARIOID IN (SELECT VEHICULOID FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit')";
+				$fecha_inicio_format = str_replace('/', '-', $fecha_inicio);
+				$fecha_fin_format = str_replace('/', '-', $fecha_fin);
+				$inicio_mes_format = str_replace('/', '-', $inicio_mes);
+				$fin_mes_format = str_replace('/', '-', $fin_mes);
+
+				/*
+					Validar si la fecha de inicio es anterior al mes en curso
+				*/
+				if(strtotime($fecha_inicio_format) < strtotime($inicio_mes_format)){
+
+					$data["MES_ANTES"] = true;
+
+					$fecha_inicio = $inicio_mes;
+
+				}
+
+				/*
+					Validar si la fecha de finalización es superior al mes en curso
+				*/
+				if(strtotime($fecha_fin_format) > strtotime($fin_mes_format)){
+
+					$data["MES_DESPUES"] = true;
+
+					$fecha_fin = $fin_mes;
+
+				}
+
+				$query_semanas = "	SELECT 
+										SUM(CONSUMO) AS TOTAL_CONSUMO 
+									FROM ADM_VALES 
+									WHERE NVL(FECHA_DESPACHO, FECHA) 
+									BETWEEN TO_DATE ('$fecha_inicio', 'dd/mm/yyyy') 
+									AND TO_DATE ('$fecha_fin', 'dd/mm/yyyy')
+									AND INVENTARIOID IN (
+										SELECT 
+										VEHICULOID 
+										FROM ADM_ADMINISTRADOR_VEHICULO 
+										WHERE ADMINISTRADOR = '$nit'
+									)";
 
 				$querys [] = $query_semanas;	
 
@@ -286,16 +356,24 @@
 			}
 
 			/* Query para generar grafica por vehiculos */
-			$query_vehiculos = "SELECT SUM(ADM_CUOTAS_COMBUSTIBLE.CUOTA) AS CUOTA, ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.INVENTARIOID
-					    FROM ADM_CUOTAS_COMBUSTIBLE
-					    INNER JOIN ADM_FICHA_VEHICULOS
-					    ON ADM_CUOTAS_COMBUSTIBLE.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
-					    WHERE ADM_CUOTAS_COMBUSTIBLE.FECHA_INICIO
-					    BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
-					    AND ADM_CUOTAS_COMBUSTIBLE.FECHA_FIN
-					    BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
-					    AND ADM_FICHA_VEHICULOS.INVENTARIOID IN (SELECT VEHICULOID FROM ADM_ADMINISTRADOR_VEHICULO WHERE ADMINISTRADOR = '$nit')
-					    GROUP BY ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.INVENTARIOID";
+			$query_vehiculos = "	SELECT 
+										SUM(ADM_CUOTAS_COMBUSTIBLE.CUOTA) AS CUOTA, 
+										ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.INVENTARIOID
+									FROM ADM_CUOTAS_COMBUSTIBLE
+									INNER JOIN ADM_FICHA_VEHICULOS
+									ON ADM_CUOTAS_COMBUSTIBLE.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
+									WHERE ADM_CUOTAS_COMBUSTIBLE.FECHA_INICIO
+									BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+									AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+									OR ADM_CUOTAS_COMBUSTIBLE.FECHA_FIN
+									BETWEEN TO_DATE('$inicio_mes', 'dd/mm/yyyy') 
+									AND TO_DATE('$fin_mes', 'dd/mm/yyyy')
+									AND ADM_FICHA_VEHICULOS.INVENTARIOID IN (
+										SELECT VEHICULOID 
+										FROM ADM_ADMINISTRADOR_VEHICULO 
+										WHERE ADMINISTRADOR = '$nit'
+									)
+									GROUP BY ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.INVENTARIOID";
 
 			$stid2 = oci_parse($conn, $query_vehiculos);
 			oci_execute($stid2);
@@ -308,7 +386,12 @@
 
 				$inventario_id = $data["INVENTARIOID"];
 
-				$query_vehiculo = "SELECT SUM(CONSUMO) AS TOTAL_CONSUMO FROM ADM_VALES WHERE NVL(FECHA_DESPACHO, FECHA) BETWEEN TO_DATE ('$inicio_mes', 'dd/mm/yy') AND TO_DATE ('$ultima_fecha', 'dd/mm/yy') AND ADM_VALES.INVENTARIOID = $inventario_id";
+				$query_vehiculo = "	SELECT 
+										SUM(CONSUMO) AS TOTAL_CONSUMO 
+									FROM ADM_VALES 
+									WHERE NVL(FECHA_DESPACHO, FECHA) BETWEEN TO_DATE ('$inicio_mes', 'dd/mm/yy') 
+									AND TO_DATE ('$fin_mes', 'dd/mm/yy') 
+									AND ADM_VALES.INVENTARIOID = $inventario_id";
 
 				$stid_ = oci_parse($conn, $query_vehiculo);
 				oci_execute($stid_);

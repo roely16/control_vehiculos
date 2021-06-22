@@ -2,7 +2,22 @@
 	<br>
 	<div class="row" >
 		<div class="col-md-2">
-			<button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#talonarioModal">Nuevo Talonario
+			<!-- <button 
+				type="button" 
+				ng-click="modal_talonario()" 
+				class="btn btn-primary btn-block" 
+				data-toggle="modal" 
+				data-target="#talonarioModal"
+			>Nuevo Talonario
+				<i class="fas fa-plus"></i>
+			</button> -->
+
+			<button 
+				type="button" 
+				ng-click="modal_talonario()" 
+				class="btn btn-primary btn-block" 
+			>
+				Nuevo Talonario
 				<i class="fas fa-plus"></i>
 			</button>
 		</div>
@@ -96,24 +111,46 @@
 		      	<form ng-submit="registrarTalonario()">
 			      	<div class="modal-body">
 			      		<input type="hidden" ng-value="vehiculo.INVENTARIOID">
+
+						<!--
+							Selección del tipo de talonario
+						-->
+
 			        	<div class="row">
 			        		<div class="col-md-12">
+
+								<div class="row">
+
+									<div class="col-md-12">
+										<div class="col-md-6">
+
+											<div class="form-group">
+												<label>Tipo de Talonario</label>
+												<select ng-options="tipo.ID as tipo.NOMBRE for tipo in tipos_talonarios" ng-model="talonario.tipo" class="form-control">
+													<option value="" disabled>-- Seleccione una opción --</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+								</div>
+
 			        			<div class="col-md-4">
 			        				<div class="form-group">
 									    <label for="exampleInputEmail1">No. de Talonario</label>
-										<input type="text" class="form-control" ng-model="talonario.no" required>
+										<input ng-disabled="!talonario.tipo" type="text" class="form-control" ng-model="talonario.no" required>
 			  						</div>
 			        			</div>
 			        			<div class="col-md-4">
 			        				<div class="form-group">
 									    <label for="exampleInputEmail1">No. de Inicio</label>
-										<input type="text" class="form-control" ng-model="talonario.inicio" required>
+										<input ng-disabled="!talonario.tipo" type="text" class="form-control" ng-model="talonario.inicio" required>
 			  						</div>
 			        			</div>
 			        			<div class="col-md-4">
 			        				<div class="form-group">
 									    <label for="exampleInputEmail1">No. de Fin</label>
-										<input type="text" class="form-control" ng-model="talonario.fin" required>
+										<input ng-disabled="!talonario.tipo" type="text" class="form-control" ng-model="talonario.fin" required>
 			  						</div>
 			        			</div>
 			        		</div>

@@ -1,0 +1,49 @@
+<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Asignar Vale <span class="label label-primary">{{ vehiculo.PLACA }}</span></h4>
+	</div>
+    <form ng-submit="asignarVale()">
+		<div class="modal-body">
+            <div class="jumbotron">
+                
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3 text-center">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Talonario</label>
+                                    <select ng-change="obtener_vale(id_talonario)" ng-model="id_talonario" ng-options="talonario.ID as talonario.NOMBRE for talonario in talonarios" class="form-control" required>
+                                        <option value="" disabled>-- Seleccione una opción --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-if="id_talonario" class="row" style="margin-bottom: 1.5rem;">
+                    <div class="col-md-12 text-center">
+
+                        <p style="margin: 0; padding: 0;">
+                            <strong>Vale Asignado: </strong>
+                            <span class="label label-info">{{ no_vale ? no_vale : 0  }}</span>
+                        </p>
+
+                        <h5>
+                            <strong>Vales Restantes: </strong>
+                            <span class="label label-danger">{{ restantes }}</span>
+                        </h5>
+
+                    </div>
+                </div>
+
+                <div ng-if="valeid" class="row">
+                    <div class="col-md-12 text-center">
+                        <button data-dismiss="modal" ng-click="emitir_vale()" ng-disabled="!no_vale" class="btn btn-primary btn-lg" role="button">Generar <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>  

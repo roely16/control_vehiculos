@@ -280,4 +280,23 @@ app.controller('ValesCtrl', ['$scope', '$http', '$routeParams', '$timeout', func
 
 	}
 
+	$scope.modal_talonario = function(){
+
+		$http({
+
+			method: 'GET',
+			url: 'routes/vales/tipos_talonarios.php',
+
+		}).then(function successCallback(response){
+
+			//$scope.obtenerValesDisponibles()
+			$scope.tipos_talonarios = response.data
+
+			console.log($scope.tipos_talonarios)
+			$('#talonarioModal').modal('show')
+
+		})	
+
+	}
+
 }])

@@ -59,7 +59,7 @@ app.config(['$routeProvider', function($routeProvider){
         templateUrl: 'views/layouts/vales/detalles_vale.html',
         controller: 'detalleValeController'
     })
-    .when('/vehiculos/detalles/:id/:gestion', {
+    .when('/vehiculos/detalles/:id/:gestion/:idvale', {
         templateUrl: 'views/layouts/detalles_vehiculo.html',
         controller: 'detalleValeController'
     })

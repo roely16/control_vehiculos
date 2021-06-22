@@ -4,7 +4,7 @@
 
 	$con_vale = new ValeController();
 
-	$respuesta = $con_vale->validar_existencia_vale($_REQUEST["id"]);
+	$respuesta = $con_vale->validar_existencia_vale($_REQUEST["id"], $_REQUEST["valeid"]);
 
 	echo json_encode($respuesta);
 

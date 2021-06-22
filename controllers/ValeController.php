@@ -49,6 +49,7 @@
 			$inicio = $request["inicio"];
 			$fin = $request["fin"];
 			$inventarioid = $request["INVENTARIOID"];
+			$tipo = $request["tipo"];
 
 			if ($inventarioid != 0) {
 
@@ -58,7 +59,7 @@
 
 				for ($i = $inicio; $i <= $fin  ; $i++) {
 
-					$stid = oci_parse($conn, "INSERT INTO ADM_VALES(TALONARIO, NO_VALE, ESTADO) VALUES ($talonario, $i, 4)");
+					$stid = oci_parse($conn, "INSERT INTO ADM_VALES(TALONARIO, NO_VALE, ESTADO, ID_TIPO_TALONARIO) VALUES ($talonario, $i, 4, $tipo)");
 
 					oci_execute($stid);
 				}
@@ -89,7 +90,7 @@
 
 					for ($i = $inicio; $i <= $fin  ; $i++) {
 
-						$stid = oci_parse($conn, "INSERT INTO ADM_VALES(TALONARIO, NO_VALE, ESTADO) VALUES ($talonario, $i, 4)");
+						$stid = oci_parse($conn, "INSERT INTO ADM_VALES(TALONARIO, NO_VALE, ESTADO, ID_TIPO_TALONARIO) VALUES ($talonario, $i, 4, $tipo)");
 
 						oci_execute($stid);
 					}
@@ -108,7 +109,7 @@
 		}
 
 		//Validar existencia de vale
-		function validar_existencia_vale($id){
+		function validar_existencia_vale($id, $valeid){
 
 			//Conectar a la base de datos
 			$dbc = new Oracle();
@@ -121,6 +122,13 @@
 			/*Obtener la cuota de combustible*/
 			$cuota_ctrl = new CuotaController();
 			$cuota = $cuota_ctrl->obtener_cuota_activa($id);
+
+			/* 
+				Comentar la línea siguiente
+				únicamente para pruebas
+			*/
+
+			//$cuota = 1;
 
 			if (!$cuota) {
 
@@ -140,7 +148,10 @@
 
 				}
 
-				$query = "SELECT * FROM ADM_VALES WHERE (ESTADO = 4) ORDER BY NO_VALE ASC";
+				$query = "	SELECT * 
+							FROM ADM_VALES 
+							WHERE VALEID = $valeid
+							ORDER BY NO_VALE ASC";
 
 				$stid = oci_parse($conn, $query);
 				oci_execute($stid);
@@ -781,6 +792,29 @@ Saludos.
 			oci_execute($stid);
 
 			return $request;
+
+		}
+
+		function tipos_talonarios(){
+
+			$query = "	SELECT *
+						FROM ADM_TIPO_TALONARIO";
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$tipos = [];
+
+			while ($row = oci_fetch_array($stid,OCI_ASSOC)) {
+				
+				$tipos [] = $row;
+
+			}
+
+			return $tipos;
 
 		}
 

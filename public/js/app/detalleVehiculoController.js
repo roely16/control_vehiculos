@@ -226,7 +226,10 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 
 					method:'GET',
 					url: 'routes/vales/validar_existencia_vale.php',
-					params: {id: $routeParams.id}
+					params: {
+						id: $routeParams.id,
+						valeid: $routeParams.idvale
+					}
 
 				}).then(function successCallback(response){
 

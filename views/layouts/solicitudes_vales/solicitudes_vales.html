@@ -58,9 +58,31 @@
 								<button class="btn btn-default btn-sm" title="Ver Detalles" ng-click="modalDetalleGestion(solicitud.GESTIONID)" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
 									<i class="glyphicon glyphicon-eye-open"></i>
 								</button>
-								<a ng-if="solicitud.ACTIVO == 1" ng-href="#/vehiculos/detalles/{{ solicitud.INVENTARIOID }}/{{ solicitud.GESTIONID }}" class="btn btn-primary btn-sm" title="Generar Vale" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')">
+
+								<!-- <a 
+									ng-click="asignar_vale(solicitud)" 
+									ng-if="solicitud.ACTIVO == 1" 
+									ng-href="#/vehiculos/detalles/{{ solicitud.INVENTARIOID }}/{{ solicitud.GESTIONID }}" 
+									class="btn btn-primary btn-sm" 
+									title="Generar Vale" 
+									data-toggle="tooltip" 
+									data-placement="bottom" 
+									onmouseenter="$(this).tooltip('show')"
+								>
 									<i class="glyphicon glyphicon-log-in"></i>
-								</a>
+								</a> -->
+
+								<button 
+									ng-click="asignar_vale(solicitud)" 
+									ng-if="solicitud.ACTIVO == 1" 									
+									class="btn btn-primary btn-sm" 
+									title="Generar Vale" 
+									data-toggle="tooltip" 
+									data-placement="bottom" 
+									onmouseenter="$(this).tooltip('show')"
+								>
+									<i class="glyphicon glyphicon-log-in"></i>
+								</button>
 
 								<a ng-if="solicitud.ACTIVO == 0" class="btn btn-primary btn-sm" title="Generar Vale" data-toggle="tooltip" data-placement="bottom" onmouseenter="$(this).tooltip('show')" disabled>
 									<i class="glyphicon glyphicon-log-in"></i>

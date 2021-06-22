@@ -1,4 +1,4 @@
-app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', function($scope, $http, $rootScope) {
+app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', '$location', function($scope, $http, $rootScope, $location) {
 
 	$scope.$root.URL_RETROCESO = '#/'
 
@@ -6,6 +6,7 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 
 	$scope.maxSize = 5
 	$scope.bigCurrentPage = 1
+	$scope.id_talonario = null
 
 	angular.element(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip()
@@ -277,6 +278,67 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', f
 		})
 	}
 
+	$scope.asignar_vale = function(data){
 
+		/* 
+
+			Validación
+			Determinar si el vale amerita que se seleccione el tipo de talonario
+
+		*/
+
+		$scope.solicitud_vale = data
+
+		$http({
+
+			method: 'POST',
+			url: 'routes/solicitudes_pendientes/verificar_asignacion_vale.php',
+			data: data
+
+		}).then(function successCallback(response){
+
+			$scope.modalMed_template_url = "views/modals/solicitudes_vales/asignar_vale.html"
+
+			$scope.talonarios = response.data.talonarios
+			$scope.vehiculo = response.data.vehiculo
+
+			$('#modalMed').modal('show')
+
+		})
+
+	}
+
+	$scope.obtener_vale = function(id_talonario){
+
+		const data = {
+			id_talonario: id_talonario
+		}
+
+		$http({
+
+			method: 'POST',
+			url: 'routes/solicitudes_pendientes/obtener_vale_asignado.php',
+			data: data
+
+		}).then(function successCallback(response){
+
+			$scope.valeid = response.data.valeid
+			$scope.no_vale = response.data.no_vale
+			$scope.restantes = response.data.restantes
+
+		})
+
+	}
+
+	$scope.emitir_vale = function(){
+
+		
+		$('#modalMed').on('hide.bs.modal', function () {
+			
+			$location.path( "/vehiculos/detalles/" + $scope.solicitud_vale.INVENTARIOID  + "/" + $scope.solicitud_vale.GESTIONID + "/" + $scope.valeid )
+
+		})
+
+	}
 
 }]) 

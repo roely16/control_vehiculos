@@ -230,7 +230,7 @@
 				}else{
 
 					$data["CONSUMO"] = $consumo["CONSUMO"];
-					$data["RESTANTE"] = $data["CUOTA"] - $consumo["CONSUMO"];
+					$data["RESTANTE"] = round($data["CUOTA"] - $consumo["CONSUMO"], 2);
 
 				}
 

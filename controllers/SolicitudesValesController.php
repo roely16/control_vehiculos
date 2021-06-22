@@ -14,15 +14,30 @@
 			$dbc = new Oracle();
 			$conn = $dbc->connect();
 
-			$query = "SELECT ADM_GESTIONES.GESTIONID, TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, 
-			ADM_GESTIONES.INVENTARIOID, ADM_GESTIONES.STATUS,RH_EMPLEADOS.NOMBRE, RH_EMPLEADOS.APELLIDO, RH_EMPLEADOS.NIT, 
-			ADM_FICHA_VEHICULOS.PLACA, ADM_FICHA_VEHICULOS.TIPO, ADM_FICHA_VEHICULOS.MARCA, ADM_FICHA_VEHICULOS.MODELO, EQP_INVENTARIO.ACTIVO 
-			FROM ADM_GESTIONES INNER JOIN RH_EMPLEADOS  ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
-			INNER JOIN ADM_FICHA_VEHICULOS ON ADM_GESTIONES.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
-			INNER JOIN EQP_INVENTARIO ON ADM_FICHA_VEHICULOS.INVENTARIOID = EQP_INVENTARIO.INVENTARIOID
-			WHERE ADM_GESTIONES.TIPOGESTION = 1 AND (ADM_GESTIONES.STATUS = 4 OR ADM_GESTIONES.STATUS = 0)
-			ORDER BY ADM_GESTIONES.GESTIONID DESC";
-//echo $query;
+			$query = "	SELECT 
+							ADM_GESTIONES.GESTIONID, 
+							TO_CHAR(ADM_GESTIONES.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA, 
+							ADM_GESTIONES.INVENTARIOID, 
+							ADM_GESTIONES.STATUS,RH_EMPLEADOS.NOMBRE, 
+							RH_EMPLEADOS.APELLIDO, 
+							RH_EMPLEADOS.NIT, 
+							ADM_FICHA_VEHICULOS.PLACA, 
+							ADM_FICHA_VEHICULOS.TIPO,
+							ADM_FICHA_VEHICULOS.MARCA, 
+							ADM_FICHA_VEHICULOS.MODELO, 
+							EQP_INVENTARIO.ACTIVO 
+						FROM ADM_GESTIONES 
+						INNER JOIN RH_EMPLEADOS  
+						ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
+						INNER JOIN ADM_FICHA_VEHICULOS 
+						ON ADM_GESTIONES.INVENTARIOID = ADM_FICHA_VEHICULOS.INVENTARIOID
+						INNER JOIN EQP_INVENTARIO 
+						ON ADM_FICHA_VEHICULOS.INVENTARIOID = EQP_INVENTARIO.INVENTARIOID
+						WHERE ADM_GESTIONES.TIPOGESTION = 1 
+						AND (ADM_GESTIONES.STATUS = 4 
+						OR ADM_GESTIONES.STATUS = 0)
+						ORDER BY ADM_GESTIONES.GESTIONID DESC";
+
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
 
@@ -111,7 +126,7 @@
 				INNER JOIN RH_EMPLEADOS 
 				ON ADM_GESTIONES.EMPLEADOID = RH_EMPLEADOS.NIT
 				WHERE ADM_GESTIONES.GESTIONID = $id";
-//echo $query;
+
 			$stid = oci_parse($conn, $query);
 			oci_execute($stid);
             $data = oci_fetch_array($stid); 
@@ -272,8 +287,7 @@
 			oci_execute($stid);
 
 			$usuario = $this->detalles_solicitud($id);
-			$text = "La gestión No. de mantenimiento correctivo/preventivo ".$id." se encuentra RECHAZADA<br>
-<br>";
+			$text = "La gestión No. de mantenimiento correctivo/preventivo ".$id." se encuentra RECHAZADA<br><br>";
 
 			/* Enviar correo */
 			$mail = new Mail();
@@ -320,6 +334,139 @@
 
 			/* Cerrar gestión en workflow */
 			$query = "UPDATE";
+		}
+
+		function verificar_asignacion_vale($request){
+
+			/*
+				Buscar el vehiculo en ADM_FICHA_VEHICULO
+				Obtener el tipo de combustible
+			*/
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$inventarioid = $request["INVENTARIOID"];
+
+			$query = "	SELECT *
+						FROM ADM_FICHA_VEHICULOS
+						WHERE INVENTARIOID = '$inventarioid'";
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$vehiculo = oci_fetch_array($stid,OCI_ASSOC);
+
+			if ($vehiculo) {
+				
+				/*
+					Obtener el talonario dependiendo el tipo de combustible
+				*/
+
+				$tipo_combustible = strtoupper($vehiculo["TIPO_COMBUSTIBLE"]);
+
+				$query = "	SELECT *
+							FROM ADM_TIPO_TALONARIO
+							WHERE TIPO_COMBUSTIBLE = '$tipo_combustible'";
+
+				$stid = oci_parse($conn, $query);
+				oci_execute($stid);
+
+				$talonarios = [];
+
+				while ($data = oci_fetch_array($stid, OCI_ASSOC)) {
+					
+					$talonarios [] = $data;
+
+				}
+
+				$data = [
+					"talonarios" => $talonarios,
+					"vehiculo" => $vehiculo
+				];
+
+				return $data;
+
+			}
+
+		}
+
+		function obtener_vale_asignado($request){
+
+			$id_talonario = $request["id_talonario"];
+
+			/*
+				Obtener el siguiente vale que corresponde
+				y además la cantidad de vales restantes
+			*/
+
+			$query = "	SELECT *
+						FROM ADM_VALES
+						WHERE ID_TIPO_TALONARIO = '$id_talonario'
+						AND ESTADO = 4
+						AND ROWNUM = 1
+						ORDER BY VALEID ASC";
+
+			$dbc = new Oracle();
+			$conn = $dbc->connect();
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$vale = oci_fetch_array($stid,OCI_ASSOC);
+
+			$query = "	SELECT COUNT(*) AS RESTANTES
+						FROM ADM_VALES
+						WHERE ID_TIPO_TALONARIO = '$id_talonario'
+						AND ESTADO = 4";
+
+			$stid = oci_parse($conn, $query);
+			oci_execute($stid);
+
+			$restantes = oci_fetch_array($stid,OCI_ASSOC);
+
+			/*
+				Si no existe un vale con tipo de talonario
+				verificar que exista alguno sin tipo
+			*/
+			
+			if(!$vale){
+
+				$query = "	SELECT *
+							FROM ADM_VALES
+							WHERE ID_TIPO_TALONARIO IS NULL
+							AND ESTADO = 4
+							AND ROWNUM = 1
+							ORDER BY VALEID ASC";
+
+				$dbc = new Oracle();
+				$conn = $dbc->connect();
+
+				$stid = oci_parse($conn, $query);
+				oci_execute($stid);
+
+				$vale = oci_fetch_array($stid,OCI_ASSOC);
+
+				$query = "	SELECT COUNT(*) AS RESTANTES
+							FROM ADM_VALES
+							WHERE ID_TIPO_TALONARIO IS NULL
+							AND ESTADO = 4";
+
+				$stid = oci_parse($conn, $query);
+				oci_execute($stid);
+
+				$restantes = oci_fetch_array($stid,OCI_ASSOC);
+
+			}
+
+			$data = [
+				"valeid" => $vale ? $vale["VALEID"] : null,
+				"no_vale" => $vale ? $vale["NO_VALE"] : null,
+				"restantes" => $restantes["RESTANTES"]
+			];
+
+			return $data;
+
 		}
 
 	}
