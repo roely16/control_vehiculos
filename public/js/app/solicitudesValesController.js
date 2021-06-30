@@ -335,7 +335,7 @@ app.controller('solicitudesValesController', ['$scope', '$http', '$rootScope', '
 		
 		$('#modalMed').on('hide.bs.modal', function () {
 			
-			$location.path( "/vehiculos/detalles/" + $scope.solicitud_vale.INVENTARIOID  + "/" + $scope.solicitud_vale.GESTIONID + "/" + $scope.valeid )
+			$location.path( "/vehiculos/detalles/" + $scope.solicitud_vale.INVENTARIOID  + "/" + $scope.solicitud_vale.GESTIONID + "/1/" + $scope.valeid )
 
 		})
 
