@@ -185,6 +185,8 @@ app.controller('detalleVehiculoController', ['$scope', '$http', '$routeParams', 
 				$scope.mantenimiento.KILOMETRAJE_MANTENIMIENTO = $scope.vehiculo.KM_SERVICIO
 				$scope.mantenimiento.GESTIONID = $routeParams.gestion
 
+				console.log($scope.mantenimiento)
+
 				$('#myTabs a[data-target="#t1"]').tab('show')
 
 				/* Se carga la plantilla del modal */
